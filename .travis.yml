@@ -1,0 +1,33 @@
+# We set the language to python, even if we use compiled extensions.
+language: python
+
+# The python versions to test.  This is a very simple job matrix since we have
+# no compiled extensions and do not have to test against different compiler versions.
+python:
+    - 3.4
+    - 3.6
+
+# Global environment variables used for all entries of the job matrix.
+
+env:
+  global:
+    # Binary packages to install with pip
+    - PIP_BINARY="numpy scipy matplotlib healpy"
+    # Other CMB-S4 dependencies to install from github.  Specify the version of each
+    # package to install.
+    #-CMBS4_PIP="s4sim=master"
+    - CMBS4_PIP=""
+
+before_install:
+    # Install binary python dependencies.
+    - pip3 install $PIP_BINARY
+    # Install CMB-S4 dependencies
+    - for p in $CMBS4_PIP; do r=$(echo $p | cut -d= -f1); v=$(echo $p | cut -d= -f2); pip3 install git+https://github.com/CMB-S4/${r}.git@${v}#egg=${r}; done
+
+# Install this package
+install:
+    - pip3 install .
+
+# Run tests
+script:
+    - python3 -c 'import s4sim.tests; s4sim.tests.run()'
