@@ -1,4 +1,4 @@
-# Copyright (c) 
+# Copyright (c) 2020-2020 CMB-S4 Collaboration.
 # Full license can be found in the top level "LICENSE" file.
 """Trim a hardware model to include only some detectors.
 """
