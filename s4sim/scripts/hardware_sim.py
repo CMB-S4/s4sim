@@ -15,7 +15,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="This program simulates the current nominal hardware\
             model and dumps it to disk",
-        usage="so_hardware_sim [options] (use --help for details)")
+        usage="s4_hardware_sim [options] (use --help for details)")
 
     parser.add_argument(
         "--out", required=False, default="hardware",
