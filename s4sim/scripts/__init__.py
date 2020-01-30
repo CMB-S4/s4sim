@@ -1,4 +1,4 @@
-# Copyright (c) 2018 Simons Observatory.
+# Copyright (c) 
 # Full license can be found in the top level "LICENSE" file.
 """Simons Observatory TOD processing entry points.
 
