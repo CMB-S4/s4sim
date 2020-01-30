@@ -9,7 +9,7 @@ from toast.utils import Logger
 import toast.qarray as qa
 
 
-def add_so_noise_args(parser):
+def add_s4_noise_args(parser):
     parser.add_argument(
         "--common-mode-noise",
         required=False,
@@ -89,7 +89,7 @@ def get_analytic_noise(args, comm, focalplane, verbose=True):
         fmin, fknee, alpha, net = np.array(args.common_mode_noise.split(",")).astype(
             np.float64
         )
-        hw = sotodlib.hardware.get_example()
+        hw = s4sim.hardware.get_example()
         for itube, tube in enumerate(sorted(hw.data["tubes"].keys())):
             d = "common_mode_{}".format(tube)
             detectors.append(d)
