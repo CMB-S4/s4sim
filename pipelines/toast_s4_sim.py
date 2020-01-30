@@ -40,11 +40,11 @@ from toast.timing import dump as dump_timing
 
 import toast.pipeline_tools as toast_tools
 
-import s4sims.pipeline_tools as s4_tools
+import s4sim.pipeline_tools as s4_tools
 
 import numpy as np
 
-import s4todlib.hardware
+import s4sim.hardware
 
 import warnings
 
@@ -86,9 +86,7 @@ def parse_arguments(comm):
     s4_tools.add_hw_args(parser)
     s4_tools.add_s4_noise_args(parser)
     s4_tools.add_pysm_args(parser)
-    s4_tools.add_export_args(parser)
     toast_tools.add_debug_args(parser)
-    s4_tools.add_import_args(parser)
 
     parser.add_argument(
         "--no-maps",
@@ -209,7 +207,7 @@ def main():
 
     # Only purge the pointing if we are NOT going to export the
     # data to a TIDAS volume
-    if (args.tidas is None) and (args.export is None):
+    if args.tidas is None:
         for ob in data.obs:
             tod = ob["tod"]
             try:
@@ -292,7 +290,6 @@ def main():
             # For the first realization and frequency, optionally
             # export the timestream data.
             toast_tools.output_tidas(args, comm, data, totalname)
-            s4_tools.export_TOD(args, comm, data, totalname, schedules)
 
             memreport("after export", comm.comm_world)
 
