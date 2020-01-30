@@ -12,7 +12,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="This program reads a hardware model and plots the\
             detectors.  Note that you should pre-select detectors before\
-            passing a hardware model to this function.  See so_hardware_trim.",
+            passing a hardware model to this function.  See s4_hardware_trim.",
         usage="s4_hardware_plot [options] (use --help for details)")
 
     parser.add_argument(
