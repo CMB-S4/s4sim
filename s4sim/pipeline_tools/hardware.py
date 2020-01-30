@@ -72,7 +72,7 @@ def add_hw_args(parser):
         "LT46 (MFL), LT47 (MFL), LT48 (MFL),  LT49 (MFL), LT50 (MFL), LT51 (MFL), "
         "LT52 (MFL), LT53 (MFL), LT54 (LFL), LT55 (LFL), LT56 (ULFL), ST0 (MFLS), "
         "ST1 (MFLS), ST2 (MFLS), ST3 (MFLS), ST4 (MFLS), ST5 (MFLS), ST6 (MFHS), "
-        "ST7 (MFHS), ST8 (MFHS), ST9 (MFHS), ST10 (MFHS), ST11 (MFHS), ST12 (HFS),
+        "ST7 (MFHS), ST8 (MFHS), ST9 (MFHS), ST10 (MFHS), ST11 (MFHS), ST12 (HFS),"
         "ST13 (HFS), ST14 (HFS), ST15 (HFS), ST16 (LFS), ST17 (LFS)."
         "Length of list must equal --bands",
     )
