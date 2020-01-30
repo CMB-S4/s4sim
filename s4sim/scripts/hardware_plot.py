@@ -13,7 +13,7 @@ def main():
         description="This program reads a hardware model and plots the\
             detectors.  Note that you should pre-select detectors before\
             passing a hardware model to this function.  See so_hardware_trim.",
-        usage="so_hardware_plot [options] (use --help for details)")
+        usage="s4_hardware_plot [options] (use --help for details)")
 
     parser.add_argument(
         "--hardware", required=True, default=None,
