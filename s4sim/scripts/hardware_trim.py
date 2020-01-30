@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2019 Simons Observatory.
+# Copyright (c) 
 # Full license can be found in the top level "LICENSE" file.
 """Trim a hardware model to include only some detectors.
 """
