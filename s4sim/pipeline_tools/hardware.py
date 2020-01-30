@@ -101,7 +101,7 @@ class DetectorParams:
         """
         Args:
             det_data (dict) :  Dictionary of detector parameters
-                from sotodlib.hardware
+                from s4sim.hardware
             band (BandParams) :  band parameters act as defaults
             wafer (int) :  wafer number
             tube (str) :  tube name
