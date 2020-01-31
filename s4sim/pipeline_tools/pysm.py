@@ -13,9 +13,9 @@ except:
     pysm = None
 
 try:
-    import s4_pysm_models
+    import so_pysm_models
 except Exception as e:
-    print('Failed to load s4_pysm_models: "{}"'.format(e))
+    print('Failed to load so_pysm_models: "{}"'.format(e))
     s4_pysm_models = None
 
 

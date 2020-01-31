@@ -229,6 +229,25 @@ def get_hardware(args, comm, verbose=False):
             "Telescope = {} tubes = {} bands = {}, thinfp = {} matches {} detectors"
             "".format(telescope.name, args.tubes, args.bands, args.thinfp, ndetector)
         )
+        """
+        # DEBUG begin
+        import matplotlib.pyplot as plt
+        import toast.qarray as qa
+        import healpy as hp
+        xaxis, yaxis, zaxis = np.eye(3)
+        rot = qa.rotation(yaxis, np.radians(-90))
+        plt.figure()
+        for det in hw.data["detectors"]:
+            quat = hw.data["detectors"][det]["quat"]
+            vec = qa.rotate(quat, zaxis)
+            vec = qa.rotate(rot, vec)
+            lon, lat = hp.vec2ang(vec, lonlat=True)
+            plt.plot(lon, lat, 'o')
+        plt.savefig("test.png")
+        import pdb
+        pdb.set_trace()
+        # DEBUG end
+        """
     else:
         hw = None
         det_index = None
