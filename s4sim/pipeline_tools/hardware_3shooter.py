@@ -9,14 +9,24 @@ from toast.utils import Logger
 
 from .. import hardware
 
-#Note, this is for atmospheric sims only and doesn't affect the wafer/tube scaling to the sky.
-#For SATs, this is FOV/2*(1+2/sqrt(3)), FOV UHF=35 deg, FOV others=29 deg
-FOCALPLANE_RADII_DEG = {"LAT0" : 3.9, "LAT1" : 3.9, "LAT2" : 3.9, "SAT0" : 31.3, "SAT1" : 31.3, "SAT2" : 31.3, "SAT3" : 31.3, "SAT4" : 37.7, "SAT5" : 31.3}
+# Note, this is for atmospheric sims only and doesn't affect the wafer/tube scaling to the sky.
+# For SATs, this is FOV/2*(1+2/sqrt(3)), FOV UHF=35 deg, FOV others=29 deg
+FOCALPLANE_RADII_DEG = {
+    "LAT0": 3.9,
+    "LAT1": 3.9,
+    "LAT2": 3.9,
+    "SAT0": 31.3,
+    "SAT1": 31.3,
+    "SAT2": 31.3,
+    "SAT3": 31.3,
+    "SAT4": 37.7,
+    "SAT5": 31.3,
+}
 
 
 class S4Telescope(Telescope):
     def __init__(self, name):
-        if (name=="LAT0") or (name=="LAT1"):
+        if (name == "LAT0") or (name == "LAT1"):
             site = Site("Atacama", lat="-22.958064", lon="-67.786222", alt=5200)
         else:
             site = Site("Pole", lat="-89.991067", lon="-44.650000", alt=2843)
@@ -87,7 +97,7 @@ class BandParams:
         self.fmin = band_data["fmin"] * 1e-3  # mHz -> Hz
         # self.alpha = banddata[band]["alpha"]
         # overwrite the hardware model value of 3.5, to a more realistic value
-        self.alpha = 1.
+        self.alpha = 1.0
         self.A = band_data["A"]
         self.C = band_data["C"]
         self.lower = band_data["low"]  # GHz
@@ -128,7 +138,7 @@ class DetectorParams:
         self.lower = get_par("low", band.lower)  # GHz
         self.center = get_par("center", band.center)  # GHz
         self.upper = get_par("high", band.upper)  # GHz
-        #ensure that the center frequency of band is center of upper and lower bands
+        # ensure that the center frequency of band is center of upper and lower bands
         self.center = 0.5 * (self.lower + self.upper)
         self.width = self.upper - self.lower
         self.wafer = wafer
@@ -185,7 +195,7 @@ def get_hardware(args, comm, verbose=False):
         tubes = args.tubes.split(",")
         # If one provides both telescopes and tubes, the tubes matching *either*
         # will be concatenated
-        #hw = hw.select(telescopes=[telescope.name], tubes=tubes, match=match)
+        # hw = hw.select(telescopes=[telescope.name], tubes=tubes, match=match)
         hw = hw.select(tubes=tubes, match=match)
         if args.thinfp:
             # Only accept a fraction of the detectors for
@@ -224,9 +234,7 @@ def get_telescope(args, comm, verbose=False):
         hwexample = hardware.get_example()
         tubes = args.tubes.split(",")
         for tube in tubes:
-            for telescope_name, telescope_data in hwexample.data[
-                "telescopes"
-            ].items():
+            for telescope_name, telescope_data in hwexample.data["telescopes"].items():
                 if tube in telescope_data["tubes"]:
                     if telescope is None:
                         telescope = S4Telescope(telescope_name)
@@ -295,6 +303,7 @@ def get_focalplane(args, comm, hw, det_index, verbose=False):
     if comm.comm_world is not None:
         focalplane = comm.comm_world.bcast(focalplane)
     return focalplane
+
 
 @function_timer
 def load_focalplanes(args, comm, schedules, verbose=False):

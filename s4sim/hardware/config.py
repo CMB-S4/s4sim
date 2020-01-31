@@ -725,8 +725,27 @@ def get_example():
         tb["location"] = ltubepos[tindx]
         tubes[nm] = tb
 
-    stubes = ["MFLS","MFLS","MFLS","MFLS","MFLS","MFLS","MFHS","MFHS","MFHS","MFHS","MFHS","MFHS","HFS","HFS","HFS","HFS","LFS","LFS"]
-    stubepos = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    stubes = [
+        "MFLS",
+        "MFLS",
+        "MFLS",
+        "MFLS",
+        "MFLS",
+        "MFLS",
+        "MFHS",
+        "MFHS",
+        "MFHS",
+        "MFHS",
+        "MFHS",
+        "MFHS",
+        "HFS",
+        "HFS",
+        "HFS",
+        "HFS",
+        "LFS",
+        "LFS",
+    ]
+    stubepos = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     for tindx in range(18):
         nm = "ST{:d}".format(tindx)
         ttyp = stubes[tindx]
@@ -913,70 +932,70 @@ def get_example():
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT5"] = tele
-    
+
     tele = OrderedDict()
     tele["tubes"] = ["ST6"]
     tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT6"] = tele
-    
+
     tele = OrderedDict()
     tele["tubes"] = ["ST7"]
     tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT7"] = tele
-    
+
     tele = OrderedDict()
     tele["tubes"] = ["ST8"]
     tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT8"] = tele
-    
+
     tele = OrderedDict()
     tele["tubes"] = ["ST9"]
     tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT9"] = tele
-    
+
     tele = OrderedDict()
     tele["tubes"] = ["ST10"]
     tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT10"] = tele
-    
+
     tele = OrderedDict()
     tele["tubes"] = ["ST11"]
     tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT11"] = tele
-    
+
     tele = OrderedDict()
     tele["tubes"] = ["ST12"]
     tele["platescale"] = 0.091224
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT12"] = tele
-    
+
     tele = OrderedDict()
     tele["tubes"] = ["ST13"]
     tele["platescale"] = 0.091224
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT13"] = tele
-    
+
     tele = OrderedDict()
     tele["tubes"] = ["ST14"]
     tele["platescale"] = 0.091224
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT14"] = tele
-    
+
     tele = OrderedDict()
     tele["tubes"] = ["ST15"]
     tele["platescale"] = 0.091224
