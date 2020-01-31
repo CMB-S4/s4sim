@@ -15,21 +15,30 @@ def main():
     parser = argparse.ArgumentParser(
         description="This program simulates the current nominal hardware\
             model and dumps it to disk",
-        usage="s4_hardware_sim [options] (use --help for details)")
-
-    parser.add_argument(
-        "--out", required=False, default="hardware",
-        help="Name (without extensions) of the output hardware file"
+        usage="s4_hardware_sim [options] (use --help for details)",
     )
 
     parser.add_argument(
-        "--plain", required=False, default=False, action="store_true",
-        help="Write plain text (without gzip compression)"
+        "--out",
+        required=False,
+        default="hardware",
+        help="Name (without extensions) of the output hardware file",
     )
 
     parser.add_argument(
-        "--overwrite", required=False, default=False, action="store_true",
-        help="Overwrite any existing output file."
+        "--plain",
+        required=False,
+        default=False,
+        action="store_true",
+        help="Write plain text (without gzip compression)",
+    )
+
+    parser.add_argument(
+        "--overwrite",
+        required=False,
+        default=False,
+        action="store_true",
+        help="Overwrite any existing output file.",
     )
 
     args = parser.parse_args()
@@ -38,8 +47,7 @@ def main():
     hw = get_example()
     hw.data["detectors"] = OrderedDict()
     for tele, teleprops in hw.data["telescopes"].items():
-        print("Simulating detectors for telescope {}...".format(tele),
-              flush=True)
+        print("Simulating detectors for telescope {}...".format(tele), flush=True)
         dets = sim_telescope_detectors(hw, tele)
         hw.data["detectors"].update(dets)
 

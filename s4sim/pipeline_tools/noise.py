@@ -9,6 +9,7 @@ from toast.utils import Logger
 import toast.qarray as qa
 from .. import hardware
 
+
 def add_s4_noise_args(parser):
     parser.add_argument(
         "--common-mode-noise",

@@ -49,7 +49,9 @@ def add_pysm_args(parser):
 
 
 @function_timer
-def simulate_sky_signal(args, comm, data, focalplanes, subnpix, localsm, signalname=None):
+def simulate_sky_signal(
+    args, comm, data, focalplanes, subnpix, localsm, signalname=None
+):
     """ Use PySM to simulate smoothed sky signal.
 
     """
@@ -73,8 +75,7 @@ def simulate_sky_signal(args, comm, data, focalplanes, subnpix, localsm, signaln
             pysm_model.append(model_tag)
         else:
             if s4_pysm_models is None:
-                raise RuntimeError(
-                    "{} requires s4_pysm_models".format(model_tag))
+                raise RuntimeError("{} requires s4_pysm_models".format(model_tag))
             if model_tag == "SO_x1_cib":
                 pysm_component_objects.append(
                     s4_pysm_models.WebSkyCIB(

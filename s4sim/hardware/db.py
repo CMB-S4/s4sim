@@ -13,7 +13,7 @@ import numpy as np
 
 import sqlite3
 
-#from sotoddb import DetDB
+# from sotoddb import DetDB
 
 
 # NOTE:  This source is not currently used.  It is kept here in case we revisit
@@ -40,6 +40,7 @@ class DataBase(object):
             dictionary is used to create the detector property tables.
 
     """
+
     def __init__(self, path, mode=None, conf=None, dets=None):
         self._path = path
         self._mode = mode
@@ -48,9 +49,8 @@ class DataBase(object):
         if os.path.exists(self._path):
             create = False
 
-        if self._mode == 'r' and create:
-            raise RuntimeError("cannot open a non-existent DB in read-only "
-                               " mode")
+        if self._mode == "r" and create:
+            raise RuntimeError("cannot open a non-existent DB in read-only " " mode")
 
         self._connstr = None
 
@@ -68,19 +68,18 @@ class DataBase(object):
     def _open(self):
         try:
             # only python3 supports uri option
-            if self._mode == 'r':
-                self._connstr = 'file:{}?mode=ro'.format(self._path)
+            if self._mode == "r":
+                self._connstr = "file:{}?mode=ro".format(self._path)
             else:
-                self._connstr = 'file:{}?mode=rwc'.format(self._path)
-            self._conn = sqlite3.connect(self._connstr, uri=True,
-                                         timeout=self._busytime)
+                self._connstr = "file:{}?mode=rwc".format(self._path)
+            self._conn = sqlite3.connect(
+                self._connstr, uri=True, timeout=self._busytime
+            )
         except sqlite3.OperationalError:
-            self._conn = sqlite3.connect(self._path,
-                                         timeout=self._busytime)
-        if self._mode == 'w':
+            self._conn = sqlite3.connect(self._path, timeout=self._busytime)
+        if self._mode == "w":
             # In read-write mode, set the journaling
-            self._conn.execute("pragma journal_mode={}"
-                               .format(self._journalmode))
+            self._conn.execute("pragma journal_mode={}".format(self._journalmode))
             self._conn.execute("pragma synchronous={}".format(self._syncmode))
             # Other tuning options
             self._conn.execute("pragma temp_store=memory")
@@ -114,7 +113,6 @@ class DataBase(object):
             del cur
             self._close()
 
-
     def initdb(self, conf, dets):
         """Initialize the database.
 
@@ -135,7 +133,7 @@ class DataBase(object):
             "`det_id` integer",
             "`time0` integer",
             "`time1` integer",
-            "`name` text"
+            "`name` text",
         ]
         for k, v in dprops.items():
             if k == "quat":
@@ -155,7 +153,7 @@ class DataBase(object):
             "`qx` float",
             "`qy` float",
             "`qz` float",
-            "`qw` float"
+            "`qw` float",
         ]
 
         # Create the DB and detector tables, then close.
@@ -200,8 +198,7 @@ class DataBase(object):
                             valstr += ", '{}'".format(v)
                     colstr += ")"
                     valstr += ")"
-                    com = "insert into {} {} values {}".format(
-                        table, colstr, valstr)
+                    com = "insert into {} {} values {}".format(table, colstr, valstr)
                     print(com, flush=True)
                     cur.execute(com)
 

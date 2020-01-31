@@ -6,6 +6,7 @@
 import numpy as np
 
 import matplotlib
+
 matplotlib.use("pdf")
 import matplotlib.pyplot as plt
 
@@ -31,8 +32,9 @@ default_band_colors = {
 }
 
 
-def plot_detectors(dets, outfile, width=None, height=None, labels=False,
-                   bandcolor=None):
+def plot_detectors(
+    dets, outfile, width=None, height=None, labels=False, bandcolor=None
+):
     """Visualize a dictionary of detectors.
 
     This makes a simple plot of the detector positions on the projected
@@ -64,13 +66,13 @@ def plot_detectors(dets, outfile, width=None, height=None, labels=False,
         for d, props in dets.items():
             quat = np.array(props["quat"]).astype(np.float64)
             dir = qa.rotate(quat, zaxis).flatten()
-            if (dir[0] > wmax):
+            if dir[0] > wmax:
                 wmax = dir[0]
-            if (dir[0] < wmin):
+            if dir[0] < wmin:
                 wmin = dir[0]
-            if (dir[1] > hmax):
+            if dir[1] > hmax:
                 hmax = dir[1]
-            if (dir[1] < hmin):
+            if dir[1] < hmin:
                 hmin = dir[1]
         wmin = np.arcsin(wmin) * 180.0 / np.pi
         wmax = np.arcsin(wmax) * 180.0 / np.pi
@@ -131,8 +133,13 @@ def plot_detectors(dets, outfile, width=None, height=None, labels=False,
 
         detface = bandcolor[band]
 
-        circ = plt.Circle((xpos, ypos), radius=detradius, fc=detface,
-                          ec="black", linewidth=0.05*detradius)
+        circ = plt.Circle(
+            (xpos, ypos),
+            radius=detradius,
+            fc=detface,
+            ec="black",
+            linewidth=0.05 * detradius,
+        )
         ax.add_artist(circ)
 
         ascale = 1.5
@@ -148,25 +155,46 @@ def plot_detectors(dets, outfile, width=None, height=None, labels=False,
         if pol == "B":
             detcolor = (0.0, 0.0, 1.0, 1.0)
 
-        ax.arrow(xtail, ytail, dx, dy, width=0.1*detradius,
-                 head_width=0.3*detradius, head_length=0.3*detradius,
-                 fc=detcolor, ec="none", length_includes_head=True)
+        ax.arrow(
+            xtail,
+            ytail,
+            dx,
+            dy,
+            width=0.1 * detradius,
+            head_width=0.3 * detradius,
+            head_length=0.3 * detradius,
+            fc=detcolor,
+            ec="none",
+            length_includes_head=True,
+        )
 
         if labels:
             # Compute the font size to use for detector labels
             fontpix = 0.1 * detradius * ypixperdeg
-            ax.text((xpos), (ypos), pixel,
-                    color='k', fontsize=fontpix, horizontalalignment='center',
-                    verticalalignment='center',
-                    bbox=dict(fc='white', ec='none', pad=0.2, alpha=1.0))
+            ax.text(
+                (xpos),
+                (ypos),
+                pixel,
+                color="k",
+                fontsize=fontpix,
+                horizontalalignment="center",
+                verticalalignment="center",
+                bbox=dict(fc="white", ec="none", pad=0.2, alpha=1.0),
+            )
             xsgn = 1.0
             if dx < 0.0:
                 xsgn = -1.0
             labeloff = 1.0 * xsgn * fontpix * len(pol) / ypixperdeg
-            ax.text((xtail+1.0*dx+labeloff), (ytail+1.0*dy), pol,
-                    color='k', fontsize=fontpix, horizontalalignment='center',
-                    verticalalignment='center',
-                    bbox=dict(fc='none', ec='none', pad=0, alpha=1.0))
+            ax.text(
+                (xtail + 1.0 * dx + labeloff),
+                (ytail + 1.0 * dy),
+                pol,
+                color="k",
+                fontsize=fontpix,
+                horizontalalignment="center",
+                verticalalignment="center",
+                bbox=dict(fc="none", ec="none", pad=0, alpha=1.0),
+            )
 
     plt.savefig(outfile)
     plt.close()
@@ -204,8 +232,11 @@ def summary_text(hw):
     """
     for obj, props in hw.data.items():
         nsub = len(props)
-        print("{}{:<12}: {}{:5d} objects{}".format(clr.WHITE, obj, clr.RED,
-                                                   nsub, clr.ENDC))
+        print(
+            "{}{:<12}: {}{:5d} objects{}".format(
+                clr.WHITE, obj, clr.RED, nsub, clr.ENDC
+            )
+        )
         if nsub <= 2000:
             line = ""
             for k in list(props.keys()):
@@ -214,8 +245,7 @@ def summary_text(hw):
                     line = ""
                 line = "{}{}, ".format(line, k)
             if len(line) > 0:
-                print("    {}{}{}".format(clr.BLUE, line.rstrip(", "),
-                      clr.ENDC))
+                print("    {}{}{}".format(clr.BLUE, line.rstrip(", "), clr.ENDC))
         else:
             # Too many to print!
             print("    {}(Too many to print){}".format(clr.BLUE, clr.ENDC))

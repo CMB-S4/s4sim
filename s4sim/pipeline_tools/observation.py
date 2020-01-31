@@ -15,9 +15,7 @@ from .hardware import get_hardware, get_focalplane
 
 def add_import_args(parser):
     parser.add_argument(
-        "--import-dir",
-        required=False,
-        help="Directory to load TOD from",
+        "--import-dir", required=False, help="Directory to load TOD from",
     )
     parser.add_argument(
         "--import-obs",
@@ -26,9 +24,7 @@ def add_import_args(parser):
         "all observations in --import-dir",
     )
     parser.add_argument(
-        "--import-prefix",
-        required=False,
-        help="Prefix for TOD files to import"
+        "--import-prefix", required=False, help="Prefix for TOD files to import"
     )
     return
 
@@ -184,6 +180,7 @@ def load_observations(args, comm):
     # This import is not at the top of the file to avoid
     # loading spt3g through so3g unnecessarily
     from ..data.toast_load import load_data
+
     log = Logger.get()
     if args.import_obs is not None:
         import_obs = args.import_obs.split(",")
@@ -205,31 +202,31 @@ def load_observations(args, comm):
         prefix=args.import_prefix,
         dets=hw,
         detranks=comm.group_size,
-        )
+    )
     if comm.world_rank == 0:
         timer.report_clear("Load data")
     telescope_data = [("all", data)]
     site = telescope.site
     focalplane = telescope.focalplane
     for obs in data.obs:
-        #obs["baselines"] = None
+        # obs["baselines"] = None
         obs["noise"] = focalplane.noise
-        #obs["id"] = int(ces.mjdstart * 10000)
-        #obs["intervals"] = tod.subscans
+        # obs["id"] = int(ces.mjdstart * 10000)
+        # obs["intervals"] = tod.subscans
         obs["site"] = site.name
         obs["site_id"] = site.id
         obs["telescope"] = telescope.name
         obs["telescope_id"] = telescope.id
         obs["fpradius"] = focalplane.radius
-        #obs["weather"] = site.weather
-        #obs["start_time"] = ces.start_time
+        # obs["weather"] = site.weather
+        # obs["start_time"] = ces.start_time
         obs["altitude"] = site.alt
-        #obs["season"] = ces.season
-        #obs["date"] = ces.start_date
-        #obs["MJD"] = ces.mjdstart
+        # obs["season"] = ces.season
+        # obs["date"] = ces.start_date
+        # obs["MJD"] = ces.mjdstart
         obs["focalplane"] = focalplane.detector_data
-        #obs["rising"] = ces.rising
-        #obs["mindist_sun"] = ces.mindist_sun
-        #obs["mindist_moon"] = ces.mindist_moon
-        #obs["el_sun"] = ces.el_sun
+        # obs["rising"] = ces.rising
+        # obs["mindist_sun"] = ces.mindist_sun
+        # obs["mindist_moon"] = ces.mindist_moon
+        # obs["el_sun"] = ces.el_sun
     return data, telescope_data, detweights

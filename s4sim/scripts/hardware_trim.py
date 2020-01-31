@@ -15,48 +15,63 @@ def main():
     parser = argparse.ArgumentParser(
         description="This program reads a hardware model from disk,\
             selects a subset of detectors, and writes the new model out.",
-        usage="s4_hardware_trim [options] (use --help for details)")
-
-    parser.add_argument(
-        "--hardware", required=True, default=None,
-        help="Input hardware file"
+        usage="s4_hardware_trim [options] (use --help for details)",
     )
 
     parser.add_argument(
-        "--out", required=False, default="trimmed",
-        help="Name (without extensions) of the output hardware file"
+        "--hardware", required=True, default=None, help="Input hardware file"
     )
 
     parser.add_argument(
-        "--plain", required=False, default=False, action="store_true",
-        help="Write plain text (without gzip compression)"
+        "--out",
+        required=False,
+        default="trimmed",
+        help="Name (without extensions) of the output hardware file",
     )
 
     parser.add_argument(
-        "--overwrite", required=False, default=False, action="store_true",
-        help="Overwrite any existing output file."
+        "--plain",
+        required=False,
+        default=False,
+        action="store_true",
+        help="Write plain text (without gzip compression)",
     )
 
     parser.add_argument(
-        "--telescopes", required=False, default=None,
+        "--overwrite",
+        required=False,
+        default=False,
+        action="store_true",
+        help="Overwrite any existing output file.",
+    )
+
+    parser.add_argument(
+        "--telescopes",
+        required=False,
+        default=None,
         help="Select only detectors on these telescope (LAT, SAT0, SAT1, etc)\
             .  This should be either a regex string or a comma-separated\
-            list of names."
+            list of names.",
     )
 
     parser.add_argument(
-        "--tubes", required=False, default=None,
+        "--tubes",
+        required=False,
+        default=None,
         help="Select only detectors on these tubes.  This should be either a\
-            regex string or a comma-separated list of names."
+            regex string or a comma-separated list of names.",
     )
 
     parser.add_argument(
-        "--match", required=False, default=None, nargs="*",
+        "--match",
+        required=False,
+        default=None,
+        nargs="*",
         help="Specify one or more detector match criteria.  Each match should\
             have the format '<property>:<regex or list>'.  The regex\
             expression should be valid to pass to the 're' module.  If \
             passing a list, this should be comma-separated.  For example, \
-            --match 'band:MF.*' 'wafer:25,26' 'pol:A' "
+            --match 'band:MF.*' 'wafer:25,26' 'pol:A' ",
     )
 
     args = parser.parse_args()
@@ -73,8 +88,7 @@ def main():
         for amat in args.match:
             fields = amat.split(":")
             if len(fields) != 2:
-                raise ValueError(
-                    "Invalid match string- must have a colon separator.")
+                raise ValueError("Invalid match string- must have a colon separator.")
             temp = fields[1].split(",")
             if len(temp) > 1:
                 match[fields[0]] = temp
