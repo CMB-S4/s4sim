@@ -11,7 +11,7 @@ from .. import hardware
 
 #Note, this is for atmospheric sims only and doesn't affect the wafer/tube scaling to the sky.
 #For SATs, this is FOV/2*(1+2/sqrt(3)), FOV UHF=35 deg, FOV others=29 deg
-FOCALPLANE_RADII_DEG = {"LAT0" : 3.9, "LAT1" : 3.9, "LAT2" : 3.9, "SAT0" : 14.5, "SAT1" : 14.5, "SAT2" : 14.5, "SAT3" : 14.5, "SAT4" : 14.5, "SAT5" : 14.5, "SAT6" : 14.5, "SAT7" : 14.5, "SAT8" : 14.5, "SAT9" : 14.5, "SAT10" : 14.5, "SAT11" : 14.5, "SAT12" : 17.5, "SAT13" : 17.5, "SAT14" : 17.5, "SAT15" : 17.5, "SAT16" : 14.5, "SAT17" : 14.5}
+FOCALPLANE_RADII_DEG = {"LAT0" : 3.9, "LAT1" : 3.9, "LAT2" : 3.9, "SAT0" : 31.3, "SAT1" : 31.3, "SAT2" : 31.3, "SAT3" : 31.3, "SAT4" : 37.7, "SAT5" : 31.3}
 
 
 class S4Telescope(Telescope):
@@ -32,20 +32,8 @@ class S4Telescope(Telescope):
             "SAT1": 8,
             "SAT2": 8,
             "SAT3": 8,
-            "SAT4": 8,
+            "SAT4": 7,
             "SAT5": 8,
-            "SAT6": 8,
-            "SAT7": 8,
-            "SAT8": 8,
-            "SAT9": 8,
-            "SAT10": 8,
-            "SAT11": 8,
-            "SAT12": 8,
-            "SAT13": 8,
-            "SAT14": 8,
-            "SAT15": 8,
-            "SAT16": 8,
-            "SAT17": 8,
         }[name]
 
 

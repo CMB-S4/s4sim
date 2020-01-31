@@ -608,7 +608,7 @@ def get_example():
         tubes[nm] = tb
 
     stubes = ["MFLS","MFLS","MFLS","MFLS","MFLS","MFLS","MFHS","MFHS","MFHS","MFHS","MFHS","MFHS","HFS","HFS","HFS","HFS","LFS","LFS"]
-    stubepos = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    stubepos = [0,1,2,0,1,2,0,1,2,0,1,2,0,1,2,0,1,2]
     for tindx in range(18):
         nm = "ST{:d}".format(tindx)
         ttyp = stubes[tindx]
@@ -695,130 +695,46 @@ def get_example():
     sfwhm["HFS2"] = 10.0
     
     tele = OrderedDict()
-    tele["tubes"] = ["ST0"]
+    tele["tubes"] = ["ST0","ST1","ST2"]
     tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT0"] = tele
     
     tele = OrderedDict()
-    tele["tubes"] = ["ST1"]
+    tele["tubes"] = ["ST3","ST4","ST5"]
     tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT1"] = tele
     
     tele = OrderedDict()
-    tele["tubes"] = ["ST2"]
+    tele["tubes"] = ["ST6","ST7","ST8"]
     tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT2"] = tele
     
     tele = OrderedDict()
-    tele["tubes"] = ["ST3"]
+    tele["tubes"] = ["ST9","ST10","ST11"]
     tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT3"] = tele
     
     tele = OrderedDict()
-    tele["tubes"] = ["ST4"]
-    tele["platescale"] = 0.056689
+    tele["tubes"] = ["ST12","ST13","ST14"]
+    tele["platescale"] = 0.091224
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT4"] = tele
     
     tele = OrderedDict()
-    tele["tubes"] = ["ST5"]
+    tele["tubes"] = ["ST15","ST16","ST17"]
     tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT5"] = tele
-    
-    tele = OrderedDict()
-    tele["tubes"] = ["ST6"]
-    tele["platescale"] = 0.056689
-    tele["tubespace"] = 700.0
-    tele["fwhm"] = sfwhm
-    telescopes["SAT6"] = tele
-    
-    tele = OrderedDict()
-    tele["tubes"] = ["ST7"]
-    tele["platescale"] = 0.056689
-    tele["tubespace"] = 700.0
-    tele["fwhm"] = sfwhm
-    telescopes["SAT7"] = tele
-    
-    tele = OrderedDict()
-    tele["tubes"] = ["ST8"]
-    tele["platescale"] = 0.056689
-    tele["tubespace"] = 700.0
-    tele["fwhm"] = sfwhm
-    telescopes["SAT8"] = tele
-    
-    tele = OrderedDict()
-    tele["tubes"] = ["ST9"]
-    tele["platescale"] = 0.056689
-    tele["tubespace"] = 700.0
-    tele["fwhm"] = sfwhm
-    telescopes["SAT9"] = tele
-    
-    tele = OrderedDict()
-    tele["tubes"] = ["ST10"]
-    tele["platescale"] = 0.056689
-    tele["tubespace"] = 700.0
-    tele["fwhm"] = sfwhm
-    telescopes["SAT10"] = tele
-    
-    tele = OrderedDict()
-    tele["tubes"] = ["ST11"]
-    tele["platescale"] = 0.056689
-    tele["tubespace"] = 700.0
-    tele["fwhm"] = sfwhm
-    telescopes["SAT11"] = tele
-    
-    tele = OrderedDict()
-    tele["tubes"] = ["ST12"]
-    tele["platescale"] = 0.091224
-    tele["tubespace"] = 700.0
-    tele["fwhm"] = sfwhm
-    telescopes["SAT12"] = tele
-    
-    tele = OrderedDict()
-    tele["tubes"] = ["ST13"]
-    tele["platescale"] = 0.091224
-    tele["tubespace"] = 700.0
-    tele["fwhm"] = sfwhm
-    telescopes["SAT13"] = tele
-    
-    tele = OrderedDict()
-    tele["tubes"] = ["ST14"]
-    tele["platescale"] = 0.091224
-    tele["tubespace"] = 700.0
-    tele["fwhm"] = sfwhm
-    telescopes["SAT14"] = tele
-    
-    tele = OrderedDict()
-    tele["tubes"] = ["ST15"]
-    tele["platescale"] = 0.091224
-    tele["tubespace"] = 700.0
-    tele["fwhm"] = sfwhm
-    telescopes["SAT15"] = tele
-
-    tele = OrderedDict()
-    tele["tubes"] = ["ST16"]
-    tele["platescale"] = 0.056689
-    tele["tubespace"] = 700.0
-    tele["fwhm"] = sfwhm
-    telescopes["SAT16"] = tele
-
-    tele = OrderedDict()
-    tele["tubes"] = ["ST17"]
-    tele["platescale"] = 0.056689
-    tele["tubespace"] = 700.0
-    tele["fwhm"] = sfwhm
-    telescopes["SAT17"] = tele
 
     cnf["telescopes"] = telescopes
     

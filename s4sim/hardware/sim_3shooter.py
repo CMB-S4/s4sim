@@ -717,11 +717,13 @@ def sim_telescope_detectors(hw, tele, tubes=None):
                                    .format(t, tele))
 
     alldets = OrderedDict()
-    if ntube == 1:
+    if ntube == 3:
         # This is a SAT.  We have three tubes.
         tubespace = teleprops["tubespace"]
-        tuberot = 90.0 * np.ones(7, dtype=np.float64)
-        tcenters = hex_layout(7, 2 * (tubespace * tele_platescale), rotate=tuberot)
+        #tuberot = 90.0 * np.ones(7, dtype=np.float64)
+        #tcenters = hex_layout(7, 2 * (tubespace * tele_platescale), rotate=tuberot)
+        tuberot = 90.0 * np.ones(3, dtype=np.float64)
+        tcenters = triangle(3, (tubespace * tele_platescale), rotate=tuberot)
         
         tindx = 0
         for tube in tubes:
