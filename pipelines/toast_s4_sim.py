@@ -165,36 +165,30 @@ def main():
 
     madampars = toast_tools.setup_madam(args)
 
-    if args.import_dir is not None:
-        schedules = None
-        data, telescope_data, detweights = s4_tools.load_observations(args, comm)
-        memreport("after load", comm.comm_world)
-        totalname = "signal"
-    else:
-        # Load and broadcast the schedule file
+    # Load and broadcast the schedule file
 
-        schedules = toast_tools.load_schedule(args, comm)
+    schedules = toast_tools.load_schedule(args, comm)
 
-        # Load the weather and append to schedules
+    # Load the weather and append to schedules
 
-        toast_tools.load_weather(args, comm, schedules)
+    toast_tools.load_weather(args, comm, schedules)
 
-        # load or simulate the focalplane
+    # load or simulate the focalplane
 
-        detweights = s4_tools.load_focalplanes(args, comm, schedules)
+    detweights = s4_tools.load_focalplanes(args, comm, schedules)
 
-        # Create the TOAST data object to match the schedule.  This will
-        # include simulating the boresight pointing.
+    # Create the TOAST data object to match the schedule.  This will
+    # include simulating the boresight pointing.
 
-        data, telescope_data = s4_tools.create_observations(args, comm, schedules)
+    data, telescope_data = s4_tools.create_observations(args, comm, schedules)
 
-        memreport("after creating observations", comm.comm_world)
+    memreport("after creating observations", comm.comm_world)
 
-        # Optionally rewrite the noise PSD:s in each observation to include
-        # elevation-dependence
-        s4_tools.get_elevation_noise(args, comm, data)
+    # Optionally rewrite the noise PSD:s in each observation to include
+    # elevation-dependence
+    s4_tools.get_elevation_noise(args, comm, data)
 
-        totalname = "total"
+    totalname = "total"
 
     # Split the communicator for day and season mapmaking
 

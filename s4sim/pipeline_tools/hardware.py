@@ -15,43 +15,50 @@ FOCALPLANE_RADII_DEG = {"LAT0" : 3.9, "LAT1" : 3.9, "LAT2" : 3.9, "SAT0" : 14.5,
 
 
 class S4Telescope(Telescope):
-    def __init__(self, name):
-        if (name=="LAT0") or (name=="LAT1"):
+    def __init__(self, name, site=None):
+        if (name=="LAT0") or (name=="LAT1") or (site is not None and site.upper() == "CHILE"):
             site = Site("Atacama", lat="-22.958064", lon="-67.786222", alt=5200)
-        else:
+            offset = 0
+        elif site is None or site.upper() == "POLE":
             site = Site("Pole", lat="-89.991067", lon="-44.650000", alt=2843)
+            offset = 1024
+        else:
+            raise RuntimeError("Unknown site: {}".format(site))
         super().__init__(name, site=site)
         self.id = {
             # Use the same telescope index for telescopes of the same type
             # in the same place to re-use the atmospheric simulations
             #'LAT0' : 0, 'LAT1' : 1, 'LAT2' : 2, 'SAT0' : 3, 'SAT1' : 4...
-            "LAT0": 1,
-            "LAT1": 1,
-            "LAT2": 2,
-            "SAT0": 8,
-            "SAT1": 8,
-            "SAT2": 8,
-            "SAT3": 8,
-            "SAT4": 8,
-            "SAT5": 8,
-            "SAT6": 8,
-            "SAT7": 8,
-            "SAT8": 8,
-            "SAT9": 8,
-            "SAT10": 8,
-            "SAT11": 8,
-            "SAT12": 8,
-            "SAT13": 8,
-            "SAT14": 8,
-            "SAT15": 8,
-            "SAT16": 8,
-            "SAT17": 8,
+            "LAT0": 1 + offset,
+            "LAT1": 1 + offset,
+            "LAT2": 2 + offset,
+            "SAT0": 8 + offset,
+            "SAT1": 8 + offset,
+            "SAT2": 8 + offset,
+            "SAT3": 8 + offset,
+            "SAT4": 8 + offset,
+            "SAT5": 8 + offset,
+            "SAT6": 8 + offset,
+            "SAT7": 8 + offset,
+            "SAT8": 8 + offset,
+            "SAT9": 8 + offset,
+            "SAT10": 8 + offset,
+            "SAT11": 8 + offset,
+            "SAT12": 8 + offset,
+            "SAT13": 8 + offset,
+            "SAT14": 8 + offset,
+            "SAT15": 8 + offset,
+            "SAT16": 8 + offset,
+            "SAT17": 8 + offset,
         }[name]
 
 
 def add_hw_args(parser):
     parser.add_argument(
         "--hardware", required=False, default=None, help="Input hardware file"
+    )
+    parser.add_argument(
+        "--site", required=False, default=None, help="Observing site: Chile or Pole"
     )
     parser.add_argument(
         "--thinfp",
@@ -241,7 +248,7 @@ def get_telescope(args, comm, verbose=False):
             ].items():
                 if tube in telescope_data["tubes"]:
                     if telescope is None:
-                        telescope = S4Telescope(telescope_name)
+                        telescope = S4Telescope(telescope_name, site=args.site)
                     elif telescope.name != telescope_name:
                         raise RuntimeError(
                             "Tubes '{}' span more than one telescope".format(tubes)
