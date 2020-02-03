@@ -23,6 +23,8 @@ setup_opts["entry_points"] = {
     "console_scripts": ["s4sim_testscript = s4sim.scripts.testscript:main"]
 }
 
+pipes = ["pipelines/toast_s4_sim.py"]
+
 setup_opts["name"] = "s4sim"
 setup_opts["provides"] = ["s4sim"]
 setup_opts["version"] = versioneer.get_version()
@@ -33,6 +35,7 @@ setup_opts["url"] = "https://github.com/CMB-S4/s4sim"
 setup_opts["packages"] = find_packages(where=".")
 setup_opts["license"] = "BSD"
 setup_opts["requires"] = ["Python (>3.4.0)"]
+setup_opts["scripts"] = pipes
 
 # Command Class dictionary.
 # Begin with the versioneer command class dictionary.
