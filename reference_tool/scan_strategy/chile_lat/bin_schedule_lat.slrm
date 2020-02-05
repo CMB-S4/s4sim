@@ -1,0 +1,46 @@
+#!/bin/bash
+#SBATCH --partition=debug
+#SBATCH --time=00:10:00
+#SBATCH --nodes=8
+#SBATCH --job-name=bin_schedule
+#SBATCH --licenses=SCRATCH
+#SBATCH --constraint=knl
+#SBATCH --core-spec=4
+#SBATCH --account=mp107
+
+ulimit -c unlimited
+
+export MALLOC_MMAP_THRESHOLD_=131072
+export PYTHONSTARTUP=""
+export PYTHONNOUSERSITE=1
+export HOME=/global/cscratch1/sd/keskital
+
+export OMP_NUM_THREADS=4
+export OMP_PLACES=threads
+export OMP_PROC_BIND=spread
+
+let nnode=8
+let ntask_node=64/$OMP_NUM_THREADS
+let ntask=$nnode*$ntask_node
+let ncore=4*$OMP_NUM_THREADS
+
+echo "Running with"
+echo "            nnode = ${nnode}"
+echo "  OMP_NUM_THREADS = ${OMP_NUM_THREADS}"
+echo "       ntask_node = ${ntask_node}"
+echo "            ntask = ${ntask}"
+
+export PYTHONSTARTUP=""
+export PYTHONNOUSERSITE=1
+export HOME=/global/cscratch1/sd/keskital
+
+logfile=bin_schedule_lat.log
+if [[ ! -e $logfile ]]; then
+    echo "Writing $logfile"
+    srun -n $ntask -c $ncore --cpu_bind=cores toast_s4_sim.py \
+         @../bin_schedule.par \
+         @bin_schedule_lat.par \
+         >& ${logfile}
+else
+    echo "$logfile exists"
+fi
