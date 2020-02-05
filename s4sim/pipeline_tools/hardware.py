@@ -19,20 +19,8 @@ FOCALPLANE_RADII_DEG = {
     "SAT1": 14.5,
     "SAT2": 14.5,
     "SAT3": 14.5,
-    "SAT4": 14.5,
-    "SAT5": 14.5,
-    "SAT6": 14.5,
-    "SAT7": 14.5,
-    "SAT8": 14.5,
-    "SAT9": 14.5,
-    "SAT10": 14.5,
-    "SAT11": 14.5,
-    "SAT12": 17.5,
-    "SAT13": 17.5,
-    "SAT14": 17.5,
-    "SAT15": 17.5,
-    "SAT16": 14.5,
-    "SAT17": 14.5,
+    "SAT4": 17.5,
+    "SAT5": 17.5,
 }
 
 
@@ -64,18 +52,6 @@ class S4Telescope(Telescope):
             "SAT3": 8 + offset,
             "SAT4": 8 + offset,
             "SAT5": 8 + offset,
-            "SAT6": 8 + offset,
-            "SAT7": 8 + offset,
-            "SAT8": 8 + offset,
-            "SAT9": 8 + offset,
-            "SAT10": 8 + offset,
-            "SAT11": 8 + offset,
-            "SAT12": 8 + offset,
-            "SAT13": 8 + offset,
-            "SAT14": 8 + offset,
-            "SAT15": 8 + offset,
-            "SAT16": 8 + offset,
-            "SAT17": 8 + offset,
         }[name]
 
 
