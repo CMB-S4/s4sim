@@ -4,7 +4,8 @@ import sys
 import matplotlib.pyplot as plt
 
 import healpy as hp
-#from toast_planck.utilities import plug_holes
+
+# from toast_planck.utilities import plug_holes
 
 plt.style.use("classic")
 

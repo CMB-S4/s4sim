@@ -100,7 +100,9 @@ for telescope, tubes in telescopes.items():
         else:
             raise RuntimeError("Unknown site: {}".format(site))
 
-        schedule = "{}_schedule_{}.txt".format(site, telescope.lower())
+        schedule = "scan_strategy/{}_{}/schedules/{}_schedule_{}.txt".format(
+            site, telescope.lower(), site, telescope.lower()
+        )
 
         for tube, bands in tubes.items():
             for band in bands:
