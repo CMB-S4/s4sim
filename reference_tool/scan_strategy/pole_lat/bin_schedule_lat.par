@@ -1,0 +1,8 @@
+--tubes
+LT42
+--bands
+MFL1
+--site
+pole
+--schedule
+schedules/pole_schedule_lat.txt
