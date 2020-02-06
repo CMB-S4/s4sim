@@ -1,4 +1,4 @@
-# Copyright (c) 
+# Copyright (c)
 # Full license can be found in the top level "LICENSE" file.
 """Focalplane simulation tools.
 """
@@ -44,7 +44,7 @@ def ang_to_quat(offsets):
         angrot = qa.rotation(zaxis, off[2])
         wx = np.sin(off[0])
         wy = np.sin(off[1])
-        wz = np.sqrt(1.0 - (wx*wx + wy*wy))
+        wz = np.sqrt(1.0 - (wx * wx + wy * wy))
         wdir = np.array([wx, wy, wz])
         posrot = qa.from_vectors(zaxis, wdir)
         out.append(qa.mult(posrot, angrot))
@@ -71,8 +71,10 @@ def hex_nring(npos):
         test -= 6 * nrings
         nrings += 1
     if test != 0:
-        raise RuntimeError("{} is not a valid number of positions for a "
-                           "hexagonal layout".format(npos))
+        raise RuntimeError(
+            "{} is not a valid number of positions for a "
+            "hexagonal layout".format(npos)
+        )
     return nrings
 
 
@@ -113,7 +115,7 @@ def hex_row_col(npos, pos):
         coloff = nrings - ring - 1
         if sector == 0:
             row = steps
-            col = coloff + 2*ring - steps
+            col = coloff + 2 * ring - steps
         elif sector == 1:
             row = ring
             col = coloff + ring - steps
@@ -132,7 +134,7 @@ def hex_row_col(npos, pos):
     return (row, col)
 
 
-def sector(npos,pos):
+def sector(npos, pos):
     """Return the sector of a given position.
         
         For a hexagonal layout, indexed in a "spiral" scheme (see hex_layout),
@@ -154,20 +156,21 @@ def sector(npos,pos):
         test -= 6 * nrings
         nrings += 1
     if pos == 0:
-        sector=3
+        sector = 3
     else:
         test = pos - 1
         ring = 1
         while (test - 6 * ring) >= 0:
             test -= 6 * ring
             ring += 1
-        if test==0:
-            sector=3
+        if test == 0:
+            sector = 3
         else:
             sector = int(test / ring)
     return sector
 
-def sector2(npos,pos):
+
+def sector2(npos, pos):
     """Return the sector of a given position.
         
         For a hexagonal layout, indexed in a "spiral" scheme (see hex_layout),
@@ -189,17 +192,17 @@ def sector2(npos,pos):
         test -= 6 * nrings
         nrings += 1
     if pos == 0:
-        sector=0
+        sector = 0
     else:
         test = pos - 1
         ring = 1
         while (test - 6 * ring) >= 0:
             test -= 6 * ring
             ring += 1
-        if test==0:
-            sector=0
-        elif test==ring:
-            sector=0
+        if test == 0:
+            sector = 0
+        elif test == ring:
+            sector = 0
         else:
             sector = int(test / ring)
     return sector
@@ -234,8 +237,8 @@ def hex_layout(npos, width, rotate=None, killpix=None):
     """
     zaxis = np.array([0, 0, 1], dtype=np.float64)
     nullquat = np.array([0, 0, 0, 1], dtype=np.float64)
-    sixty = np.pi/3.0
-    thirty = np.pi/6.0
+    sixty = np.pi / 3.0
+    thirty = np.pi / 6.0
     rtthree = np.sqrt(3.0)
     rtthreebytwo = 0.5 * rtthree
 
@@ -245,7 +248,7 @@ def hex_layout(npos, width, rotate=None, killpix=None):
     nrings = hex_nring(npos)
     posdiam = angdiameter / (2 * nrings - 2)
     if killpix is None:
-        killpix=[]
+        killpix = []
     nkill = len(killpix)
     result = np.zeros((npos - nkill, 4), dtype=np.float64)
     off = 0
@@ -311,7 +314,7 @@ def hex_layout(npos, width, rotate=None, killpix=None):
             else:
                 prerot = qa.rotation(zaxis, rotate[pos] * np.pi / 180.0)
                 result[off] = qa.mult(posrot, prerot)
-            off+=1
+            off += 1
 
     return result
 
@@ -330,9 +333,8 @@ def rhomb_dim(npos):
 
     """
     dim = int(np.sqrt(float(npos)))
-    if dim**2 != npos:
-        raise ValueError("The number of positions for a rhombus must "
-                         "be square")
+    if dim ** 2 != npos:
+        raise ValueError("The number of positions for a rhombus must " "be square")
     return dim
 
 
@@ -381,18 +383,18 @@ def triangle(npos, width, rotate=None):
         
         """
     zaxis = np.array([0, 0, 1], dtype=np.float64)
-    sixty = np.pi/3.0
-    thirty = np.pi/6.0
+    sixty = np.pi / 3.0
+    thirty = np.pi / 6.0
     rtthree = np.sqrt(3.0)
     rtthreebytwo = 0.5 * rtthree
-    
+
     tubedist = width * np.pi / 180.0
     result = np.zeros((npos, 4), dtype=np.float64)
-    posangarr=np.array([sixty*3.+thirty,-thirty,thirty*3.])
+    posangarr = np.array([sixty * 3.0 + thirty, -thirty, thirty * 3.0])
     for pos in range(npos):
         posang = posangarr[pos]
-        posdist =tubedist/rtthree
-        
+        posdist = tubedist / rtthree
+
         posx = np.sin(posdist) * np.cos(posang)
         posy = np.sin(posdist) * np.sin(posang)
         posz = np.cos(posdist)
@@ -400,7 +402,7 @@ def triangle(npos, width, rotate=None):
         norm = np.sqrt(np.dot(posdir, posdir))
         posdir /= norm
         posrot = qa.from_vectors(zaxis, posdir)
-        
+
         if rotate is None:
             result[pos] = posrot
         else:
@@ -467,7 +469,7 @@ def rhombus_layout(npos, width, rotate=None):
         if posrow >= dim:
             relrow = (2 * dim - 2) - posrow
         colang = (float(poscol) - float(relrow) / 2.0) * posdiam
-        distang = np.sqrt(rowang**2 + colang**2)
+        distang = np.sqrt(rowang ** 2 + colang ** 2)
         zang = np.cos(distang)
         posdir = np.array([colang, rowang, zang], dtype=np.float64)
         norm = np.sqrt(np.dot(posdir, posdir))
@@ -484,8 +486,9 @@ def rhombus_layout(npos, width, rotate=None):
     return result
 
 
-def rhombus_hex_layout(rhombus_npos, rhombus_width, gap, rhombus_rotate=None,
-                       killpix=None):
+def rhombus_hex_layout(
+    rhombus_npos, rhombus_width, gap, rhombus_rotate=None, killpix=None
+):
     """
     Construct a hexagon from 3 rhombi.
 
@@ -514,8 +517,7 @@ def rhombus_hex_layout(rhombus_npos, rhombus_width, gap, rhombus_rotate=None,
     radwidth = rhombus_width * np.pi / 180.0
 
     # First layout one rhombus
-    rquat = rhombus_layout(rhombus_npos, rhombus_width,
-                           rotate=rhombus_rotate)
+    rquat = rhombus_layout(rhombus_npos, rhombus_width, rotate=rhombus_rotate)
 
     # angular separation of rhombi
     gap *= np.pi / 180.0
@@ -532,10 +534,8 @@ def rhombus_hex_layout(rhombus_npos, rhombus_width, gap, rhombus_rotate=None,
 
     centers = [
         np.array([shift, 0.0, 0.0]),
-        np.array([-shift * np.cos(sixty), shift * np.sin(sixty),
-                  2 * sixty]),
-        np.array([-shift * np.cos(sixty), -shift * np.sin(sixty),
-                  4 * sixty])
+        np.array([-shift * np.cos(sixty), shift * np.sin(sixty), 2 * sixty]),
+        np.array([-shift * np.cos(sixty), -shift * np.sin(sixty), 4 * sixty]),
     ]
     qcenters = ang_to_quat(centers)
 
@@ -554,8 +554,16 @@ def rhombus_hex_layout(rhombus_npos, rhombus_width, gap, rhombus_rotate=None,
     return result
 
 
-def sim_wafer_detectors(hw, wafer, platescale, fwhm, band=None, partial_type=None, no_gap=None,
-                        center=np.array([0, 0, 0, 1], dtype=np.float64)):
+def sim_wafer_detectors(
+    hw,
+    wafer,
+    platescale,
+    fwhm,
+    band=None,
+    partial_type=None,
+    no_gap=None,
+    center=np.array([0, 0, 0, 1], dtype=np.float64),
+):
     """Generate detector properties for a wafer.
 
     Given a Hardware configuration, generate all detector properties for
@@ -585,9 +593,7 @@ def sim_wafer_detectors(hw, wafer, platescale, fwhm, band=None, partial_type=Non
         if band in bands:
             bands = [band]
         else:
-            raise RuntimeError("band '{}' not valid for wafer '{}'"
-                               .format(band, wafer))
-
+            raise RuntimeError("band '{}' not valid for wafer '{}'".format(band, wafer))
 
     # Lay out the pixel locations depending on the wafer type.  Also
     # compute the polarization orientation rotation, as well as the A/B
@@ -604,7 +610,7 @@ def sim_wafer_detectors(hw, wafer, platescale, fwhm, band=None, partial_type=Non
         if no_gap is None:
             gap = platescale * wprops["rhombusgap"]
         else:
-            gap=0.0
+            gap = 0.0
 
         nrhombus = npix // 3
         # This dim is also the number of pixels along the short axis.
@@ -628,22 +634,26 @@ def sim_wafer_detectors(hw, wafer, platescale, fwhm, band=None, partial_type=Non
             pol_B[p] = 90.0 + pol_A[p]
         # kill pixels in partial arrays
         if partial_type is None:
-            kill=[]
-        elif partial_type=="rhombus":
-            kill=np.linspace(dim**2,3*dim**2-1,2*dim**2,dtype=np.int)
-        elif partial_type=="half":
-            kill1=np.linspace(0,((dim**2-dim)//2-1),(dim**2-dim)//2,dtype=np.int)
-            kill2=np.linspace(dim**2,2*dim**2-1,dim**2,dtype=np.int)
-            kill=np.append(kill1,kill2)
+            kill = []
+        elif partial_type == "rhombus":
+            kill = np.linspace(dim ** 2, 3 * dim ** 2 - 1, 2 * dim ** 2, dtype=np.int)
+        elif partial_type == "half":
+            kill1 = np.linspace(
+                0, ((dim ** 2 - dim) // 2 - 1), (dim ** 2 - dim) // 2, dtype=np.int
+            )
+            kill2 = np.linspace(dim ** 2, 2 * dim ** 2 - 1, dim ** 2, dtype=np.int)
+            kill = np.append(kill1, kill2)
         else:
-            kill=[]
+            kill = []
         # We are going to remove 2 pixels for mechanical reasons
-        #kf = dim * (dim - 1) // 2
-        #kill = [kf, kf + dim - 2]
-        layout_A = rhombus_hex_layout(nrhombus, width, gap,
-                                      rhombus_rotate=pol_A, killpix=kill)
-        layout_B = rhombus_hex_layout(nrhombus, width, gap,
-                                      rhombus_rotate=pol_B, killpix=kill)
+        # kf = dim * (dim - 1) // 2
+        # kill = [kf, kf + dim - 2]
+        layout_A = rhombus_hex_layout(
+            nrhombus, width, gap, rhombus_rotate=pol_A, killpix=kill
+        )
+        layout_B = rhombus_hex_layout(
+            nrhombus, width, gap, rhombus_rotate=pol_B, killpix=kill
+        )
     elif wprops["packing"] == "HP":
         # Hex close-packed
         # This is the center-center distance along the vertex-vertex axis
@@ -662,27 +672,31 @@ def sim_wafer_detectors(hw, wafer, platescale, fwhm, band=None, partial_type=Non
                 pol_A[p] = 45.0
             pol_B[p] = 90.0 + pol_A[p]
         if partial_type is None:
-            kill=[]
-        elif partial_type=="half":
-            kill=[]
+            kill = []
+        elif partial_type == "half":
+            kill = []
             for ii in range(npix):
-                if sector(npix,ii) < 3:
+                if sector(npix, ii) < 3:
                     kill.append(ii)
-        elif partial_type=="rhombus":
-            kill=[]
+        elif partial_type == "rhombus":
+            kill = []
             for ii in range(npix):
-                if (sector2(npix,ii) == 1) or (sector2(npix,ii) == 2) or (sector2(npix,ii) == 3) or (sector2(npix,ii) == 4):
+                if (
+                    (sector2(npix, ii) == 1)
+                    or (sector2(npix, ii) == 2)
+                    or (sector2(npix, ii) == 3)
+                    or (sector2(npix, ii) == 4)
+                ):
                     kill.append(ii)
         else:
-            kill=[]
+            kill = []
         layout_A = hex_layout(npix, width, rotate=pol_A, killpix=kill)
         layout_B = hex_layout(npix, width, rotate=pol_B, killpix=kill)
-        #Do we need a kill pixel function here?
+        # Do we need a kill pixel function here?
         # kill pixels in partial arrays
 
     else:
-        raise RuntimeError(
-            "Unknown wafer packing '{}'".format(wprops["packing"]))
+        raise RuntimeError("Unknown wafer packing '{}'".format(wprops["packing"]))
 
     # Now we go through each pixel and create the orthogonal detectors for
     # each band.
@@ -755,8 +769,9 @@ def sim_telescope_detectors(hw, tele, tubes=None):
     else:
         for t in tubes:
             if t not in alltubes:
-                raise RuntimeError("Invalid tube '{}' for telescope '{}'"
-                                   .format(t, tele))
+                raise RuntimeError(
+                    "Invalid tube '{}' for telescope '{}'".format(t, tele)
+                )
 
     alldets = OrderedDict()
     if ntube == 3:
@@ -764,9 +779,9 @@ def sim_telescope_detectors(hw, tele, tubes=None):
         tubespace = teleprops["tubespace"]
         tuberot = 0.0 * np.ones(7, dtype=np.float64)
         tcenters = hex_layout(7, 2 * (tubespace * tele_platescale), rotate=tuberot)
-        #tuberot = 90.0 * np.ones(3, dtype=np.float64)
-        #tcenters = triangle(3, (tubespace * tele_platescale), rotate=tuberot)
-        
+        # tuberot = 90.0 * np.ones(3, dtype=np.float64)
+        # tcenters = triangle(3, (tubespace * tele_platescale), rotate=tuberot)
+
         tindx = 0
         for tube in tubes:
             tubeprops = hw.data["tubes"][tube]
@@ -774,76 +789,148 @@ def sim_telescope_detectors(hw, tele, tubes=None):
             platescale = tubeprops["platescale"]
             location = tubeprops["location"]
             type = tubeprops["type"]
-            if type=="HFS":
+            if type == "HFS":
                 srad = waferspace * platescale * np.pi / 180.0
                 wcenters = [
-                            np.array([0.0, 0.0, 0.0]),
-                            np.array([srad * np.cos(thirty), srad * np.sin(thirty), 0.0]),
-                            np.array([0.0, srad, 0.0]),
-                            np.array([-srad * np.cos(thirty), srad * np.sin(thirty), 0.0]),
-                            np.array([-srad * np.cos(thirty), -srad * np.sin(thirty), 0.0]),
-                            np.array([0.0, -srad, 0.0]),
-                            np.array([srad * np.cos(thirty), -srad * np.sin(thirty), 0.0]),
-                            np.array([srad * np.cos(thirty), srad * np.sin(thirty)+srad, 8*thirty]),
-                            np.array([2.0*srad * np.cos(thirty), 0.0, 6*thirty]),
-                            np.array([srad * np.cos(thirty), -srad * np.sin(thirty)-srad, 4*thirty]),
-                            np.array([-srad * np.cos(thirty), srad * np.sin(thirty)+srad, 10*thirty]),
-                            np.array([-2.0*srad * np.cos(thirty), 0.0, 0.0]),
-                            np.array([-srad * np.cos(thirty), -srad * np.sin(thirty)-srad, 2*thirty])
+                    np.array([0.0, 0.0, 0.0]),
+                    np.array([srad * np.cos(thirty), srad * np.sin(thirty), 0.0]),
+                    np.array([0.0, srad, 0.0]),
+                    np.array([-srad * np.cos(thirty), srad * np.sin(thirty), 0.0]),
+                    np.array([-srad * np.cos(thirty), -srad * np.sin(thirty), 0.0]),
+                    np.array([0.0, -srad, 0.0]),
+                    np.array([srad * np.cos(thirty), -srad * np.sin(thirty), 0.0]),
+                    np.array(
+                        [
+                            srad * np.cos(thirty),
+                            srad * np.sin(thirty) + srad,
+                            8 * thirty,
+                        ]
+                    ),
+                    np.array([2.0 * srad * np.cos(thirty), 0.0, 6 * thirty]),
+                    np.array(
+                        [
+                            srad * np.cos(thirty),
+                            -srad * np.sin(thirty) - srad,
+                            4 * thirty,
+                        ]
+                    ),
+                    np.array(
+                        [
+                            -srad * np.cos(thirty),
+                            srad * np.sin(thirty) + srad,
+                            10 * thirty,
+                        ]
+                    ),
+                    np.array([-2.0 * srad * np.cos(thirty), 0.0, 0.0]),
+                    np.array(
+                        [
+                            -srad * np.cos(thirty),
+                            -srad * np.sin(thirty) - srad,
+                            2 * thirty,
+                        ]
+                    ),
                 ]
                 qwcenters = ang_to_quat(wcenters)
                 centers = list()
                 for qwc in qwcenters:
                     centers.append(qa.mult(tcenters[location], qwc))
-        
+
                 windx = 0
                 for wafer in tubeprops["wafers"]:
                     if windx > 6:
-                        partial_type="rhombus"
+                        partial_type = "rhombus"
                     else:
-                        partial_type=None
-                    dets = sim_wafer_detectors(hw, wafer, platescale, fwhm,
-                                               center=centers[windx], partial_type=partial_type)
+                        partial_type = None
+                    dets = sim_wafer_detectors(
+                        hw,
+                        wafer,
+                        platescale,
+                        fwhm,
+                        center=centers[windx],
+                        partial_type=partial_type,
+                    )
                     alldets.update(dets)
                     windx += 1
                 tindx += 1
             else:
                 shift = waferspace * platescale * np.pi / 180.0
                 wcenters = [
-                            np.array([0.0, shift/2., 0.0]),
-                            np.array([shift * np.cos(thirty), shift * np.sin(thirty)+shift/2., 0.0]),
-                            np.array([0.0, shift+shift/2., 0.0]),
-                            np.array([-shift * np.cos(thirty), shift * np.sin(thirty)+shift/2., 0.0]),
-                            np.array([-shift * np.cos(thirty), -shift * np.sin(thirty)+shift/2., 0.0]),
-                            np.array([0.0, -shift+shift/2., 0.0]),
-                            np.array([shift * np.cos(thirty), -shift * np.sin(thirty)+shift/2., 0.0]),
-                            np.array([2.0*shift * np.cos(thirty), shift/2., 10*thirty]),
-                            np.array([2.0*shift * np.cos(thirty), -shift/2., -4*thirty]),
-                            np.array([-2.0*shift * np.cos(thirty), shift/2., 2*thirty]),
-                            np.array([-2.0*shift * np.cos(thirty), -shift/2., 4*thirty]),
-                            np.array([-shift * np.cos(thirty), -(shift + shift * np.sin(thirty))+shift/2., 0.0]),
-                            np.array([0.0, -2.0 * shift+shift/2., 0.0]),
-                            np.array([shift * np.cos(thirty), -(shift + shift * np.sin(thirty))+shift/2., 0.0])
+                    np.array([0.0, shift / 2.0, 0.0]),
+                    np.array(
+                        [
+                            shift * np.cos(thirty),
+                            shift * np.sin(thirty) + shift / 2.0,
+                            0.0,
+                        ]
+                    ),
+                    np.array([0.0, shift + shift / 2.0, 0.0]),
+                    np.array(
+                        [
+                            -shift * np.cos(thirty),
+                            shift * np.sin(thirty) + shift / 2.0,
+                            0.0,
+                        ]
+                    ),
+                    np.array(
+                        [
+                            -shift * np.cos(thirty),
+                            -shift * np.sin(thirty) + shift / 2.0,
+                            0.0,
+                        ]
+                    ),
+                    np.array([0.0, -shift + shift / 2.0, 0.0]),
+                    np.array(
+                        [
+                            shift * np.cos(thirty),
+                            -shift * np.sin(thirty) + shift / 2.0,
+                            0.0,
+                        ]
+                    ),
+                    np.array([2.0 * shift * np.cos(thirty), shift / 2.0, 10 * thirty]),
+                    np.array([2.0 * shift * np.cos(thirty), -shift / 2.0, -4 * thirty]),
+                    np.array([-2.0 * shift * np.cos(thirty), shift / 2.0, 2 * thirty]),
+                    np.array([-2.0 * shift * np.cos(thirty), -shift / 2.0, 4 * thirty]),
+                    np.array(
+                        [
+                            -shift * np.cos(thirty),
+                            -(shift + shift * np.sin(thirty)) + shift / 2.0,
+                            0.0,
+                        ]
+                    ),
+                    np.array([0.0, -2.0 * shift + shift / 2.0, 0.0]),
+                    np.array(
+                        [
+                            shift * np.cos(thirty),
+                            -(shift + shift * np.sin(thirty)) + shift / 2.0,
+                            0.0,
+                        ]
+                    ),
                 ]
                 qwcenters = ang_to_quat(wcenters)
                 centers = list()
                 for qwc in qwcenters:
                     centers.append(qa.mult(tcenters[location], qwc))
-                
+
                 windx = 0
                 for wafer in tubeprops["wafers"]:
                     if windx == 7:
-                        partial_type="half"
+                        partial_type = "half"
                     elif windx == 8:
-                        partial_type="half"
+                        partial_type = "half"
                     elif windx == 9:
-                        partial_type="half"
+                        partial_type = "half"
                     elif windx == 10:
-                        partial_type="half"
+                        partial_type = "half"
                     else:
-                        partial_type=None
-                    dets = sim_wafer_detectors(hw, wafer, platescale, fwhm,
-                                               center=centers[windx], partial_type=partial_type)
+                        partial_type = None
+                    dets = sim_wafer_detectors(
+                        hw,
+                        wafer,
+                        platescale,
+                        fwhm,
+                        center=centers[windx],
+                        partial_type=partial_type,
+                    )
                     alldets.update(dets)
                     windx += 1
                 tindx += 1
@@ -869,7 +956,7 @@ def sim_telescope_detectors(hw, tele, tubes=None):
                 np.array([np.tan(thirty) * wradius, -wradius, 0.0]),
                 np.array([2.0 * wradius / np.cos(thirty), 0.0, 6.0 * thirty]),
                 np.array([-wradius / np.cos(thirty), 2.0 * wradius, 10.0 * thirty]),
-                np.array([-wradius / np.cos(thirty), -2.0 * wradius, 2.0 * thirty])
+                np.array([-wradius / np.cos(thirty), -2.0 * wradius, 2.0 * thirty]),
             ]
             qwcenters = ang_to_quat(wcenters)
             centers = list()
@@ -878,24 +965,31 @@ def sim_telescope_detectors(hw, tele, tubes=None):
 
             windx = 0
             for wafer in tubeprops["wafers"]:
-                #For first three wafers, use whole wafers, then construct partial wafers
+                # For first three wafers, use whole wafers, then construct partial wafers
                 if windx <= 2:
-                    partial_type=None
-                    no_gap=None
+                    partial_type = None
+                    no_gap = None
                 elif windx == 3:
-                    partial_type="rhombus"
-                    no_gap=None
+                    partial_type = "rhombus"
+                    no_gap = None
                 elif windx == 4:
-                    partial_type="rhombus"
-                    no_gap=None
+                    partial_type = "rhombus"
+                    no_gap = None
                 elif windx == 5:
-                    partial_type="rhombus"
-                    no_gap=None
+                    partial_type = "rhombus"
+                    no_gap = None
                 else:
-                    partial_type=None
-                    no_gap=None
-                dets = sim_wafer_detectors(hw, wafer, platescale, fwhm,
-                                           center=centers[windx], partial_type=partial_type, no_gap=no_gap)
+                    partial_type = None
+                    no_gap = None
+                dets = sim_wafer_detectors(
+                    hw,
+                    wafer,
+                    platescale,
+                    fwhm,
+                    center=centers[windx],
+                    partial_type=partial_type,
+                    no_gap=no_gap,
+                )
                 alldets.update(dets)
                 windx += 1
             tindx += 1
