@@ -1,4 +1,4 @@
-# Copyright (c)
+# Copyright (c) 2020-2020 CMB-S4 Collaboration.
 # Full license can be found in the top level "LICENSE" file.
 """Hardware configuration utilities.
 """
@@ -54,7 +54,7 @@ class Hardware(object):
                 os.remove(path)
             else:
                 raise RuntimeError(
-                    "Dump path {} already exists.  Use " "overwrite option".format(path)
+                    "Dump path {} already exists.  Use overwrite option".format(path)
                 )
         if compress:
             with gzip.open(path, "wb") as f:
