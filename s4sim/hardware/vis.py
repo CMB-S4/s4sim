@@ -5,11 +5,6 @@
 
 import numpy as np
 
-import matplotlib
-
-matplotlib.use("pdf")
-import matplotlib.pyplot as plt
-
 import quaternionarray as qa
 
 
@@ -54,6 +49,11 @@ def plot_detectors(
         None
 
     """
+    import matplotlib
+
+    matplotlib.use("pdf")
+    import matplotlib.pyplot as plt
+
     xaxis = np.array([1.0, 0.0, 0.0], dtype=np.float64)
     zaxis = np.array([0.0, 0.0, 1.0], dtype=np.float64)
     wmin = 1.0
