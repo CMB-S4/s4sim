@@ -198,7 +198,7 @@ class Hardware(object):
             if wselect is None:
                 # Just the regular behavior
                 if isinstance(v, list):
-                    reg[k] = re.compile(r"(" + "|".join(v) + r")")
+                    reg[k] = re.compile(r"(^" + "$|^".join(v) + r"$)")
                 else:
                     reg[k] = re.compile(v)
             else:
@@ -208,11 +208,11 @@ class Hardware(object):
                     wall.extend(v)
                 else:
                     wall.append(v)
-                reg[k] = re.compile(r"(" + "|".join(wall) + r")")
+                reg[k] = re.compile(r"(^" + "$|^".join(wall) + r"$)")
         elif wselect is not None:
             # No pattern in the match dictionary, just our list from the
             # telescope / tube selection.
-            reg["wafer"] = re.compile(r"(" + "|".join(wselect) + r")")
+            reg["wafer"] = re.compile(r"(^" + "$|^".join(wselect) + r"$)")
 
         for k, v in match.items():
             if k == "wafer":
@@ -220,7 +220,7 @@ class Hardware(object):
                 continue
             else:
                 if isinstance(v, list):
-                    reg[k] = re.compile(r"(" + "|".join(v) + r")")
+                    reg[k] = re.compile(r"(^" + "$|^".join(v) + r"$)")
                 else:
                     reg[k] = re.compile(v)
 
