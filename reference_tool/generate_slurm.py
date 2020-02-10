@@ -57,7 +57,6 @@ telescopes = {
 
 for telescope, tubes in telescopes.items():
     if telescope == "LAT":
-        continue  # DEBUG
         nside = 4096
         fsample = 200
         hwprpm = None
@@ -66,7 +65,7 @@ for telescope, tubes in telescopes.items():
         poly_order = 15
         ground_order = 25
         fpradius = 4.0
-        nnode = 512
+        nnode = 64
         nthread = 8
         nnode_group = 16
         madampars = {
@@ -81,7 +80,7 @@ for telescope, tubes in telescopes.items():
         scan_accel = 1
         poly_order = 5
         ground_order = 10
-        nnode = 64
+        nnode = 16
         fpradius = 18.0
         nthread = 4
         nnode_group = 4
@@ -94,7 +93,7 @@ for telescope, tubes in telescopes.items():
     for site in "chile", "pole":
         if site == "chile":
             weather = "weather_Atacama.fits"
-        elif weather == "pole":
+        elif site == "pole":
             weather = "weather_South_Pole.fits"
             hwprpm = None
         else:
@@ -110,7 +109,9 @@ for telescope, tubes in telescopes.items():
                     rootname = "{}_{}_{}_{}_{}".format(
                         site, flavor, telescope, tube, band
                     )
-                    fname_slurm = "{}.slrm".format(rootname)
+                    os.makedirs("slurm", exist_ok=True)
+                    os.makedirs("logs", exist_ok=True)
+                    fname_slurm = os.path.join("slurm", "{}.slrm".format(rootname))
                     with open(fname_slurm, "w") as slurm:
                         for line in [
                             "#!/bin/bash",
@@ -145,7 +146,7 @@ for telescope, tubes in telescopes.items():
                             'echo "        groupsize = ${groupsize}"',
                             '\nexport PYTHONSTARTUP=""',
                             "export PYTHONNOUSERSITE=1",
-                            "\nlogfile={}.log\n".format(rootname),
+                            "\nlogfile=logs/{}.log\n".format(rootname),
                             "if [[ ! -e $logfile ]]; then",
                             '    echo "Writing $logfile"',
                             "    srun -n $ntask -c $ncore --cpu_bind=cores \\",
@@ -183,12 +184,12 @@ for telescope, tubes in telescopes.items():
                             params["wcov"] = None
                             params["wcov-inv"] = None
                         elif flavor == "atmosphere":
-                            params["simulate-atmosphere"]
+                            params["simulate-atmosphere"] = None
                             params["no-hits"] = None
                             params["no-wcov"] = None
                             params["no-wcov-inv"] = None
                         elif flavor == "signal":
-                            params["input-map"] = input_map
+                            #params["input-map"] = input_map
                             params["no-hits"] = None
                             params["no-wcov"] = None
                             params["no-wcov-inv"] = None
@@ -214,5 +215,3 @@ for telescope, tubes in telescopes.items():
                             "fi",
                         ]:
                             slurm.write(line + "\n")
-
-                        sys.exit()
