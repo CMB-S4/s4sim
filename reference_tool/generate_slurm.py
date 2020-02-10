@@ -179,10 +179,19 @@ for telescope, tubes in telescopes.items():
 
                         if flavor == "noise":
                             params["simulate-noise"] = None
+                            params["hits"] = None
+                            params["wcov"] = None
+                            params["wcov-inv"] = None
                         elif flavor == "atmosphere":
                             params["simulate-atmosphere"]
+                            params["no-hits"] = None
+                            params["no-wcov"] = None
+                            params["no-wcov-inv"] = None
                         elif flavor == "signal":
                             params["input-map"] = input_map
+                            params["no-hits"] = None
+                            params["no-wcov"] = None
+                            params["no-wcov-inv"] = None
                         else:
                             raise RuntimeError(
                                 "Unknown simulation flavor: '{}'".format(flavor)

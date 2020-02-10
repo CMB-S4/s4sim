@@ -30,10 +30,6 @@ echo "  OMP_NUM_THREADS = ${OMP_NUM_THREADS}"
 echo "       ntask_node = ${ntask_node}"
 echo "            ntask = ${ntask}"
 
-export PYTHONSTARTUP=""
-export PYTHONNOUSERSITE=1
-export HOME=/global/cscratch1/sd/keskital
-
 logfile=bin_schedule_lat.log
 if [[ ! -e $logfile ]]; then
     echo "Writing $logfile"
