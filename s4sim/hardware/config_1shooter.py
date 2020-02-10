@@ -198,7 +198,7 @@ class Hardware(object):
             if wselect is None:
                 # Just the regular behavior
                 if isinstance(v, list):
-                    reg[k] = re.compile(r"(^" + "$|^".join(v) + r"$)")
+                    reg[k] = re.compile(r"(" + "|".join(v) + r")")
                 else:
                     reg[k] = re.compile(v)
             else:
@@ -208,11 +208,11 @@ class Hardware(object):
                     wall.extend(v)
                 else:
                     wall.append(v)
-                reg[k] = re.compile(r"(^" + "$|^".join(wall) + r"$)")
+                reg[k] = re.compile(r"(" + "|".join(wall) + r")")
         elif wselect is not None:
             # No pattern in the match dictionary, just our list from the
             # telescope / tube selection.
-            reg["wafer"] = re.compile(r"(^" + "$|^".join(wselect) + r"$)")
+            reg["wafer"] = re.compile(r"(" + "|".join(wselect) + r")")
 
         for k, v in match.items():
             if k == "wafer":
@@ -220,7 +220,7 @@ class Hardware(object):
                 continue
             else:
                 if isinstance(v, list):
-                    reg[k] = re.compile(r"(^" + "$|^".join(v) + r"$)")
+                    reg[k] = re.compile(r"(" + "|".join(v) + r")")
                 else:
                     reg[k] = re.compile(v)
 
@@ -493,12 +493,12 @@ def get_example():
     wcnt = {
         "ULFL": (3 + 3) * 1,
         "LFL": (3 + 3) * (2 + 2 * 2),
-        "LFS": (10 + 4) * 2,
+        "LFS": (11 + 2) * 2,
         "MFL": (3 + 3) * (12 + 12 * 2),
-        "MFLS": (10 + 4) * 6,
-        "MFHS": (10 + 4) * 6,
+        "MFLS": (11 + 2) * 6,
+        "MFHS": (11 + 2) * 6,
         "HFL": (3 + 3) * (4 + 5 * 2),
-        "HFS": (7 + 6) * 4,
+        "HFS": (8 + 2) * 4,
     }
     wpac = {
         "ULFL": "RP",
@@ -755,7 +755,7 @@ def get_example():
         tb["wafers"] = list()
         # HF tubes have 8 full wafers + 2 partial, all others 11+2
         if ttyp == "HFS":
-            for tw in range(13):
+            for tw in range(10):
                 off = 0
                 for w, props in cnf["wafers"].items():
                     if props["type"] == ttyp:
@@ -767,7 +767,7 @@ def get_example():
             # 35.0/(3*127.89)
             tb["platescale"] = 0.091224
         else:
-            for tw in range(14):
+            for tw in range(13):
                 off = 0
                 for w, props in cnf["wafers"].items():
                     if props["type"] == ttyp:
@@ -892,46 +892,130 @@ def get_example():
     sfwhm["HFS2"] = 10.0
 
     tele = OrderedDict()
-    tele["tubes"] = ["ST0", "ST1", "ST2"]
+    tele["tubes"] = ["ST0"]
     tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT0"] = tele
 
     tele = OrderedDict()
-    tele["tubes"] = ["ST3", "ST4", "ST5"]
+    tele["tubes"] = ["ST1"]
     tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT1"] = tele
 
     tele = OrderedDict()
-    tele["tubes"] = ["ST6", "ST7", "ST8"]
+    tele["tubes"] = ["ST2"]
     tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT2"] = tele
 
     tele = OrderedDict()
-    tele["tubes"] = ["ST9", "ST10", "ST11"]
+    tele["tubes"] = ["ST3"]
     tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT3"] = tele
 
     tele = OrderedDict()
-    tele["tubes"] = ["ST12", "ST13", "ST14"]
-    tele["platescale"] = 0.091224
+    tele["tubes"] = ["ST4"]
+    tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT4"] = tele
 
     tele = OrderedDict()
-    tele["tubes"] = ["ST15", "ST16", "ST17"]
+    tele["tubes"] = ["ST5"]
     tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT5"] = tele
+
+    tele = OrderedDict()
+    tele["tubes"] = ["ST6"]
+    tele["platescale"] = 0.056689
+    tele["tubespace"] = 700.0
+    tele["fwhm"] = sfwhm
+    telescopes["SAT6"] = tele
+
+    tele = OrderedDict()
+    tele["tubes"] = ["ST7"]
+    tele["platescale"] = 0.056689
+    tele["tubespace"] = 700.0
+    tele["fwhm"] = sfwhm
+    telescopes["SAT7"] = tele
+
+    tele = OrderedDict()
+    tele["tubes"] = ["ST8"]
+    tele["platescale"] = 0.056689
+    tele["tubespace"] = 700.0
+    tele["fwhm"] = sfwhm
+    telescopes["SAT8"] = tele
+
+    tele = OrderedDict()
+    tele["tubes"] = ["ST9"]
+    tele["platescale"] = 0.056689
+    tele["tubespace"] = 700.0
+    tele["fwhm"] = sfwhm
+    telescopes["SAT9"] = tele
+
+    tele = OrderedDict()
+    tele["tubes"] = ["ST10"]
+    tele["platescale"] = 0.056689
+    tele["tubespace"] = 700.0
+    tele["fwhm"] = sfwhm
+    telescopes["SAT10"] = tele
+
+    tele = OrderedDict()
+    tele["tubes"] = ["ST11"]
+    tele["platescale"] = 0.056689
+    tele["tubespace"] = 700.0
+    tele["fwhm"] = sfwhm
+    telescopes["SAT11"] = tele
+
+    tele = OrderedDict()
+    tele["tubes"] = ["ST12"]
+    tele["platescale"] = 0.091224
+    tele["tubespace"] = 700.0
+    tele["fwhm"] = sfwhm
+    telescopes["SAT12"] = tele
+
+    tele = OrderedDict()
+    tele["tubes"] = ["ST13"]
+    tele["platescale"] = 0.091224
+    tele["tubespace"] = 700.0
+    tele["fwhm"] = sfwhm
+    telescopes["SAT13"] = tele
+
+    tele = OrderedDict()
+    tele["tubes"] = ["ST14"]
+    tele["platescale"] = 0.091224
+    tele["tubespace"] = 700.0
+    tele["fwhm"] = sfwhm
+    telescopes["SAT14"] = tele
+
+    tele = OrderedDict()
+    tele["tubes"] = ["ST15"]
+    tele["platescale"] = 0.091224
+    tele["tubespace"] = 700.0
+    tele["fwhm"] = sfwhm
+    telescopes["SAT15"] = tele
+
+    tele = OrderedDict()
+    tele["tubes"] = ["ST16"]
+    tele["platescale"] = 0.056689
+    tele["tubespace"] = 700.0
+    tele["fwhm"] = sfwhm
+    telescopes["SAT16"] = tele
+
+    tele = OrderedDict()
+    tele["tubes"] = ["ST17"]
+    tele["platescale"] = 0.056689
+    tele["tubespace"] = 700.0
+    tele["fwhm"] = sfwhm
+    telescopes["SAT17"] = tele
 
     cnf["telescopes"] = telescopes
 

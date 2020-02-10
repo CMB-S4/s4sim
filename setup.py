@@ -20,7 +20,13 @@ setup_opts = dict()
 # Entry points / scripts.  Add scripts here and define the main() of each
 # script in s4sim.scripts.<foo>.main()
 setup_opts["entry_points"] = {
-    "console_scripts": ["s4sim_testscript = s4sim.scripts.testscript:main"]
+    "console_scripts": [
+        "s4sim_testscript = s4sim.scripts.testscript:main",
+        "s4_hardware_sim = s4sim.scripts.hardware_sim:main",
+        "s4_hardware_plot = s4sim.scripts.hardware_plot:main",
+        "s4_hardware_trim = s4sim.scripts.hardware_trim:main",
+        "s4_hardware_info = s4sim.scripts.hardware_info:main",
+    ]
 }
 
 pipes = ["pipelines/toast_s4_sim.py"]

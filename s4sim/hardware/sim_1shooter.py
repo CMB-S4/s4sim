@@ -170,44 +170,6 @@ def sector(npos, pos):
     return sector
 
 
-def sector2(npos, pos):
-    """Return the sector of a given position.
-        
-        For a hexagonal layout, indexed in a "spiral" scheme (see hex_layout),
-        this function returns the sector of a single position.
-        The row is zero along the main vertex-vertex axis, and is positive
-        or negative above / below this line of positions.
-        
-        Args:
-        npos (int): The number of positions.
-        pos (int): position number
-        
-        Returns:
-        (integer): sector of the position
-        
-        """
-    test = npos - 1
-    nrings = 1
-    while (test - 6 * nrings) >= 0:
-        test -= 6 * nrings
-        nrings += 1
-    if pos == 0:
-        sector = 0
-    else:
-        test = pos - 1
-        ring = 1
-        while (test - 6 * ring) >= 0:
-            test -= 6 * ring
-            ring += 1
-        if test == 0:
-            sector = 0
-        elif test == ring:
-            sector = 0
-        else:
-            sector = int(test / ring)
-    return sector
-
-
 def hex_layout(npos, width, rotate=None, killpix=None):
     """Compute positions in a hexagon layout.
 
@@ -678,16 +640,6 @@ def sim_wafer_detectors(
             for ii in range(npix):
                 if sector(npix, ii) < 3:
                     kill.append(ii)
-        elif partial_type == "rhombus":
-            kill = []
-            for ii in range(npix):
-                if (
-                    (sector2(npix, ii) == 1)
-                    or (sector2(npix, ii) == 2)
-                    or (sector2(npix, ii) == 3)
-                    or (sector2(npix, ii) == 4)
-                ):
-                    kill.append(ii)
         else:
             kill = []
         layout_A = hex_layout(npix, width, rotate=pol_A, killpix=kill)
@@ -774,14 +726,11 @@ def sim_telescope_detectors(hw, tele, tubes=None):
                 )
 
     alldets = OrderedDict()
-    if ntube == 3:
+    if ntube == 1:
         # This is a SAT.  We have three tubes.
         tubespace = teleprops["tubespace"]
-        tuberot = 0.0 * np.ones(7, dtype=np.float64)
+        tuberot = 90.0 * np.ones(7, dtype=np.float64)
         tcenters = hex_layout(7, 2 * (tubespace * tele_platescale), rotate=tuberot)
-        # tuberot = 90.0 * np.ones(3, dtype=np.float64)
-        # tcenters = triangle(3, (tubespace * tele_platescale), rotate=tuberot)
-
         tindx = 0
         for tube in tubes:
             tubeprops = hw.data["tubes"][tube]
@@ -790,45 +739,18 @@ def sim_telescope_detectors(hw, tele, tubes=None):
             location = tubeprops["location"]
             type = tubeprops["type"]
             if type == "HFS":
-                srad = waferspace * platescale * np.pi / 180.0
+                srad = 0.5 * (waferspace * platescale * np.pi / 180.0)
                 wcenters = [
-                    np.array([0.0, 0.0, 0.0]),
-                    np.array([srad * np.cos(thirty), srad * np.sin(thirty), 0.0]),
+                    np.array([1.5 * srad / np.cos(thirty), 0.0, 0.0]),
                     np.array([0.0, srad, 0.0]),
-                    np.array([-srad * np.cos(thirty), srad * np.sin(thirty), 0.0]),
-                    np.array([-srad * np.cos(thirty), -srad * np.sin(thirty), 0.0]),
+                    np.array([-1.5 * srad / np.cos(thirty), 0.0, 0.0]),
                     np.array([0.0, -srad, 0.0]),
-                    np.array([srad * np.cos(thirty), -srad * np.sin(thirty), 0.0]),
-                    np.array(
-                        [
-                            srad * np.cos(thirty),
-                            srad * np.sin(thirty) + srad,
-                            8 * thirty,
-                        ]
-                    ),
-                    np.array([2.0 * srad * np.cos(thirty), 0.0, 6 * thirty]),
-                    np.array(
-                        [
-                            srad * np.cos(thirty),
-                            -srad * np.sin(thirty) - srad,
-                            4 * thirty,
-                        ]
-                    ),
-                    np.array(
-                        [
-                            -srad * np.cos(thirty),
-                            srad * np.sin(thirty) + srad,
-                            10 * thirty,
-                        ]
-                    ),
-                    np.array([-2.0 * srad * np.cos(thirty), 0.0, 0.0]),
-                    np.array(
-                        [
-                            -srad * np.cos(thirty),
-                            -srad * np.sin(thirty) - srad,
-                            2 * thirty,
-                        ]
-                    ),
+                    np.array([1.5 * srad / np.cos(thirty), 2.0 * srad, 0.0]),
+                    np.array([0.0, 3.0 * srad, 0.0]),
+                    np.array([-1.5 * srad / np.cos(thirty), 2.0 * srad, 0.0]),
+                    np.array([-1.5 * srad / np.cos(thirty), -2.0 * srad, 0.0]),
+                    np.array([0.0, -3.0 * srad, 6.0 * thirty]),
+                    np.array([1.5 * srad / np.cos(thirty), -2.0 * srad, 0.0]),
                 ]
                 qwcenters = ang_to_quat(wcenters)
                 centers = list()
@@ -837,8 +759,10 @@ def sim_telescope_detectors(hw, tele, tubes=None):
 
                 windx = 0
                 for wafer in tubeprops["wafers"]:
-                    if windx > 6:
-                        partial_type = "rhombus"
+                    if windx == 5:
+                        partial_type = "half"
+                    elif windx == 8:
+                        partial_type = "half"
                     else:
                         partial_type = None
                     dets = sim_wafer_detectors(
@@ -855,55 +779,30 @@ def sim_telescope_detectors(hw, tele, tubes=None):
             else:
                 shift = waferspace * platescale * np.pi / 180.0
                 wcenters = [
-                    np.array([0.0, shift / 2.0, 0.0]),
+                    np.array([0.0, 0.0, 0.0]),
+                    np.array([shift * np.cos(thirty), shift * np.sin(thirty), 0.0]),
+                    np.array([0.0, shift, 0.0]),
+                    np.array([-shift * np.cos(thirty), shift * np.sin(thirty), 0.0]),
+                    np.array([-shift * np.cos(thirty), -shift * np.sin(thirty), 0.0]),
+                    np.array([0.0, -shift, 0.0]),
+                    np.array([shift * np.cos(thirty), -shift * np.sin(thirty), 0.0]),
                     np.array(
-                        [
-                            shift * np.cos(thirty),
-                            shift * np.sin(thirty) + shift / 2.0,
-                            0.0,
-                        ]
+                        [shift * np.cos(thirty), shift + shift * np.sin(thirty), 0.0]
                     ),
-                    np.array([0.0, shift + shift / 2.0, 0.0]),
+                    np.array([0.0, 2.0 * shift, 0.0]),
                     np.array(
-                        [
-                            -shift * np.cos(thirty),
-                            shift * np.sin(thirty) + shift / 2.0,
-                            0.0,
-                        ]
+                        [-shift * np.cos(thirty), shift + shift * np.sin(thirty), 0.0]
                     ),
                     np.array(
                         [
                             -shift * np.cos(thirty),
-                            -shift * np.sin(thirty) + shift / 2.0,
+                            -(shift + shift * np.sin(thirty)),
                             0.0,
                         ]
                     ),
-                    np.array([0.0, -shift + shift / 2.0, 0.0]),
+                    np.array([0.0, -2.0 * shift, 6.0 * thirty]),
                     np.array(
-                        [
-                            shift * np.cos(thirty),
-                            -shift * np.sin(thirty) + shift / 2.0,
-                            0.0,
-                        ]
-                    ),
-                    np.array([2.0 * shift * np.cos(thirty), shift / 2.0, 10 * thirty]),
-                    np.array([2.0 * shift * np.cos(thirty), -shift / 2.0, -4 * thirty]),
-                    np.array([-2.0 * shift * np.cos(thirty), shift / 2.0, 2 * thirty]),
-                    np.array([-2.0 * shift * np.cos(thirty), -shift / 2.0, 4 * thirty]),
-                    np.array(
-                        [
-                            -shift * np.cos(thirty),
-                            -(shift + shift * np.sin(thirty)) + shift / 2.0,
-                            0.0,
-                        ]
-                    ),
-                    np.array([0.0, -2.0 * shift + shift / 2.0, 0.0]),
-                    np.array(
-                        [
-                            shift * np.cos(thirty),
-                            -(shift + shift * np.sin(thirty)) + shift / 2.0,
-                            0.0,
-                        ]
+                        [shift * np.cos(thirty), -(shift + shift * np.sin(thirty)), 0.0]
                     ),
                 ]
                 qwcenters = ang_to_quat(wcenters)
@@ -913,13 +812,9 @@ def sim_telescope_detectors(hw, tele, tubes=None):
 
                 windx = 0
                 for wafer in tubeprops["wafers"]:
-                    if windx == 7:
+                    if windx == 8:
                         partial_type = "half"
-                    elif windx == 8:
-                        partial_type = "half"
-                    elif windx == 9:
-                        partial_type = "half"
-                    elif windx == 10:
+                    elif windx == 11:
                         partial_type = "half"
                     else:
                         partial_type = None
