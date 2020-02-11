@@ -40,3 +40,7 @@ C
 --out
 schedules/pole_schedule_lat.txt
 --one-scan-per-day
+--boresight-angle-step
+45
+--boresight-angle-time
+1440

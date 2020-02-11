@@ -37,6 +37,7 @@ def create_observation(args, comm, telescope, ces, noise, verbose=True):
             focalplane.detquats,
             totsamples,
             detranks=ndetrank,
+            boresight_angle=ces.boresight_angle,
             firsttime=ces.start_time,
             rate=args.sample_rate,
             site_lon=site.lon,
