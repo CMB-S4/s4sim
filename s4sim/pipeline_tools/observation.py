@@ -48,6 +48,7 @@ def create_observation(args, comm, telescope, ces, noise, verbose=True):
             el=ces.el,
             scanrate=args.scan_rate,
             scan_accel=args.scan_accel,
+            cosecant_modulation=args.scan_cosecant_modulate,
             CES_start=None,
             CES_stop=None,
             sun_angle_min=args.sun_angle_min,

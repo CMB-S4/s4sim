@@ -186,15 +186,20 @@ def get_hardware(args, comm, verbose=False):
     Then trim it down to the bands that were selected.
     """
     log = Logger.get()
+    timer = Timer()
+    timer.start()
     telescope = get_telescope(args, comm, verbose=verbose)
     if comm.world_rank == 0:
         if args.hardware:
             log.info("Loading hardware configuration from {}...".format(args.hardware))
             hw = hardware.Hardware(args.hardware)
+            timer.report_clear("Load {}".format(args.hardware))
         else:
             log.info("Simulating default hardware configuration")
             hw = hardware.get_example()
+            timer.report_clear("Get example hardware")
             hw.data["detectors"] = hardware.sim_telescope_detectors(hw, telescope.name)
+            timer.report_clear("Get telescope detectors")
         # Construct a running index for all detectors across all
         # telescopes for independent noise realizations
         det_index = {}
@@ -225,25 +230,7 @@ def get_hardware(args, comm, verbose=False):
             "Telescope = {} tubes = {} bands = {}, thinfp = {} matches {} detectors"
             "".format(telescope.name, args.tubes, args.bands, args.thinfp, ndetector)
         )
-        """
-        # DEBUG begin
-        import matplotlib.pyplot as plt
-        import toast.qarray as qa
-        import healpy as hp
-        xaxis, yaxis, zaxis = np.eye(3)
-        rot = qa.rotation(yaxis, np.radians(-90))
-        plt.figure()
-        for det in hw.data["detectors"]:
-            quat = hw.data["detectors"][det]["quat"]
-            vec = qa.rotate(quat, zaxis)
-            vec = qa.rotate(rot, vec)
-            lon, lat = hp.vec2ang(vec, lonlat=True)
-            plt.plot(lon, lat, 'o')
-        plt.savefig("test.png")
-        import pdb
-        pdb.set_trace()
-        # DEBUG end
-        """
+        timer.report_clear("Trim detectors")
     else:
         hw = None
         det_index = None

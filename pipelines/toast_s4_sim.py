@@ -5,12 +5,14 @@
 
 
 import os
-if 'TOAST_STARTUP_DELAY' in os.environ:
+
+if "TOAST_STARTUP_DELAY" in os.environ:
     import numpy as np
     import time
-    delay = np.float(os.environ['TOAST_STARTUP_DELAY'])
+
+    delay = np.float(os.environ["TOAST_STARTUP_DELAY"])
     wait = np.random.rand() * delay
-    #print('Sleeping for {} seconds before importing TOAST'.format(wait),
+    # print('Sleeping for {} seconds before importing TOAST'.format(wait),
     #      flush=True)
     time.sleep(wait)
 
@@ -94,6 +96,14 @@ def parse_arguments(comm):
         default=False,
         action="store_true",
         help="Disable all mapmaking.",
+    )
+
+    parser.add_argument(
+        "--skip-madam",
+        required=False,
+        default=False,
+        action="store_true",
+        help="Skip the first Madam call.",
     )
 
     parser.add_argument(
@@ -294,20 +304,20 @@ def main():
 
         # Bin and destripe maps
 
-        toast_tools.apply_madam(
-            args,
-            comm,
-            data,
-            madampars,
-            outpath,
-            detweights,
-            totalname,
-            time_comms=time_comms,
-            telescope_data=telescope_data,
-            first_call=(mc == firstmc),
-        )
-
-        memreport("after madam", comm.comm_world)
+        if not args.skip_madam:
+            toast_tools.apply_madam(
+                args,
+                comm,
+                data,
+                madampars,
+                outpath,
+                detweights,
+                totalname,
+                time_comms=time_comms,
+                telescope_data=telescope_data,
+                first_call=(mc == firstmc),
+            )
+            memreport("after madam", comm.comm_world)
 
         if args.apply_polyfilter or args.apply_groundfilter:
 

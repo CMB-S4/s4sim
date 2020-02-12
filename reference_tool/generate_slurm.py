@@ -38,20 +38,28 @@ import sys
                         --bands
 """
 
-flavors = "noise", "atmosphere", "signal"
+flavors = (
+    "noise",
+    "atmosphere",
+    "cmb-scalar",
+    "cmb-lensing",
+    "cmb-tensors",
+    "galactic",
+    "extra-galactic",
+)
 
 telescopes = {
     "LAT": {
-        "LT38": ["HFL1", "HFL2"],  # 225 & 278 GHz
-        "LT42": ["MFL1", "MFL2"],  #  93 & 145 GHz
-        "LT54": ["LFL1", "LFL2"],  #  27 &  39 GHz
-        "LT56": ["LFL1"],  #        20 GHz
+        "LT0": ["HFL1", "HFL2"],  #  225 & 278 GHz
+        "LT5": ["MFL1", "MFL2"],  #   93 & 145 GHz
+        "LT17": ["LFL1", "LFL2"],  #  27 &  39 GHz
+        "LT56": ["ULFL1"],  #               20 GHz
     },
     "SAT": {
-        "ST0": ["MFLS1", "MFLS2"],  #  85 & 145.1 GHz
-        "ST6": ["MFHS1", "MFHS2"],  #  95 & 155.1 GHz
-        "ST12": ["HFS1", "HFS2"],  # 220 & 270 GHz
-        "ST16": ["LFS1", "LFS2"],  #  30 &  40 GHz
+        "ST0": ["MFLS1", "MFLS2"],  #  85 & 145.1 GHz - SAT0 - FOV 14.5 deg
+        "ST6": ["MFHS1", "MFHS2"],  #  95 & 155.1 GHz - SAT2 - FOV 14.5 deg
+        "ST12": ["HFS1", "HFS2"],  #  220 & 270 GHz - SAT4 - FOV 17.5 deg
+        "ST16": ["LFS1", "LFS2"],  #   30 &  40 GHz - SAT5 - FOV 17.5 deg
     },
 }
 
@@ -72,6 +80,7 @@ for telescope, tubes in telescopes.items():
             "madam-concatenate-messages": None,
             "no-madam-allreduce": None,
         }
+        cosecant_scan = True
     elif telescope == "SAT":
         nside = 512
         fsample = 20
@@ -87,6 +96,7 @@ for telescope, tubes in telescopes.items():
         madampars = {
             "madam-allreduce": None,
         }
+        cosecant_scan = False
     else:
         raise RuntimeError("Unknown telescope: {}".format(telescope))
 
@@ -96,6 +106,7 @@ for telescope, tubes in telescopes.items():
         elif site == "pole":
             weather = "weather_South_Pole.fits"
             hwprpm = None
+            cosecant_scan = False
         else:
             raise RuntimeError("Unknown site: {}".format(site))
 
@@ -106,9 +117,7 @@ for telescope, tubes in telescopes.items():
         for tube, bands in tubes.items():
             for band in bands:
                 for flavor in flavors:
-                    rootname = "{}_{}_{}_{}_{}".format(
-                        site, flavor, telescope, tube, band
-                    )
+                    rootname = "{}_{}_{}_{}".format(site, flavor, telescope, band)
                     os.makedirs("slurm", exist_ok=True)
                     os.makedirs("logs", exist_ok=True)
                     fname_slurm = os.path.join("slurm", "{}.slrm".format(rootname))
@@ -169,8 +178,8 @@ for telescope, tubes in telescopes.items():
                             "focalplane-radius": fpradius,
                             "madam-prefix": rootname,
                         }
-                        if hwprpm is not None:
-                            params["hwp-rpm"] = hwprpm
+                        if cosecant_scan:
+                            params["scan-cosecant-modulate"] = None
                         if poly_order is not None:
                             params["polyfilter"] = None
                             params["poly-order"] = poly_order
@@ -188,11 +197,18 @@ for telescope, tubes in telescopes.items():
                             params["no-hits"] = None
                             params["no-wcov"] = None
                             params["no-wcov-inv"] = None
-                        elif flavor == "signal":
-                            #params["input-map"] = input_map
+                        elif flavor in [
+                            "cmb-scalar",
+                            "cmb-lensing",
+                            "cmb-tensors",
+                            "galactic",
+                            "extra-galactic",
+                        ]:
+                            # params["input-map"] = input_map
                             params["no-hits"] = None
                             params["no-wcov"] = None
                             params["no-wcov-inv"] = None
+                            params["skip-madam"] = None
                         else:
                             raise RuntimeError(
                                 "Unknown simulation flavor: '{}'".format(flavor)

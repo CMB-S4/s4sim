@@ -116,6 +116,7 @@ npix = 12 * nside ** 2
 hp.mollview(np.zeros(npix), cbar=False, title="Patch positions")
 hp.graticule(22.5)
 
+
 def plot_patch(patch, tier):
     left, top, right, bottom = patch
     color, lw = [("red", 3), ("black", 2), ("grey", 2)][tier - 1]
