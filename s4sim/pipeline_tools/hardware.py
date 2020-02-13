@@ -211,21 +211,25 @@ def get_hardware(args, comm, verbose=False):
         # will be concatenated
         # hw = hw.select(telescopes=[telescope.name], tubes=tubes, match=match)
         hw = hw.select(tubes=tubes, match=match)
-        if args.thinfp:
-            # Only accept a fraction of the detectors for
-            # testing and development
-            delete_detectors = []
-            for det_name in hw.data["detectors"].keys():
-                if (det_index[det_name] // 2) % args.thinfp != 0:
-                    delete_detectors.append(det_name)
-            for det_name in delete_detectors:
-                del hw.data["detectors"][det_name]
         ndetector = len(hw.data["detectors"])
         if ndetector == 0:
             raise RuntimeError(
                 "No detectors match query: telescope={}, "
-                "tubes={}, match={}".format(telescope, tubes, match)
+                "tubes={}, match={}".format(telescope.name, tubes, match)
             )
+        if args.thinfp:
+            # Only accept a fraction of the detectors for
+            # testing and development
+            thin_index = {}
+            for idet, det in enumerate(sorted(hw.data["detectors"])):
+                thin_index[det] = idet
+            delete_detectors = []
+            for det_name in hw.data["detectors"].keys():
+                if (thin_index[det_name] // 2) % args.thinfp != 0:
+                    delete_detectors.append(det_name)
+            for det_name in delete_detectors:
+                del hw.data["detectors"][det_name]
+        ndetector = len(hw.data["detectors"])
         log.info(
             "Telescope = {} tubes = {} bands = {}, thinfp = {} matches {} detectors"
             "".format(telescope.name, args.tubes, args.bands, args.thinfp, ndetector)
