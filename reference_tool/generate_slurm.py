@@ -118,6 +118,7 @@ for telescope, tubes in telescopes.items():
 
         for tube, bands in tubes.items():
             for band in bands:
+                hardware = "hardware_{}_{}.toml.gz".format(telescope, band[:-1])
                 for flavor in flavors:
                     rootname = "{}_{}_{}_{}".format(site, flavor, telescope, band)
                     os.makedirs("slurm", exist_ok=True)
@@ -180,6 +181,7 @@ for telescope, tubes in telescopes.items():
                             "focalplane-radius": fpradius,
                             "madam-prefix": rootname,
                             "thinfp": thinfp,
+                            "hardware": hardware,
                         }
                         if cosecant_scan:
                             params["scan-cosecant-modulate"] = None
