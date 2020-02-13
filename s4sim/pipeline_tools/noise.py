@@ -41,14 +41,18 @@ def get_elevation_noise(args, comm, data, key="noise"):
             A = fp[det]["A"]
             C = fp[det]["C"]
             psd = noise.psd(det)
+            # We only consider a small range of samples for the elevation
+            n = tod.local_samples[1]
+            istart = max(0, n // 2 - 1000)
+            istop = min(n, n // 2 + 1000)
             try:
                 # Some TOD classes provide a shortcut to Az/El
-                _, el = tod.read_azel(detector=det)
+                _, el = tod.read_azel(detector=det, local_start=istart, n=istop - istart)
             except Exception:
-                azelquat = tod.read_pntg(detector=det, azel=True)
+                azelquat = tod.read_pntg(detector=det, azel=True, local_start=istart, n=istop - istart)
                 # Convert Az/El quaternion of the detector back into
                 # angles for the simulation.
-                theta, _ = qa.to_position(azelquat)
+                theta = qa.to_position(azelquat)[0]
                 el = np.pi / 2 - theta
             el = np.median(el)
             # Scale the analytical noise PSD. Pivot is at el = 50 deg.

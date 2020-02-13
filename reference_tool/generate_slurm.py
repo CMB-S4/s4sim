@@ -75,12 +75,13 @@ for telescope, tubes in telescopes.items():
         fpradius = 4.0
         nnode = 64
         nthread = 8
-        nnode_group = 16
+        nnode_group = 4
         madampars = {
             "madam-concatenate-messages": None,
             "no-madam-allreduce": None,
         }
         cosecant_scan = True
+        thinfp = 8
     elif telescope == "SAT":
         nside = 512
         fsample = 20
@@ -97,6 +98,7 @@ for telescope, tubes in telescopes.items():
             "madam-allreduce": None,
         }
         cosecant_scan = False
+        thinfp = 4
     else:
         raise RuntimeError("Unknown telescope: {}".format(telescope))
 
@@ -177,6 +179,7 @@ for telescope, tubes in telescopes.items():
                             "no-madam-allreduce": None,
                             "focalplane-radius": fpradius,
                             "madam-prefix": rootname,
+                            "thinfp": thinfp,
                         }
                         if cosecant_scan:
                             params["scan-cosecant-modulate"] = None
