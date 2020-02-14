@@ -74,11 +74,13 @@ for telescope, tubes in telescopes.items():
         ground_order = 25
         fpradius = 4.0
         nnode = 64
-        nthread = 8
-        nnode_group = 4
+        nthread = 16
+        nnode_group = 1
         madampars = {
             "madam-concatenate-messages": None,
-            "no-madam-allreduce": None,
+            "madam-allreduce": None,
+            "madam-precond-width": 30,
+            "nside-submap": 16,
         }
         cosecant_scan = True
         thinfp = 8
@@ -93,9 +95,11 @@ for telescope, tubes in telescopes.items():
         nnode = 16
         fpradius = 18.0
         nthread = 4
-        nnode_group = 4
+        nnode_group = 1
         madampars = {
-            "madam-allreduce": None,
+            "no-madam-allreduce": None,
+            "madam-precond-width": 30,
+            "nside-submap": 16,
         }
         cosecant_scan = False
         thinfp = 4

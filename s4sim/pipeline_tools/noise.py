@@ -47,9 +47,9 @@ def get_elevation_noise(args, comm, data, key="noise"):
             istop = min(n, n // 2 + 1000)
             try:
                 # Some TOD classes provide a shortcut to Az/El
-                _, el = tod.read_azel(
+                el = tod.read_azel(
                     detector=det, local_start=istart, n=istop - istart
-                )
+                )[1]
             except Exception:
                 azelquat = tod.read_pntg(
                     detector=det, azel=True, local_start=istart, n=istop - istart
@@ -61,9 +61,8 @@ def get_elevation_noise(args, comm, data, key="noise"):
             el = np.median(el)
             # Scale the analytical noise PSD. Pivot is at el = 50 deg.
             psd[:] *= (A / np.sin(el) + C) ** 2
-    timer.stop()
     if comm.world_rank == 0:
-        timer.report("Elevation noise")
+        timer.report_clear("Elevation noise")
     return
 
 
