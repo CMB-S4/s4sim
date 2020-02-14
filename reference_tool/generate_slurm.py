@@ -81,6 +81,8 @@ for telescope, tubes in telescopes.items():
             "madam-allreduce": None,
             "madam-precond-width": 30,
             "nside-submap": 16,
+            "madam-baseline-length": 1,
+            "madam-noisefilter": None,
         }
         cosecant_scan = True
         thinfp = 8
@@ -100,11 +102,20 @@ for telescope, tubes in telescopes.items():
             "no-madam-allreduce": None,
             "madam-precond-width": 30,
             "nside-submap": 16,
+            "madam-baseline-length": 1,
+            "madam-noisefilter": None,
         }
         cosecant_scan = False
         thinfp = 4
     else:
         raise RuntimeError("Unknown telescope: {}".format(telescope))
+
+    # For now, we disable destriping and only output filtered maps
+    madampars = {
+        # Comment out skip-madam for a pure binned map (2 separate Madam calls)
+        "skip-madam": None,
+        "no-destripe": None,
+    }
 
     for site in "chile", "pole":
         if site == "chile":
@@ -201,11 +212,13 @@ for telescope, tubes in telescopes.items():
                             params["hits"] = None
                             params["wcov"] = None
                             params["wcov-inv"] = None
+                            params["MC-count"] = 8
                         elif flavor == "atmosphere":
                             params["simulate-atmosphere"] = None
                             params["no-hits"] = None
                             params["no-wcov"] = None
                             params["no-wcov-inv"] = None
+                            params["MC-count"] = 8
                         elif flavor in [
                             "cmb-scalar",
                             "cmb-lensing",

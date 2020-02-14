@@ -271,23 +271,6 @@ def main():
 
         memreport("after simulating SSS", comm.comm_world)
 
-        # DEBUG begin
-        """
-        import matplotlib.pyplot as plt
-        tod = data.obs[0]['tod']
-        times = tod.local_times()
-        for det in tod.local_dets:
-            sig = tod.local_signal(det, totalname)
-            plt.plot(times, sig, label=det)
-        plt.legend(loc='best')
-        fnplot = 'debug_{}.png'.format(args.madam_prefix)
-        plt.savefig(fnplot)
-        plt.close()
-        print('DEBUG plot saved in', fnplot)
-        return
-        """
-        # DEBUG end
-
         toast_tools.scramble_gains(args, comm, data, mc, totalname)
 
         if mc == firstmc:
@@ -341,9 +324,9 @@ def main():
                 totalname,
                 time_comms=time_comms,
                 telescope_data=telescope_data,
-                first_call=False,
+                first_call=(args.skip_madam and mc == firstmc),
                 extra_prefix="filtered",
-                bin_only=True,
+                bin_only=(not args.skip_madam),
             )
 
             memreport("after filter & bin", comm.comm_world)

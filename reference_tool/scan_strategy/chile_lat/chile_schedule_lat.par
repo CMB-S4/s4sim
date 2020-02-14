@@ -38,3 +38,7 @@ C
 RISING_SCAN_40,HORIZONTAL,1.00,20.00,160.00,40.00,1440
 --patch
 SETTING_SCAN_40,HORIZONTAL,1.00,200.00,340.00,40.00,1440
+--boresight-angle-step
+180
+--boresight-angle-time
+1440

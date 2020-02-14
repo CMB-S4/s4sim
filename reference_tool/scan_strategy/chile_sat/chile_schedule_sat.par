@@ -40,3 +40,7 @@ C
 86400
 --fp-radius
 0
+--boresight-angle-step
+45
+--boresight-angle-time
+1440
