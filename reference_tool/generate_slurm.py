@@ -38,14 +38,15 @@ import sys
                         --bands
 """
 
+input_map_dir = "/global/cscratch1/sd/zonca/cmbs4/map_based_simulations/202002_foregrounds_extragalactic_cmb_tophat"
+
 flavors = (
     "noise",
     "atmosphere",
-    "cmb-scalar",
-    "cmb-lensing",
-    "cmb-tensors",
-    "galactic",
-    "extra-galactic",
+    "cmb-unlensed", # cmb_unlensed_solardipole_nest
+    "cmb-lensing", # cmb_lensing_signal
+    "cmb-tensors", # cmb_tensor_nest
+    "foreground", # combined_foregrounds
 )
 
 telescopes = {
@@ -133,17 +134,98 @@ for telescope, tubes in telescopes.items():
 
         for tube, bands in tubes.items():
             for band in bands:
+                thinfp_temp = thinfp
+                if band.startswith("ULF") or band.startswith("LF"):
+                    thinfp_temp = 1
+                elif band.startswith("HFS"):
+                    thinfp_temp = 8
                 hardware = "hardware_{}_{}.toml.gz".format(telescope, band[:-1])
                 for flavor in flavors:
                     rootname = "{}_{}_{}_{}".format(site, flavor, telescope, band)
                     os.makedirs("slurm", exist_ok=True)
                     os.makedirs("logs", exist_ok=True)
+                    
+                    params = {
+                        "bands": band,
+                        "tubes": tube,
+                        "sample-rate": fsample,
+                        "scan-rate": scan_rate,
+                        "scan-accel": scan_accel,
+                        "nside": nside,
+                        "schedule": schedule,
+                        "weather": weather,
+                        "site": site,
+                        "madam-concatenate-messages": None,
+                        "no-madam-allreduce": None,
+                        "focalplane-radius": fpradius,
+                        "madam-prefix": rootname,
+                        "thinfp": thinfp_temp,
+                        "hardware": hardware,
+                    }
+                    if cosecant_scan:
+                        params["scan-cosecant-modulate"] = None
+                    if poly_order is not None:
+                        params["polyfilter"] = None
+                        params["poly-order"] = poly_order
+                    if ground_order is not None:
+                        params["groundfilter"] = None
+                        params["ground-order"] = ground_order
+
+                    if flavor == "noise":
+                        params["simulate-noise"] = None
+                        params["hits"] = None
+                        params["wcov"] = None
+                        params["wcov-inv"] = None
+                        params["MC-count"] = 8
+                        walltime = "02:00:00"
+                    elif flavor == "atmosphere":
+                        params["simulate-atmosphere"] = None
+                        params["no-hits"] = None
+                        params["no-wcov"] = None
+                        params["no-wcov-inv"] = None
+                        params["MC-count"] = 8
+                        walltime = "24:00:00"
+                    elif flavor in [
+                        "cmb-unlensed",
+                        "cmb-lensing",
+                        "cmb-tensors",
+                        "foreground",
+                    ]:
+                        # params["input-map"] = input_map
+                        params["no-hits"] = None
+                        params["no-wcov"] = None
+                        params["no-wcov-inv"] = None
+                        params["skip-madam"] = None
+                        signal_name = {
+                            "cmb-unlensed" : "cmb_unlensed_solardipole_nest",
+                            "cmb-lensing" : "cmb_lensing_signal",
+                            "cmb-tensors" : "cmb_tensor_nest",
+                            "foreground" : "combined_foregrounds",
+                        }[flavor]
+                        num = "0000"
+                        params["input-map"] = os.path.join(
+                            input_map_dir,
+                            str(nside),
+                            signal_name,
+                            num,
+                            "cmbs4_{}_uKCMB_{}-{}_nside{}_{}.fits".format(
+                                signal_name, telescope, band, nside, num
+                            )
+                        )
+                        walltime = "00:30:00"
+                    else:
+                        raise RuntimeError(
+                            "Unknown simulation flavor: '{}'".format(flavor)
+                        )
+
+                    params.update(madampars)
+                        
                     fname_slurm = os.path.join("slurm", "{}.slrm".format(rootname))
                     with open(fname_slurm, "w") as slurm:
                         for line in [
                             "#!/bin/bash",
                             "#SBATCH --partition=regular",
-                            "#SBATCH --time=02:00:00",
+                            "#SBATCH --time={}".format(walltime),
                             "#SBATCH --nodes={}".format(nnode),
                             "#SBATCH --job-name={}".format(rootname),
                             "#SBATCH --licenses=SCRATCH",
@@ -153,7 +235,8 @@ for telescope, tubes in telescopes.items():
                             "\nulimit -c unlimited",
                             "export MALLOC_MMAP_THRESHOLD_=131072",
                             'export PYTHONSTARTUP=""',
-                            "export PYTHONNOUSERSITE=1" "export HOME=$SCRATCH",
+                            "export PYTHONNOUSERSITE=1",
+                            "export HOME=$SCRATCH",
                             "export OMP_NUM_THREADS={}".format(nthread),
                             "export OMP_PLACES=threads",
                             "export OMP_PROC_BIND=spread",
@@ -181,62 +264,6 @@ for telescope, tubes in telescopes.items():
                             "        --group-size $groupsize \\",
                         ]:
                             slurm.write(line + "\n")
-                        params = {
-                            "bands": band,
-                            "tubes": tube,
-                            "sample-rate": fsample,
-                            "scan-rate": scan_rate,
-                            "scan-accel": scan_accel,
-                            "nside": nside,
-                            "schedule": schedule,
-                            "weather": weather,
-                            "site": site,
-                            "madam-concatenate-messages": None,
-                            "no-madam-allreduce": None,
-                            "focalplane-radius": fpradius,
-                            "madam-prefix": rootname,
-                            "thinfp": thinfp,
-                            "hardware": hardware,
-                        }
-                        if cosecant_scan:
-                            params["scan-cosecant-modulate"] = None
-                        if poly_order is not None:
-                            params["polyfilter"] = None
-                            params["poly-order"] = poly_order
-                        if ground_order is not None:
-                            params["groundfilter"] = None
-                            params["ground-order"] = ground_order
-
-                        if flavor == "noise":
-                            params["simulate-noise"] = None
-                            params["hits"] = None
-                            params["wcov"] = None
-                            params["wcov-inv"] = None
-                            params["MC-count"] = 8
-                        elif flavor == "atmosphere":
-                            params["simulate-atmosphere"] = None
-                            params["no-hits"] = None
-                            params["no-wcov"] = None
-                            params["no-wcov-inv"] = None
-                            params["MC-count"] = 8
-                        elif flavor in [
-                            "cmb-scalar",
-                            "cmb-lensing",
-                            "cmb-tensors",
-                            "galactic",
-                            "extra-galactic",
-                        ]:
-                            # params["input-map"] = input_map
-                            params["no-hits"] = None
-                            params["no-wcov"] = None
-                            params["no-wcov-inv"] = None
-                            params["skip-madam"] = None
-                        else:
-                            raise RuntimeError(
-                                "Unknown simulation flavor: '{}'".format(flavor)
-                            )
-
-                        params.update(madampars)
 
                         for key in sorted(params.keys()):
                             if params[key] is None:

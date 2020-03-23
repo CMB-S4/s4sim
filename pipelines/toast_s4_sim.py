@@ -166,18 +166,18 @@ def outputs_exist(args, comm, outpath):
         if not args.skip_madam:
             if there and args.write_binmap:
                 fname = os.path.join(
-                    outpath, args.madam_prefix + "_telescope_all_time_all_bmap.fits"
+                    outpath, args.mapmaker_prefix + "_telescope_all_time_all_bmap.fits"
                 )
                 there = os.path.isfile(fname)
             if there and args.destripe:
                 fname = os.path.join(
-                    outpath, args.madam_prefix + "_telescope_all_time_all_map.fits"
+                    outpath, args.mapmaker_prefix + "_telescope_all_time_all_map.fits"
                 )
                 there = os.path.isfile(fname)
         if there and (args.apply_polyfilter or args.apply_groundfilter):
             fname = os.path.join(
                 outpath,
-                args.madam_prefix + "_filtered" + "_telescope_all_time_all_bmap.fits",
+                args.mapmaker_prefix + "_filtered" + "_telescope_all_time_all_bmap.fits",
             )
             there = os.path.isfile(fname)
     there = comm.comm_world.bcast(there)

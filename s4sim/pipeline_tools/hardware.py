@@ -45,7 +45,7 @@ class S4Telescope(Telescope):
             #'LAT0' : 0, 'LAT1' : 1, 'LAT2' : 2, 'SAT0' : 3, 'SAT1' : 4...
             "LAT0": 1 + offset,
             "LAT1": 1 + offset,
-            "LAT2": 2 + offset,
+            "LAT2": 1 + offset,
             "SAT0": 8 + offset,
             "SAT1": 8 + offset,
             "SAT2": 8 + offset,
