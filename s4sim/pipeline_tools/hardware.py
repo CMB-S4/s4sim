@@ -36,6 +36,10 @@ class S4Telescope(Telescope):
         elif site is None or site.upper() == "POLE":
             site = Site("Pole", lat="-89.991067", lon="-44.650000", alt=2843)
             offset = 1024
+            # HACK begin
+            if name == "LAT2":
+                offset = 0
+            # HACK end
         else:
             raise RuntimeError("Unknown site: {}".format(site))
         super().__init__(name, site=site)

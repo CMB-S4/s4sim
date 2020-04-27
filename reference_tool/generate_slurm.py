@@ -33,7 +33,7 @@ import sys
                         LT56 (ULFL), ST0 (MFLS), ST1 (MFLS), ST2 (MFLS), ST3
                         (MFLS), ST4 (MFLS), ST5 (MFLS), ST6 (MFHS), ST7
                         (MFHS), ST8 (MFHS), ST9 (MFHS), ST10 (MFHS), ST11
-                        (MFHS), ST12 (HFS),ST13 (HFS), ST14 (HFS), ST15 (HFS),
+                        (MFHS), ST12 (HFS), ST13 (HFS), ST14 (HFS), ST15 (HFS),
                         ST16 (LFS), ST17 (LFS).Length of list must equal
                         --bands
 """
@@ -73,7 +73,7 @@ for telescope, tubes in telescopes.items():
         scan_accel = 1
         poly_order = 15
         ground_order = 25
-        fpradius = 4.0
+        fpradius = 4.3
         nnode = 64
         nthread = 16
         nnode_group = 1
@@ -96,7 +96,7 @@ for telescope, tubes in telescopes.items():
         poly_order = 5
         ground_order = 10
         nnode = 16
-        fpradius = 18.0
+        fpradius = 20.5
         nthread = 4
         nnode_group = 1
         madampars = {
