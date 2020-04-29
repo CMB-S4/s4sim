@@ -288,7 +288,7 @@ def get_example():
     bnd["low"] = 17.5
     bnd["high"] = 22.5
     bnd["bandpass"] = ""
-    bnd["NET"] = 214.0
+    bnd["NET"] = 325.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
@@ -303,7 +303,7 @@ def get_example():
     bnd["low"] = 24.0
     bnd["high"] = 30.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 177.0
+    bnd["NET"] = 387.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
@@ -318,7 +318,7 @@ def get_example():
     bnd["low"] = 30.0
     bnd["high"] = 48.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 224.0
+    bnd["NET"] = 247.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
@@ -359,7 +359,7 @@ def get_example():
     bnd["low"] = 75.5
     bnd["high"] = 110.5
     bnd["bandpass"] = ""
-    bnd["NET"] = 238.0
+    bnd["NET"] = 305.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
@@ -372,7 +372,7 @@ def get_example():
     bnd["low"] = 125.0
     bnd["high"] = 165.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 320.0
+    bnd["NET"] = 385.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
@@ -437,7 +437,7 @@ def get_example():
     bnd["low"] = 195.0
     bnd["high"] = 255.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 747.0
+    bnd["NET"] = 854.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
@@ -450,7 +450,7 @@ def get_example():
     bnd["low"] = 255.5
     bnd["high"] = 300.5
     bnd["bandpass"] = ""
-    bnd["NET"] = 1281.0
+    bnd["NET"] = 2077.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
