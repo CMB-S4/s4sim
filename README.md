@@ -118,3 +118,5 @@ OrderedDict([('LFS1', 72.8),
              ('HFS1', 13.0),
              ('HFS2', 10.0)])
 ```
+
+It also includes facilities to dump and load the instrument configuration from a TOML file, see the `dump` and `load` methods.
