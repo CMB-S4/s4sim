@@ -119,4 +119,4 @@ OrderedDict([('LFS1', 72.8),
              ('HFS2', 10.0)])
 ```
 
-It also includes facilities to dump and load the instrument configuration from a TOML file, see the `dump` and `load` methods.
+It also includes facilities to dump and load the instrument configuration from a TOML file, see the `dump` and `load` methods. You can also output to a TOML file by running 's4_hardware_sim.py' from the 's4sim.scripts' package. This TOML file can be trimmed with 's4_hardware_trim.py' and visualized with 's4_hardware_plot.py".
