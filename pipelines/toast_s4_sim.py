@@ -282,6 +282,8 @@ def main():
                 log.info("Outputs already exist, skipping.")
             continue
 
+        toast.tod.OpCacheClear(totalname).exec(data)
+
         toast_tools.simulate_atmosphere(args, comm, data, mc, totalname)
 
         s4_tools.scale_atmosphere_by_bandpass(args, comm, data, totalname, mc)
