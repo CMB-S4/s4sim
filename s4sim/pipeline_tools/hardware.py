@@ -27,8 +27,7 @@ FOCALPLANE_RADII_DEG = {
 class S4Telescope(Telescope):
     def __init__(self, name, site=None):
         if (
-            (name == "LAT0")
-            or (name == "LAT1")
+            (site is None and (name == "LAT0"  or name == "LAT1"))
             or (site is not None and site.upper() == "CHILE")
         ):
             site = Site("Atacama", lat="-22.958064", lon="-67.786222", alt=5200)
