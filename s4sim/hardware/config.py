@@ -881,15 +881,16 @@ def get_example():
     tele["fwhm"] = lfwhm
     telescopes["LAT2"] = tele
 
+    #from the DSR
     sfwhm = OrderedDict()
     sfwhm["LFS1"] = 72.8
-    sfwhm["LFS2"] = 54.8
+    sfwhm["LFS2"] = 72.8
     sfwhm["MFLS1"] = 25.5
-    sfwhm["MFLS2"] = 15.1
+    sfwhm["MFLS2"] = 25.5
     sfwhm["MFHS1"] = 22.7
-    sfwhm["MFHS2"] = 14.2
+    sfwhm["MFHS2"] = 22.7
     sfwhm["HFS1"] = 13.0
-    sfwhm["HFS2"] = 10.0
+    sfwhm["HFS2"] = 13.0
 
     tele = OrderedDict()
     tele["tubes"] = ["ST0", "ST1", "ST2"]
