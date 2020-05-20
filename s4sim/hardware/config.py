@@ -881,6 +881,7 @@ def get_example():
     tele["fwhm"] = lfwhm
     telescopes["LAT2"] = tele
 
+    #from the DSR
     sfwhm = OrderedDict()
     sfwhm["LFS1"] = 72.8
     sfwhm["LFS2"] = 72.8
