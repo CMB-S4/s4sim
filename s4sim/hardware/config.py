@@ -398,7 +398,7 @@ def get_example():
     bnd["low"] = 129.1
     bnd["high"] = 161.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 238.0
+    bnd["NET"] = 309.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
@@ -411,7 +411,7 @@ def get_example():
     bnd["low"] = 83.6
     bnd["high"] = 138.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 309.0
+    bnd["NET"] = 238.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
