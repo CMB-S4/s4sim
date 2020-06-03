@@ -9,3 +9,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated LAT per detector noise to use SO goal v3r0 noise estimates
 - Fixed typo in SAT per detector noise for MF 145 GHz and 95 GHz bands
 - Fixed SAT beam sizes to match those in the DSR
+- Fixed SAT 95 GHz upper band edge
