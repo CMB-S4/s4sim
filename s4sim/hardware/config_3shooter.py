@@ -409,7 +409,7 @@ def get_example():
     bnd = OrderedDict()
     bnd["center"] = 95.0
     bnd["low"] = 83.6
-    bnd["high"] = 138.0
+    bnd["high"] = 106.4
     bnd["bandpass"] = ""
     bnd["NET"] = 238.0
     bnd["fknee"] = 50.0
