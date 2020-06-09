@@ -38,7 +38,7 @@ import sys
                         --bands
 """
 
-input_map_dir = "/global/cscratch1/sd/zonca/cmbs4/map_based_simulations/202002_foregrounds_extragalactic_cmb_tophat"
+input_map_dir = "/global/cscratch1/sd/zonca/cmbs4/map_based_simulations/202006_foregrounds_extragalactic_cmb_tophat"
 
 flavors = (
     "noise",
