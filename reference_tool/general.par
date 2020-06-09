@@ -1,3 +1,6 @@
+--gainscrambler
+--gain-sigma
+0.01
 --sort-schedule
 --single-precision-pointing
 --flush
