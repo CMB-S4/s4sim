@@ -212,7 +212,7 @@ for telescope, tubes in telescopes.items():
                                 signal_name, telescope, band, nside, num
                             )
                         )
-                        walltime = "00:30:00"
+                        walltime = "02:00:00"
                     else:
                         raise RuntimeError(
                             "Unknown simulation flavor: '{}'".format(flavor)
