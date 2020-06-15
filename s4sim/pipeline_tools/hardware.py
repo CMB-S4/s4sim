@@ -74,12 +74,13 @@ def add_hw_args(parser):
     parser.add_argument(
         "--bands",
         required=True,
-        help="Comma-separated list of bands: ULFL1 (20 GHz, LAT), LFL1 (27 GHz LAT), "
-        "LFL2 (39 GHz, LAT), LFS1 (30 GHz, SAT), LFS2 (40 GHz, SAT), "
-        "MFL1 (93 GHz, LAT), MFL2 (145 GHz, LAT), MFLS1 (85 GHz, SAT), "
+        help="Comma-separated list of bands: ULFPL1 (20 GHz, Pole LAT), LFL1 (27 GHz LAT), "
+        "LFL2 (39 GHz, LAT), LFPL1 (27 GHz Pole LAT), LFPL2 (39 GHz, Pole LAT), "
+        "LFS1 (30 GHz, SAT), LFS2 (40 GHz, SAT), MFL1 (93 GHz, LAT), MFL2 (145 GHz, LAT), "
+        "MFPL1 (93 GHz, Pole LAT), MFPL2 (145 GHz, Pole LAT), MFLS1 (85 GHz, SAT), "
         "MFLS2 (145.1 GHz, SAT), MFHS1 (95 GHz, SAT), MFHS2 (155.1 GHz, SAT), "
-        "HFL1(225 GHz, LAT), HFL2 (278 GHz, LAT), HFS1 (220 GHz, SAT), "
-        "HFS2 (270 GHz, SAT)."
+        "HFL1(225 GHz, LAT), HFL2 (278 GHz, LAT), HFPL1 (225 GHz, Pole LAT), "
+        "HFPL2 (278 GHz, Pole LAT), HFS1 (220 GHz, SAT), HFS2 (270 GHz, SAT)."
         "Length of list must equal --tubes",
     )
     parser.add_argument(
@@ -91,10 +92,10 @@ def add_hw_args(parser):
         "LT16 (MFL), LT17 (LFL), LT18 (LFL), LT19 (HFL), LT20 (HFL), LT21 (HFL), "
         "LT22 (HFL), LT23 (HFL), LT24 (MFL), LT25 (MFL), LT26 (MFL), LT27 (MFL), "
         "LT28 (MFL), LT29 (MFL), LT30 (MFL),  LT31 (MFL), LT32 (MFL), LT33 (MFL), "
-        "LT34 (MFL), LT35 (MFL), LT36 (LFL), LT37 (LFL), LT38 (HFL), LT39 (HFL), "
-        "LT40 (HFL), LT41 (HFL), LT42 (MFL), LT43 (MFL), LT44 (MFL), LT45 (MFL), "
-        "LT46 (MFL), LT47 (MFL), LT48 (MFL),  LT49 (MFL), LT50 (MFL), LT51 (MFL), "
-        "LT52 (MFL), LT53 (MFL), LT54 (LFL), LT55 (LFL), LT56 (ULFL), ST0 (MFLS), "
+        "LT34 (MFL), LT35 (MFL), LT36 (LFL), LT37 (LFL), LT38 (HFPL), LT39 (HFPL), "
+        "LT40 (HFPL), LT41 (HFPL), LT42 (MFPL), LT43 (MFPL), LT44 (MFPL), LT45 (MFPL), "
+        "LT46 (MFPL), LT47 (MFPL), LT48 (MFPL),  LT49 (MFPL), LT50 (MFPL), LT51 (MFPL), "
+        "LT52 (MFPL), LT53 (MFPL), LT54 (LFPL), LT55 (LFPL), LT56 (ULFPL), ST0 (MFLS), "
         "ST1 (MFLS), ST2 (MFLS), ST3 (MFLS), ST4 (MFLS), ST5 (MFLS), ST6 (MFHS), "
         "ST7 (MFHS), ST8 (MFHS), ST9 (MFHS), ST10 (MFHS), ST11 (MFHS), ST12 (HFS),"
         "ST13 (HFS), ST14 (HFS), ST15 (HFS), ST16 (LFS), ST17 (LFS)."
