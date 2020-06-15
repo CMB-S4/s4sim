@@ -74,11 +74,6 @@ The baseline hardware configuration is stored in the `s4sim.hardware` module and
 
 • `sim.py` defines the wafer layout and distribution of wafers in each optics tube
 
-s4sim/s4sim/hardware/ also stored two outdated configurations (1shooter and 3shooter) that may be useful in future applications but are not the baseline design. The baseline design is called by the package init file, while these alternative configurations are not.
-
-• 1shooter: This configuration has each SAT optics tube as its own telescope (i.e. all have independent scanning)
-
-• 3shooter: This configuration has each SAT with three tubes (i.e. no independent scanning of optics tubes) but the tubes are not focused on the same patch of sky as they are in the baseline design. This could be adapted in the future if there are slight offsets on the area of the sky that different tubes see.
 
 ### Example usage
 
