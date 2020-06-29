@@ -7,14 +7,16 @@
 import os
 import sys
 
-
 """
-  --bands BANDS         Comma-separated list of bands: ULFL1 (20 GHz, LAT),
-                        LFL1 (27 GHz LAT), LFL2 (39 GHz, LAT), LFS1 (30 GHz,
+  --bands BANDS         Comma-separated list of bands: ULFPL1 (20 GHz, Pole
+                        LAT), LFL1 (27 GHz LAT), LFL2 (39 GHz, LAT), LFPL1 (27
+                        GHz Pole LAT), LFPL2 (39 GHz, Pole LAT), LFS1 (30 GHz,
                         SAT), LFS2 (40 GHz, SAT), MFL1 (93 GHz, LAT), MFL2
-                        (145 GHz, LAT), MFLS1 (85 GHz, SAT), MFLS2 (145.1 GHz,
+                        (145 GHz, LAT), MFPL1 (93 GHz, Pole LAT), MFPL2 (145
+                        GHz, Pole LAT), MFLS1 (85 GHz, SAT), MFLS2 (145.1 GHz,
                         SAT), MFHS1 (95 GHz, SAT), MFHS2 (155.1 GHz, SAT),
-                        HFL1(225 GHz, LAT), HFL2 (278 GHz, LAT), HFS1 (220
+                        HFL1(225 GHz, LAT), HFL2 (278 GHz, LAT), HFPL1 (225
+                        GHz, Pole LAT), HFPL2 (278 GHz, Pole LAT), HFS1 (220
                         GHz, SAT), HFS2 (270 GHz, SAT).Length of list must
                         equal --tubes
   --tubes TUBES         Comma-separated list of optics tubes: LT0 (HFL), LT1
@@ -26,16 +28,17 @@ import sys
                         (MFL), LT25 (MFL), LT26 (MFL), LT27 (MFL), LT28 (MFL),
                         LT29 (MFL), LT30 (MFL), LT31 (MFL), LT32 (MFL), LT33
                         (MFL), LT34 (MFL), LT35 (MFL), LT36 (LFL), LT37 (LFL),
-                        LT38 (HFL), LT39 (HFL), LT40 (HFL), LT41 (HFL), LT42
-                        (MFL), LT43 (MFL), LT44 (MFL), LT45 (MFL), LT46 (MFL),
-                        LT47 (MFL), LT48 (MFL), LT49 (MFL), LT50 (MFL), LT51
-                        (MFL), LT52 (MFL), LT53 (MFL), LT54 (LFL), LT55 (LFL),
-                        LT56 (ULFL), ST0 (MFLS), ST1 (MFLS), ST2 (MFLS), ST3
-                        (MFLS), ST4 (MFLS), ST5 (MFLS), ST6 (MFHS), ST7
-                        (MFHS), ST8 (MFHS), ST9 (MFHS), ST10 (MFHS), ST11
-                        (MFHS), ST12 (HFS), ST13 (HFS), ST14 (HFS), ST15 (HFS),
-                        ST16 (LFS), ST17 (LFS).Length of list must equal
-                        --bands
+                        LT38 (HFPL), LT39 (HFPL), LT40 (HFPL), LT41 (HFPL),
+                        LT42 (MFPL), LT43 (MFPL), LT44 (MFPL), LT45 (MFPL),
+                        LT46 (MFPL), LT47 (MFPL), LT48 (MFPL), LT49 (MFPL),
+                        LT50 (MFPL), LT51 (MFPL), LT52 (MFPL), LT53 (MFPL),
+                        LT54 (LFPL), LT55 (LFPL), LT56 (ULFPL), ST0 (MFLS),
+                        ST1 (MFLS), ST2 (MFLS), ST3 (MFLS), ST4 (MFLS), ST5
+                        (MFLS), ST6 (MFHS), ST7 (MFHS), ST8 (MFHS), ST9
+                        (MFHS), ST10 (MFHS), ST11 (MFHS), ST12 (HFS),ST13
+                        (HFS), ST14 (HFS), ST15 (HFS), ST16 (LFS), ST17
+                        (LFS).Length of list must equal --bands
+
 """
 
 input_map_dir = "/global/cscratch1/sd/zonca/cmbs4/map_based_simulations/202006_foregrounds_extragalactic_cmb_tophat"
@@ -51,10 +54,13 @@ flavors = (
 
 telescopes = {
     "LAT": {
-        "LT0": ["HFL1", "HFL2"],  #  225 & 278 GHz
-        "LT5": ["MFL1", "MFL2"],  #   93 & 145 GHz
-        "LT17": ["LFL1", "LFL2"],  #  27 &  39 GHz
-        "LT56": ["ULFL1"],  #               20 GHz
+        "LT0": ["HFL1", "HFL2"], #           225 & 278 GHz
+        "LT5": ["MFL1", "MFL2"],  #           93 & 145 GHz
+        "LT17": ["LFL1", "LFL2"],  #          27 &  39 GHz
+        "LT38": ["HFPL1", "HFPL2"],  #  Pole 225 & 278 GHz
+        "LT42": ["MFPL1", "MFPL2"],  #  Pole  93 & 145 GHz
+        "LT54": ["LFPL1", "LFPL2"],  #  Pole  27 &  39 GHz
+        "LT56": ["ULFPL1"],  #          Pole 20 GHz
     },
     "SAT": {
         "ST0": ["MFLS1", "MFLS2"],  #  85 & 145.1 GHz - SAT0 - FOV 14.5 deg
@@ -134,6 +140,10 @@ for telescope, tubes in telescopes.items():
 
         for tube, bands in tubes.items():
             for band in bands:
+                if telescope == "LAT" and site == "pole" and "P" not in band:
+                    continue
+                if telescope == "LAT" and site == "chile" and "P" in band and band != "ULFPL1":
+                    continue
                 thinfp_temp = thinfp
                 if band.startswith("ULF") or band.startswith("LF"):
                     thinfp_temp = 1
@@ -141,10 +151,10 @@ for telescope, tubes in telescopes.items():
                     thinfp_temp = 8
                 hardware = "hardware_{}_{}.toml.gz".format(telescope, band[:-1])
                 for flavor in flavors:
-                    rootname = "{}_{}_{}_{}".format(site, flavor, telescope, band)
+                    rootname = "{}_{}_{}_{}".format(site, flavor, telescope, band.replace("P", ""))
                     os.makedirs("slurm", exist_ok=True)
                     os.makedirs("logs", exist_ok=True)
-                    
+
                     params = {
                         "bands": band,
                         "tubes": tube,
@@ -161,7 +171,10 @@ for telescope, tubes in telescopes.items():
                         "madam-prefix": rootname,
                         "thinfp": thinfp_temp,
                         "hardware": hardware,
+                        "out" : "out-hwp",
                     }
+                    if hwprpm:
+                        params["hwp-rpm"] = hwprpm
                     if cosecant_scan:
                         params["scan-cosecant-modulate"] = None
                     if poly_order is not None:
@@ -177,7 +190,10 @@ for telescope, tubes in telescopes.items():
                         params["wcov"] = None
                         params["wcov-inv"] = None
                         params["MC-count"] = 8
-                        walltime = "02:00:00"
+                        if telescope == "LAT":
+                            walltime = "02:00:00"
+                        else:
+                            walltime = "08:00:00"
                     elif flavor == "atmosphere":
                         params["simulate-atmosphere"] = None
                         params["no-hits"] = None
@@ -199,19 +215,30 @@ for telescope, tubes in telescopes.items():
                         signal_name = {
                             "cmb-unlensed" : "cmb_unlensed_solardipole_nest",
                             "cmb-lensing" : "cmb_lensing_signal",
-                            "cmb-tensors" : "cmb_tensor_nest",
+                            #"cmb-tensors" : "cmb_tensor_nest",
+                            "cmb-tensors" : "cmb_tensor",
                             "foreground" : "combined_foregrounds",
                         }[flavor]
                         num = "0000"
-                        params["input-map"] = os.path.join(
-                            input_map_dir,
-                            str(nside),
-                            signal_name,
-                            num,
-                            "cmbs4_{}_uKCMB_{}-{}_nside{}_{}.fits".format(
-                                signal_name, telescope, band, nside, num
+                        if flavor == "cmb-tensors":
+                            # cmb_tensor/4096/cmbs4_cmb_tensor_uKCMB_LAT-HFL1_nside4096_0000.fits
+                            params["input-map"] = os.path.join(
+                                "cmb_tensor",
+                                str(nside),
+                                "cmbs4_cmb_tensor_uKCMB_{}-{}_nside{}_{}.fits".format(
+                                    telescope, band.replace("P", ""), nside, num
+                                )
                             )
-                        )
+                        else:
+                            params["input-map"] = os.path.join(
+                                input_map_dir,
+                                str(nside),
+                                signal_name,
+                                num,
+                                "cmbs4_{}_uKCMB_{}-{}_nside{}_{}.fits".format(
+                                    signal_name, telescope, band.replace("P", ""), nside, num
+                                )
+                            )
                         walltime = "02:00:00"
                     else:
                         raise RuntimeError(
@@ -219,7 +246,7 @@ for telescope, tubes in telescopes.items():
                         )
 
                     params.update(madampars)
-                        
+
                     fname_slurm = os.path.join("slurm", "{}.slrm".format(rootname))
                     with open(fname_slurm, "w") as slurm:
                         for line in [
