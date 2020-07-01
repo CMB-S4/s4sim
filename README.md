@@ -74,6 +74,8 @@ The baseline hardware configuration is stored in the `s4sim.hardware` module and
 
 • `sim.py` defines the wafer layout and distribution of wafers in each optics tube
 
+The reference instrument model is available [in this spreadsheet on Google Docs](https://docs.google.com/spreadsheets/d/1X0x8wYhjHdI_WPjhgbtyVlVQrX86tTgxgqEUhan2Hxg/edit?usp=sharing)
+
 
 ### Example usage
 
