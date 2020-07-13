@@ -288,7 +288,7 @@ def get_example():
     bnd["low"] = 17.5
     bnd["high"] = 22.5
     bnd["bandpass"] = ""
-    bnd["NET"] = 214.0
+    bnd["NET"] = 473.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
@@ -296,14 +296,14 @@ def get_example():
     # These numbers are for V3 LAT baseline
     bnd["A"] = 0.09
     bnd["C"] = 0.87
-    bands["ULFL1"] = bnd
+    bands["ULFPL1"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 27.0
     bnd["low"] = 24.0
     bnd["high"] = 30.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 177.0
+    bnd["NET"] = 429.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
@@ -318,13 +318,41 @@ def get_example():
     bnd["low"] = 30.0
     bnd["high"] = 48.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 224.0
+    bnd["NET"] = 261.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
     bnd["A"] = 0.25
     bnd["C"] = 0.64
     bands["LFL2"] = bnd
+
+    bnd = OrderedDict()
+    bnd["center"] = 27.0
+    bnd["low"] = 24.0
+    bnd["high"] = 30.0
+    bnd["bandpass"] = ""
+    bnd["NET"] = 445.0
+    bnd["fknee"] = 50.0
+    bnd["fmin"] = 0.01
+    bnd["alpha"] = 3.5
+    # Noise elevation scaling fits from Carlos Sierra
+    # These numbers are for V3 LAT baseline
+    bnd["A"] = 0.09
+    bnd["C"] = 0.87
+    bands["LFPL1"] = bnd
+
+    bnd = OrderedDict()
+    bnd["center"] = 39.0
+    bnd["low"] = 30.0
+    bnd["high"] = 48.0
+    bnd["bandpass"] = ""
+    bnd["NET"] = 320.0
+    bnd["fknee"] = 50.0
+    bnd["fmin"] = 0.01
+    bnd["alpha"] = 3.5
+    bnd["A"] = 0.25
+    bnd["C"] = 0.64
+    bands["LFPL2"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 30.0
@@ -359,7 +387,7 @@ def get_example():
     bnd["low"] = 75.5
     bnd["high"] = 110.5
     bnd["bandpass"] = ""
-    bnd["NET"] = 238.0
+    bnd["NET"] = 305.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
@@ -372,13 +400,39 @@ def get_example():
     bnd["low"] = 125.0
     bnd["high"] = 165.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 320.0
+    bnd["NET"] = 385.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
     bnd["A"] = 0.17
     bnd["C"] = 0.76
     bands["MFL2"] = bnd
+
+    bnd = OrderedDict()
+    bnd["center"] = 93.0
+    bnd["low"] = 75.5
+    bnd["high"] = 110.5
+    bnd["bandpass"] = ""
+    bnd["NET"] = 347.0
+    bnd["fknee"] = 50.0
+    bnd["fmin"] = 0.01
+    bnd["alpha"] = 3.5
+    bnd["A"] = 0.14
+    bnd["C"] = 0.80
+    bands["MFPL1"] = bnd
+    
+    bnd = OrderedDict()
+    bnd["center"] = 145.0
+    bnd["low"] = 125.0
+    bnd["high"] = 165.0
+    bnd["bandpass"] = ""
+    bnd["NET"] = 374.0
+    bnd["fknee"] = 50.0
+    bnd["fmin"] = 0.01
+    bnd["alpha"] = 3.5
+    bnd["A"] = 0.17
+    bnd["C"] = 0.76
+    bands["MFPL2"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 85.0
@@ -398,7 +452,7 @@ def get_example():
     bnd["low"] = 129.1
     bnd["high"] = 161.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 238.0
+    bnd["NET"] = 309.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
@@ -409,9 +463,9 @@ def get_example():
     bnd = OrderedDict()
     bnd["center"] = 95.0
     bnd["low"] = 83.6
-    bnd["high"] = 138.0
+    bnd["high"] = 106.4
     bnd["bandpass"] = ""
-    bnd["NET"] = 309.0
+    bnd["NET"] = 238.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
@@ -437,7 +491,7 @@ def get_example():
     bnd["low"] = 195.0
     bnd["high"] = 255.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 747.0
+    bnd["NET"] = 792.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
@@ -450,13 +504,39 @@ def get_example():
     bnd["low"] = 255.5
     bnd["high"] = 300.5
     bnd["bandpass"] = ""
-    bnd["NET"] = 1281.0
+    bnd["NET"] = 1990.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
     bnd["A"] = 0.36
     bnd["C"] = 0.49
     bands["HFL2"] = bnd
+
+    bnd = OrderedDict()
+    bnd["center"] = 225.0
+    bnd["low"] = 195.0
+    bnd["high"] = 255.0
+    bnd["bandpass"] = ""
+    bnd["NET"] = 664.0
+    bnd["fknee"] = 50.0
+    bnd["fmin"] = 0.01
+    bnd["alpha"] = 3.5
+    bnd["A"] = 0.30
+    bnd["C"] = 0.58
+    bands["HFPL1"] = bnd
+    
+    bnd = OrderedDict()
+    bnd["center"] = 278.0
+    bnd["low"] = 255.5
+    bnd["high"] = 300.5
+    bnd["bandpass"] = ""
+    bnd["NET"] = 1609.0
+    bnd["fknee"] = 50.0
+    bnd["fmin"] = 0.01
+    bnd["alpha"] = 3.5
+    bnd["A"] = 0.36
+    bnd["C"] = 0.49
+    bands["HFPL2"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 220.0
@@ -488,66 +568,84 @@ def get_example():
 
     wafers = OrderedDict()
 
-    wtypes = ["ULFL", "LFL", "LFS", "MFL", "MFLS", "MFHS", "HFL", "HFS"]
+    wtypes = ["ULFPL", "LFL", "LFPL", "LFS", "MFL", "MFPL", "MFLS", "MFHS", "HFL", "HFPL", "HFS"]
     # partial wafers will be counted as individual wafers since we make a full wafer then kill pixels
     wcnt = {
-        "ULFL": (3 + 3) * 1,
-        "LFL": (3 + 3) * (2 + 2 * 2),
+        "ULFPL": (3 + 3) * 1,
+        "LFL": (3 + 3) * (2 * 2),
+        "LFPL": (3 + 3) * 2,
         "LFS": (10 + 4) * 2,
-        "MFL": (3 + 3) * (12 + 12 * 2),
+        "MFL": (3 + 3) * (12 * 2),
+        "MFPL": (3 + 3) * 12,
         "MFLS": (10 + 4) * 6,
         "MFHS": (10 + 4) * 6,
-        "HFL": (3 + 3) * (4 + 5 * 2),
+        "HFL": (3 + 3) * (5 * 2),
+        "HFPL": (3 + 3) * 4,
         "HFS": (7 + 6) * 4,
     }
     wpac = {
-        "ULFL": "RP",
+        "ULFPL": "RP",
         "LFL": "RP",
+        "LFPL": "RP",
         "LFS": "RP",
         "MFL": "RP",
+        "MFPL": "RP",
         "MFLS": "RP",
         "MFHS": "RP",
         "HFL": "RP",
+        "HFPL": "RP",
         "HFS": "HP",
     }
     wnp = {
-        "ULFL": 27,
+        "ULFPL": 27,
         "LFL": 48,
+        "LFPL": 48,
         "LFS": 12,
         "MFL": 432,
+        "MFPL": 432,
         "MFLS": 147,
         "MFHS": 147,
-        "HFL": 507,
+        "HFL": 432,
+        "HFPL": 432,
         "HFS": 469,
     }
     wpixmm = {
-        "ULFL": 21.1,
+        "ULFPL": 21.1,
         "LFL": 16.1,
+        "LFPL": 16.1,
         "LFS": 31.1,
         "MFL": 5.3,
+        "MFPL": 5.3,
         "MFLS": 9.4,
         "MFHS": 9.4,
-        "HFL": 5.1,
+        "HFL": 5.3,
+        "HFPL": 5.3,
         "HFS": 5.2,
     }
     wrhombgap = {
-        "ULFL": 0.71,
+        "ULFPL": 0.71,
         "LFL": 0.71,
+        "LFPL": 0.71,
         "LFS": 0.71,
         "MFL": 0.71,
+        "MFPL": 0.71,
         "MFLS": 0.71,
         "MFHS": 0.71,
         "HFL": 0.71,
+        "HFPL": 0.71,
         "HFS": 0.71,
     }
     wbd = {
-        "ULFL": ["ULFL1"],
+        "ULFPL": ["ULFPL1"],
         "LFL": ["LFL1", "LFL2"],
+        "LFPL": ["LFPL1", "LFPL2"],
         "LFS": ["LFS1", "LFS2"],
         "MFL": ["MFL1", "MFL2"],
+        "MFPL": ["MFPL1", "MFPL2"],
         "MFLS": ["MFLS1", "MFLS2"],
         "MFHS": ["MFHS1", "MFHS2"],
         "HFL": ["HFL1", "HFL2"],
+        "HFPL": ["HFPL1", "HFPL2"],
         "HFS": ["HFS1", "HFS2"],
     }
     windx = 0
@@ -572,13 +670,16 @@ def get_example():
     tubes = OrderedDict()
 
     woff = {
-        "ULFL": 0,
+        "ULFPL": 0,
         "LFL": 0,
+        "LFPL": 0,
         "LFS": 0,
         "MFL": 0,
+        "MFPL": 0,
         "MFLS": 0,
         "MFHS": 0,
         "HFL": 0,
+        "HFPL": 0,
         "HFS": 0,
     }
 
@@ -624,25 +725,25 @@ def get_example():
         "MFL",
         "LFL",
         "LFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "LFL",
-        "LFL",
-        "ULFL",
+        "HFPL",
+        "HFPL",
+        "HFPL",
+        "HFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "LFPL",
+        "LFPL",
+        "ULFPL",
     ]
     ltubepos = [
         0,
@@ -786,13 +887,19 @@ def get_example():
     telescopes = OrderedDict()
 
     lfwhm = OrderedDict()
-    lfwhm["ULFL1"] = 10.0
+    lfwhm["ULFPL1"] = 10.0
     lfwhm["LFL1"] = 7.4
+    lfwhm["LFPL1"] = 7.4
     lfwhm["LFL2"] = 5.1
+    lfwhm["LFPL2"] = 5.1
     lfwhm["MFL1"] = 2.2
+    lfwhm["MFPL1"] = 2.2
     lfwhm["MFL2"] = 1.4
+    lfwhm["MFPL2"] = 1.4
     lfwhm["HFL1"] = 1.0
+    lfwhm["HFPL1"] = 1.0
     lfwhm["HFL2"] = 0.9
+    lfwhm["HFPL2"] = 0.9
 
     tele = OrderedDict()
     tele["tubes"] = [
