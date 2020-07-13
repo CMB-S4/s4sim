@@ -938,8 +938,8 @@ def sim_telescope_detectors(hw, tele, tubes=None):
         # This is the LAT.  Compute the tube centers.
         # Rotate each tube by 90 degrees, so that it is pointed "down".
         tubespace = teleprops["tubespace"]
-        tuberot = 90.0 * np.ones(19, dtype=np.float64)
-        tcenters = hex_layout(19, 4 * (tubespace * tele_platescale), rotate=tuberot)
+        tuberot = 90.0 * np.ones(91, dtype=np.float64)
+        tcenters = hex_layout(91, 10 * (tubespace * tele_platescale), rotate=tuberot)
 
         tindx = 0
         for tube in tubes:
@@ -950,14 +950,7 @@ def sim_telescope_detectors(hw, tele, tubes=None):
 
             wradius = 0.5 * (waferspace * platescale * np.pi / 180.0)
             # get centers and rotations for arrays
-            wcenters = [
-                np.array([np.tan(thirty) * wradius, wradius, 0.0]),
-                np.array([-wradius / np.cos(thirty), 0.0, 0.0]),
-                np.array([np.tan(thirty) * wradius, -wradius, 0.0]),
-                np.array([2.0 * wradius / np.cos(thirty), 0.0, 6.0 * thirty]),
-                np.array([-wradius / np.cos(thirty), 2.0 * wradius, 10.0 * thirty]),
-                np.array([-wradius / np.cos(thirty), -2.0 * wradius, 2.0 * thirty]),
-            ]
+            wcenters = [np.array([0.0, 0.0, 0.0])]
             qwcenters = ang_to_quat(wcenters)
             centers = list()
             for qwc in qwcenters:
@@ -966,31 +959,16 @@ def sim_telescope_detectors(hw, tele, tubes=None):
             windx = 0
             for wafer in tubeprops["wafers"]:
                 # For first three wafers, use whole wafers, then construct partial wafers
-                if windx <= 2:
-                    partial_type = None
-                    no_gap = None
-                elif windx == 3:
-                    partial_type = "rhombus"
-                    no_gap = None
-                elif windx == 4:
-                    partial_type = "rhombus"
-                    no_gap = None
-                elif windx == 5:
-                    partial_type = "rhombus"
-                    no_gap = None
-                else:
-                    partial_type = None
-                    no_gap = None
                 dets = sim_wafer_detectors(
                     hw,
                     wafer,
                     platescale,
                     fwhm,
                     center=centers[windx],
-                    partial_type=partial_type,
-                    no_gap=no_gap,
+                    partial_type=None,
+                    no_gap=None,
                 )
                 alldets.update(dets)
-                windx += 1
+                #windx += 1
             tindx += 1
     return alldets
