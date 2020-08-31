@@ -24,7 +24,7 @@ nrow, ncol = 2, 2
 fig = plt.figure(figsize=[8 * ncol, 6 * nrow])
 
 
-args={
+args = {
     "reso" : .75,
     "xsize" : 1600,
     "rot" : [40, -50],
@@ -34,13 +34,19 @@ args={
     "cmap" : "coolwarm",
 }
 
+grargs = {
+    "dpar" : 5,
+    "dmer" : 15,
+    "local" : False,
+}
+
 hp.gnomview(
     m1[0] * 1e6,
     **args,
     title="thinfp=1, rms={:.1f}uK".format(rms1),
     sub=[nrow, ncol, 1],
 )
-hp.graticule(5)
+hp.graticule(**grargs)
 
 hp.gnomview(
     m4[0] * 1e6,
@@ -48,7 +54,7 @@ hp.gnomview(
     title="thinfp=4, rms={:.1f}uK".format(rms4),
     sub=[nrow, ncol, 2],
 )
-hp.graticule(5)
+hp.graticule(**grargs)
 
 hp.gnomview(
     (m4 - m1)[0] * 1e6,
@@ -56,7 +62,7 @@ hp.gnomview(
     title="difference, rms={:.1f}uK".format(rms14),
     sub=[nrow, ncol, 3],
 )
-hp.graticule(5)
+hp.graticule(**grargs)
 
 cl1 = hp.anafast(m1[0] * mask, lmax=1024)
 cl4 = hp.anafast(m4[0] * mask, lmax=1024)
