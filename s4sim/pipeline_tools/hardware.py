@@ -6,8 +6,12 @@ import numpy as np
 from toast.pipeline_tools import Telescope, Focalplane, Site, Schedule, CES
 from toast.timing import function_timer, Timer
 from toast.utils import Logger
+import toast.qarray as qa
 
 from .. import hardware
+
+
+XAXIS, YAXIS, ZAXIS = np.eye(3)
 
 # Note, this is for atmospheric sims only and doesn't affect the wafer/tube scaling to the sky.
 # For SATs, this is FOV/2*(1+2/sqrt(3)), FOV UHF=35 deg, FOV others=29 deg
@@ -70,6 +74,13 @@ def add_hw_args(parser):
         required=False,
         type=np.int,
         help="Thin the focalplane by this factor",
+    )
+    parser.add_argument(
+        "--radiusfp-deg",
+        required=False,
+        type=np.float,
+        help="Reject detectors outside of this radius from the boresight. "
+        "To reject inside the radius, provide a negative value.",
     )
     parser.add_argument(
         "--bands",
@@ -233,10 +244,34 @@ def get_hardware(args, comm, verbose=False):
                     delete_detectors.append(det_name)
             for det_name in delete_detectors:
                 del hw.data["detectors"][det_name]
+        if args.radiusfp_deg:
+            # Only accept detectors inside the given radius
+            radius = np.radians(args.radiusfp_deg)
+            # Comparing to the cosine of the radius avoids repeated
+            # arccos evaluations
+            cosradius = np.cos(radius)
+            inside = radius > 0
+            delete_detectors = []
+            for det_name, det_data in hw.data["detectors"].items():
+                det_quat = det_data["quat"]
+                vec = qa.rotate(det_quat, ZAXIS)
+                rcos = np.dot(vec, ZAXIS)
+                if (rcos < cosradius and inside) or (rcos > cosradius and not inside):
+                    delete_detectors.append(det_name)
+            for det_name in delete_detectors:
+                del hw.data["detectors"][det_name]
+
         ndetector = len(hw.data["detectors"])
         log.info(
-            "Telescope = {} tubes = {} bands = {}, thinfp = {} matches {} detectors"
-            "".format(telescope.name, args.tubes, args.bands, args.thinfp, ndetector)
+            "Telescope = {} tubes = {} bands = {}, thinfp = {} radiusfp = {} "
+            "matches {} detectors".format(
+                telescope.name,
+                args.tubes,
+                args.bands,
+                args.thinfp,
+                args.radiusfp_deg,
+                ndetector,
+            )
         )
         timer.report_clear("Trim detectors")
     else:

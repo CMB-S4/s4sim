@@ -32,6 +32,11 @@ def create_observation(args, comm, telescope, ces, verbose=True):
     else:
         ndetrank = 1
 
+    if args.el_nod_deg and (ces.subscan == 0 or args.el_nod_every_scan):
+        el_nod = args.el_nod_deg
+    else:
+        el_nod = None
+
     try:
         tod = TODGround(
             comm.comm_group,
@@ -47,8 +52,16 @@ def create_observation(args, comm, telescope, ces, verbose=True):
             azmin=ces.azmin,
             azmax=ces.azmax,
             el=ces.el,
+            el_nod=el_nod,
+            start_with_elnod=args.start_with_el_nod,
+            end_with_elnod=args.end_with_el_nod,
+            el_mod_step=args.el_mod_step_deg,
+            el_mod_rate=args.el_mod_rate_hz,
+            el_mod_amplitude=args.el_mod_amplitude_deg,
+            el_mod_sine=args.el_mod_sine,
             scanrate=args.scan_rate,
             scan_accel=args.scan_accel,
+            scan_accel_el=args.scan_accel_el,
             cosecant_modulation=args.scan_cosecant_modulate,
             CES_start=None,
             CES_stop=None,
