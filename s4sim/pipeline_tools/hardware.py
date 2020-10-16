@@ -19,12 +19,12 @@ FOCALPLANE_RADII_DEG = {
     "LAT0": 3.9,
     "LAT1": 3.9,
     "LAT2": 3.9,
-    "SAT0": 14.5,
-    "SAT1": 14.5,
-    "SAT2": 14.5,
-    "SAT3": 14.5,
-    "SAT4": 17.5,
-    "SAT5": 17.5,
+    "SAT0": 17.5,
+    "SAT1": 17.5,
+    "SAT2": 17.5,
+    "SAT3": 17.5,
+    "SAT4": 14.5,
+    "SAT5": 14.5,
 }
 
 
@@ -107,9 +107,9 @@ def add_hw_args(parser):
         "LT40 (HFPL), LT41 (HFPL), LT42 (MFPL), LT43 (MFPL), LT44 (MFPL), LT45 (MFPL), "
         "LT46 (MFPL), LT47 (MFPL), LT48 (MFPL),  LT49 (MFPL), LT50 (MFPL), LT51 (MFPL), "
         "LT52 (MFPL), LT53 (MFPL), LT54 (LFPL), LT55 (LFPL), LT56 (ULFPL), ST0 (MFLS), "
-        "ST1 (MFLS), ST2 (MFLS), ST3 (MFLS), ST4 (MFLS), ST5 (MFLS), ST6 (MFHS), "
-        "ST7 (MFHS), ST8 (MFHS), ST9 (MFHS), ST10 (MFHS), ST11 (MFHS), ST12 (HFS),"
-        "ST13 (HFS), ST14 (HFS), ST15 (HFS), ST16 (LFS), ST17 (LFS)."
+        "ST1 (MFHS), ST2 (HFS), ST3 (MFLS), ST4 (MFHS), ST5 (HFS), ST6 (MLHS), "
+        "ST7 (MFHS), ST8 (HFS), ST9 (MFLS), ST10 (MFHS), ST11 (HFS), ST12 (MFLS),"
+        "ST13 (MFHS), ST14 (LFS), ST15 (MFLS), ST16 (MFHS), ST17 (LFS)."
         "Length of list must equal --bands",
     )
     return

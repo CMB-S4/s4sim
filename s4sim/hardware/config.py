@@ -1224,22 +1224,22 @@ def get_example():
 
     stubes = [
         "MFLS",
-        "MFLS",
-        "MFLS",
-        "MFLS",
-        "MFLS",
-        "MFLS",
-        "MFHS",
-        "MFHS",
-        "MFHS",
-        "MFHS",
-        "MFHS",
         "MFHS",
         "HFS",
+        "MFLS",
+        "MFHS",
         "HFS",
+        "MFLS",
+        "MFHS",
         "HFS",
+        "MFLS",
+        "MFHS",
         "HFS",
+        "MFLS",
+        "MFHS",
         "LFS",
+        "MFLS",
+        "MFHS",
         "LFS",
     ]
     stubepos = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -1626,7 +1626,7 @@ def get_example():
 
     tele = OrderedDict()
     tele["tubes"] = ["ST12", "ST13", "ST14"]
-    tele["platescale"] = 0.091224
+    tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT4"] = tele
