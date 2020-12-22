@@ -574,14 +574,14 @@ def get_example():
         "ULFPL": 4,
         "LFL": 8*2,
         "LFPL": 9,
-        "LFS": (10 + 4) * 2,
+        "LFS": (12) * 2,
         "MFL": 54*2,
         "MFPL": 54,
-        "MFLS": (10 + 4) * 6,
-        "MFHS": (10 + 4) * 6,
+        "MFLS": (12) * 6,
+        "MFHS": (12) * 6,
         "HFL": 23*2,
         "HFPL": 18,
-        "HFS": (7 + 6) * 4,
+        "HFS": (6 + 6) * 4,
     }
     wpac = {
         "ULFPL": "RP",
@@ -1252,7 +1252,7 @@ def get_example():
         tb["wafers"] = list()
         # HF tubes have 8 full wafers + 2 partial, all others 11+2
         if ttyp == "HFS":
-            for tw in range(13):
+            for tw in range(12):
                 off = 0
                 for w, props in cnf["wafers"].items():
                     if props["type"] == ttyp:
@@ -1264,7 +1264,7 @@ def get_example():
             # 35.0/(3*127.89)
             tb["platescale"] = 0.091224
         else:
-            for tw in range(14):
+            for tw in range(12):
                 off = 0
                 for w, props in cnf["wafers"].items():
                     if props["type"] == ttyp:
