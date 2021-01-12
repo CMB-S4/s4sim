@@ -81,6 +81,7 @@ def parse_arguments(comm):
     toast_tools.add_noise_args(parser)
     toast_tools.add_gainscrambler_args(parser)
     toast_tools.add_madam_args(parser)
+    toast_tools.add_filterbin_args(parser)
     toast_tools.add_sky_map_args(parser)
     toast_tools.add_sss_args(parser)
     toast_tools.add_tidas_args(parser)
@@ -178,6 +179,12 @@ def outputs_exist(args, comm, outpath):
             fname = os.path.join(
                 outpath,
                 args.mapmaker_prefix + "_filtered" + "_telescope_all_time_all_bmap.fits",
+            )
+            there = os.path.isfile(fname)
+        if there and (args.filterbin_ground_order or args.filterbin_poly_order):
+            fname = os.path.join(
+                outpath,
+                args.filterbin_prefix + "_telescope_all_time_all_filtered.fits",
             )
             there = os.path.isfile(fname)
     there = comm.comm_world.bcast(there)
@@ -334,6 +341,21 @@ def main():
                 first_call=(mc == firstmc),
             )
             memreport("after madam", comm.comm_world)
+
+        if (
+                args.filterbin_ground_order is not None
+                or args.filterbin_poly_order is not None
+        ):
+            toast_tools.apply_filterbin(
+                args,
+                comm,
+                data,
+                outpath,
+                totalname,
+                time_comms=time_comms,
+                telescope_data=telescope_data,
+                first_call=(mc == firstmc),
+            )
 
         if args.apply_polyfilter or args.apply_groundfilter:
 
