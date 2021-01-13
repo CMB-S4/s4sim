@@ -92,11 +92,10 @@ def add_hw_args(parser):
         "MFLS2 (145.1 GHz, SAT), MFHS1 (95 GHz, SAT), MFHS2 (155.1 GHz, SAT), "
         "HFL1(225 GHz, LAT), HFL2 (278 GHz, LAT), HFPL1 (225 GHz, Pole LAT), "
         "HFPL2 (278 GHz, Pole LAT), HFS1 (220 GHz, SAT), HFS2 (270 GHz, SAT)."
-        "Length of list must equal --tubes",
     )
     parser.add_argument(
         "--tubes",
-        required=True,
+        required=False,
         help="Comma-separated list of optics tubes: LT0 (HFL), LT1 (HFL), LT2 (HFL), "
         "LT3 (HFL), LT4 (HFL), LT5 (MFL), LT6 (MFL), LT7 (MFL), LT8 (MFL), LT9 (MFL), "
         "LT10 (MFL), LT11 (MFL),  LT12 (MFL), LT13 (MFL), LT14 (MFL), LT15 (MFL), "
@@ -110,7 +109,12 @@ def add_hw_args(parser):
         "ST1 (MFHS), ST2 (HFS), ST3 (MFLS), ST4 (MFHS), ST5 (HFS), ST6 (MLHS), "
         "ST7 (MFHS), ST8 (HFS), ST9 (MFLS), ST10 (MFHS), ST11 (HFS), ST12 (MFLS),"
         "ST13 (MFHS), ST14 (LFS), ST15 (MFLS), ST16 (MFHS), ST17 (LFS)."
-        "Length of list must equal --bands",
+    )
+    parser.add_argument(
+        "--telescope",
+        required=False,
+        help="Telescope, one of: LAT0, LAT1, LAT2, SAT0, SAT1, SAT2, "
+        "SAT3, SAT4, SAT5",
     )
     return
 
@@ -221,7 +225,10 @@ def get_hardware(args, comm, verbose=False):
         for idet, det in enumerate(sorted(hw.data["detectors"])):
             det_index[det] = idet
         match = {"band": args.bands.replace(",", "|")}
-        tubes = args.tubes.split(",")
+        if args.tubes is None:
+            tubes = None
+        else:
+            tubes = args.tubes.split(",")
         # If one provides both telescopes and tubes, the tubes matching *either*
         # will be concatenated
         # hw = hw.select(telescopes=[telescope.name], tubes=tubes, match=match)
@@ -287,6 +294,8 @@ def get_hardware(args, comm, verbose=False):
 def get_telescope(args, comm, verbose=False):
     """ Determine which telescope matches the detector selections
     """
+    if args.telescope is not None:
+        return S4Telescope(args.telescope, site=args.site)
     telescope = None
     if comm.world_rank == 0:
         hwexample = hardware.get_example()
@@ -301,7 +310,7 @@ def get_telescope(args, comm, verbose=False):
                             "Tubes '{}' span more than one telescope".format(tubes)
                         )
                     break
-            if telescope is None:
+            else:
                 raise RuntimeError(
                     "Failed to match tube = '{}' with a telescope".format(tube)
                 )
@@ -340,6 +349,10 @@ def get_focalplane(args, comm, hw, det_index, verbose=False):
             for telescope_name, telescope_data in hw.data["telescopes"].items():
                 if tube_name in telescope_data["tubes"]:
                     break
+            else:
+                raise RuntimeError(
+                    "Unable to match tube {} to a telescope".format(tube_name)
+                )
             fpradius = max(fpradius, FOCALPLANE_RADII_DEG[telescope_name])
             det_params = DetectorParams(
                 det_data,
