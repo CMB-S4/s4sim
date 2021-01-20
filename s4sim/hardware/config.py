@@ -1206,7 +1206,7 @@ def get_example():
         ttyp = ltubes[tindx]
         tb = OrderedDict()
         tb["type"] = ttyp
-        tb["waferspace"] = 127.89
+        tb["waferspace"] = 127.
         tb["wafers"] = list()
         # tw is the wafer number in the tube. Here we use 6 for the 3 full and 3 partial wafers/tube
         for tw in range(1):
@@ -1248,7 +1248,7 @@ def get_example():
         ttyp = stubes[tindx]
         tb = OrderedDict()
         tb["type"] = ttyp
-        tb["waferspace"] = 127.89
+        tb["waferspace"] = 127.
         tb["wafers"] = list()
         # HF tubes have 8 full wafers + 2 partial, all others 11+2
         if ttyp == "HFS":
