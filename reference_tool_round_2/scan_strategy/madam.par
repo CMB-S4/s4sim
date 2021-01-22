@@ -1,0 +1,6 @@
+temperature_only = T
+write_map = F
+write_binmap = F
+write_matrix = F
+write_wcov = T
+write_hits = T

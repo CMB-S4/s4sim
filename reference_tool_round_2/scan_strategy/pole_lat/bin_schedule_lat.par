@@ -1,0 +1,8 @@
+--telescope
+LAT2
+--bands
+MFPL1
+--site
+pole
+--schedule
+schedules/pole_schedule_lat.txt
