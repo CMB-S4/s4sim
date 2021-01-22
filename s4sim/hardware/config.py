@@ -1206,7 +1206,7 @@ def get_example():
         ttyp = ltubes[tindx]
         tb = OrderedDict()
         tb["type"] = ttyp
-        tb["waferspace"] = 127.
+        tb["waferspace"] = 124.
         tb["wafers"] = list()
         # tw is the wafer number in the tube. Here we use 6 for the 3 full and 3 partial wafers/tube
         for tw in range(1):
@@ -1248,7 +1248,7 @@ def get_example():
         ttyp = stubes[tindx]
         tb = OrderedDict()
         tb["type"] = ttyp
-        tb["waferspace"] = 127.
+        tb["waferspace"] = 124.
         tb["wafers"] = list()
         # HF tubes have 8 full wafers + 2 partial, all others 11+2
         if ttyp == "HFS":
@@ -1261,8 +1261,8 @@ def get_example():
                             woff[ttyp] += 1
                             break
                         off += 1
-            # 35.0/(3*127.89)
-            tb["platescale"] = 0.091224
+            # 29.0 deg/(422mm)
+            tb["platescale"] = 0.0687
         else:
             for tw in range(12):
                 off = 0
@@ -1273,8 +1273,8 @@ def get_example():
                             woff[ttyp] += 1
                             break
                         off += 1
-            # 29.0/(4*127.89)
-            tb["platescale"] = 0.056689
+            # 29.0/(490mm)
+            tb["platescale"] = 0.0592
         tb["location"] = stubepos[tindx]
         tubes[nm] = tb
 
