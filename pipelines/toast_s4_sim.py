@@ -30,6 +30,7 @@ import pickle
 import re
 import sys
 import traceback
+from time import time
 
 import argparse
 import dateutil.parser
@@ -105,6 +106,14 @@ def parse_arguments(comm):
         default=False,
         action="store_true",
         help="Skip the first Madam call.",
+    )
+
+    parser.add_argument(
+        "--pairdiff",
+        required=False,
+        default=False,
+        action="store_true",
+        help="Pair-difference TOD and pointing.",
     )
 
     parser.add_argument(
@@ -190,6 +199,47 @@ def outputs_exist(args, comm, outpath):
     there = comm.comm_world.bcast(there)
     return there
 
+
+def pairdiff(data, args, comm, name, do_pointing):
+    if not args.pairdiff:
+        return
+    t1 = time()
+    if comm.comm_world.rank == 0:
+        print("Pair differencing data", flush=True)
+
+    for obs in data.obs:
+        tod = obs["tod"]
+        for det in tod.local_dets:
+            signal = tod.local_signal(det, name)
+            if det.endswith("A"):
+                pairdet = det[:-1] + "B"
+                if pairdet not in tod.local_dets:
+                    raise RuntimeError(
+                        "Detector pair not available ({}, {})".format(det, pairdet)
+                    )
+            else:
+                continue
+            # signal
+            pairsignal = tod.local_signal(pairdet, name)
+            signal[:], pairsignal[:] = [
+                0.5 * (signal + pairsignal), 0.5 * (signal - pairsignal)
+            ]
+            if do_pointing:
+                # flags
+                flags = tod.local_flags(det)
+                pairflags = tod.local_flags(pairdet)
+                flags |= pairflags
+                pairflags[:] = flags
+                # pointing weights
+                weights = tod.cache.reference("weights_" + det)
+                pairweights = tod.cache.reference("weights_" + pairdet)
+                weights[:], pairweights[:] = [
+                    0.5 * (weights + pairweights), 0.5 * (weights - pairweights)
+                ]
+
+    if comm.comm_world.rank == 0:
+        print("Pair differenced in {:.1f} s".format(time() - t1), flush=True)
+    return
 
 def main():
     log = Logger.get()
@@ -326,6 +376,8 @@ def main():
             continue
 
         # Bin and destripe maps
+
+        pairdiff(data, args, comm, totalname, mc == firstmc)
 
         if not args.skip_madam:
             toast_tools.apply_madam(
