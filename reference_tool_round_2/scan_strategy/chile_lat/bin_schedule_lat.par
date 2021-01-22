@@ -6,4 +6,4 @@ MFL1
 chile
 --schedule
 schedules/chile_schedule_lat.txt
---scan-sinc-modulate
+--scan-cosecant-modulate
