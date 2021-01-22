@@ -1,0 +1,107 @@
+#!/bin/bash
+#SBATCH --qos=premium
+#SBATCH --partition=regular
+#SBATCH --time=00:30:00
+#SBATCH --nodes=8
+#SBATCH --job-name=cache_atm
+#SBATCH --licenses=SCRATCH
+#SBATCH --constraint=knl
+#SBATCH --core-spec=4
+#SBATCH --account=mp107
+
+ulimit -c unlimited
+export MALLOC_MMAP_THRESHOLD_=131072
+export PYTHONSTARTUP=""
+export PYTHONNOUSERSITE=1
+export HOME=$SCRATCH
+export OMP_NUM_THREADS=4
+export OMP_PLACES=threads
+export OMP_PROC_BIND=spread
+
+let nnode=1
+let ntask_node=32/$OMP_NUM_THREADS
+let ntask=$nnode*$ntask_node
+let ncore=2*$OMP_NUM_THREADS
+# Make sure nnode is divisible by nnode_group
+let nnode_group=1
+let groupsize=nnode_group*ntask_node
+
+echo "Running with"
+echo "            nnode = ${nnode}"
+echo "  OMP_NUM_THREADS = ${OMP_NUM_THREADS}"
+echo "       ntask_node = ${ntask_node}"
+echo "            ntask = ${ntask}"
+echo "      nnode_group = ${nnode_group}"
+echo "        groupsize = ${groupsize}"
+
+export PYTHONSTARTUP=""
+export PYTHONNOUSERSITE=1
+
+logdir=atm_logs
+mkdir -p $logdir
+
+for site in chile pole; do
+    case $site in
+        chile)
+            weather="weather_Atacama.fits"
+            ;;
+        pole)
+            weather="weather_South_Pole.fits"
+            ;;
+        *) echo "Unknown telescope: $tel"; exit;;
+    esac
+    for tel in sat lat; do
+        case $tel in
+            sat)
+                tube=ST16
+                band=LFS1
+                nside=512
+                fpradius=20.5
+                hardware=hardware_SAT_LFS.toml.gz
+                fsample=20
+                ;;
+            lat)
+                tube=LT17
+                band=LFL1
+                nside=4096
+                fpradius=4.3
+                hardware=hardware_LAT_LFL.toml.gz
+                fsample=200
+                ;;
+            *) echo "Unknown telescope: $tel"; exit;;
+        esac
+            
+        fnames=scan_strategy/${site}_${tel}/split_schedules/*
+        # Random wait time to reduce clashes
+        #sleep $((RANDOM % 15))
+        for schedule in $fnames; do
+            rootname=`basename $schedule .txt`
+            rootname=${site}_${rootname}
+            logfile=$logdir/${rootname}.log
+            if [[ ! -e $logfile ]]; then
+                echo "Writing $logfile"
+                srun -n $ntask -c $ncore --cpu_bind=cores \
+                     toast_s4_sim.py @general.par \
+                     --group-size $groupsize \
+                     --MC-count 8 \
+                     --bands $band \
+                     --focalplane-radius $fpradius \
+                     --hardware $hardware \
+                     --no-maps \
+                     --sample-rate $fsample \
+                     --scan-accel 1 \
+                     --scan-rate 1 \
+                     --schedule $schedule \
+                     --simulate-atmosphere \
+                     --site $site \
+                     --thinfp 1 \
+                     --tubes $tube \
+                     --weather $weather \
+                     >& ${logfile}
+                exit
+            else
+                echo "$logfile exists"
+            fi
+        done
+    done
+done
