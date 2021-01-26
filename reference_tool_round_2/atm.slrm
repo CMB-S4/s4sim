@@ -22,7 +22,7 @@ let ntask_node=64/$OMP_NUM_THREADS
 let ntask=$nnode*$ntask_node
 let ncore=4*$OMP_NUM_THREADS
 # Make sure nnode is divisible by nnode_group
-let nnode_group=1
+let nnode_group=$nnode
 let groupsize=nnode_group*ntask_node
 
 echo "Running with"
