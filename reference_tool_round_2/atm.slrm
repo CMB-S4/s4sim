@@ -52,7 +52,7 @@ for site in pole chile; do
     for tel in sat lat; do
         case $tel in
             sat)
-                tube=ST16
+                tube=ST17
                 band=LFS1
                 nside=512
                 # Minimum is 14.5 deg
