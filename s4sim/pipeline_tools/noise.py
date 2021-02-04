@@ -18,6 +18,14 @@ def add_s4_noise_args(parser):
         "common mode that is co-added with every detector: "
         "'fmin[Hz],fknee[Hz],alpha,NET[K]'",
     )
+    parser.add_argument(
+        "--no-elevation-noise",
+        required=False,
+        default=False,
+        action="store_true",
+        help="Disable elevation-dependent noise scaling",
+        dest="no_elevation_noise",
+    )
     return
 
 
@@ -26,6 +34,8 @@ def get_elevation_noise(args, comm, data, key="noise"):
     """ Insert elevation-dependent noise
 
     """
+    if args.no_elevation_noise:
+        return
     timer = Timer()
     timer.start()
     # fsample = args.sample_rate
