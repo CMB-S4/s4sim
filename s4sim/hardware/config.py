@@ -292,10 +292,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    # Noise elevation scaling fits from Carlos Sierra
-    # These numbers are for V3 LAT baseline
-    bnd["A"] = 0.09
-    bnd["C"] = 0.87
+    bnd["A"] = 0.11318
+    bnd["C"] = 0.85219
     bands["ULFPL1"] = bnd
 
     bnd = OrderedDict()
@@ -307,8 +305,6 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    # Noise elevation scaling fits from Carlos Sierra
-    # These numbers are for V3 LAT baseline
     bnd["A"] = 0.09
     bnd["C"] = 0.87
     bands["LFL1"] = bnd
@@ -335,10 +331,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    # Noise elevation scaling fits from Carlos Sierra
-    # These numbers are for V3 LAT baseline
-    bnd["A"] = 0.09
-    bnd["C"] = 0.87
+    bnd["A"] = 0.14567
+    bnd["C"] = 0.80971
     bands["LFPL1"] = bnd
 
     bnd = OrderedDict()
@@ -350,8 +344,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.25
-    bnd["C"] = 0.64
+    bnd["A"] = 0.43134
+    bnd["C"] = 0.43711
     bands["LFPL2"] = bnd
 
     bnd = OrderedDict()
@@ -363,8 +357,6 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    # Noise elevation scaling fits from Carlos Sierra
-    # These numbers are for V3 LAT baseline
     bnd["A"] = 0.21119
     bnd["C"] = 0.72431
     bands["LFS1"] = bnd
@@ -417,8 +409,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.14
-    bnd["C"] = 0.80
+    bnd["A"] = 0.32097
+    bnd["C"] = 0.58104
     bands["MFPL1"] = bnd
     
     bnd = OrderedDict()
@@ -430,8 +422,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.17
-    bnd["C"] = 0.76
+    bnd["A"] = 0.25828
+    bnd["C"] = 0.66275
     bands["MFPL2"] = bnd
 
     bnd = OrderedDict()
@@ -521,8 +513,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.30
-    bnd["C"] = 0.58
+    bnd["A"] = 0.32046
+    bnd["C"] = 0.58175
     bands["HFPL1"] = bnd
     
     bnd = OrderedDict()
@@ -534,8 +526,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.36
-    bnd["C"] = 0.49
+    bnd["A"] = 0.37458
+    bnd["C"] = 0.51111
     bands["HFPL2"] = bnd
 
     bnd = OrderedDict()
