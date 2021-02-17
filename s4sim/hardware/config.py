@@ -365,8 +365,8 @@ def get_example():
     bnd["alpha"] = 3.5
     # Noise elevation scaling fits from Carlos Sierra
     # These numbers are for V3 LAT baseline
-    bnd["A"] = 0.09
-    bnd["C"] = 0.87
+    bnd["A"] = 0.21119
+    bnd["C"] = 0.72431
     bands["LFS1"] = bnd
 
     bnd = OrderedDict()
@@ -378,8 +378,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.25
-    bnd["C"] = 0.64
+    bnd["A"] = 0.46752
+    bnd["C"] = 0.38995
     bands["LFS2"] = bnd
 
     bnd = OrderedDict()
@@ -443,8 +443,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.14
-    bnd["C"] = 0.80
+    bnd["A"] = 0.41637
+    bnd["C"] = 0.45661
     bands["MFLS1"] = bnd
 
     bnd = OrderedDict()
@@ -456,8 +456,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.17
-    bnd["C"] = 0.76
+    bnd["A"] = 0.24727
+    bnd["C"] = 0.67730
     bands["MFLS2"] = bnd
 
     bnd = OrderedDict()
@@ -469,8 +469,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.14
-    bnd["C"] = 0.80
+    bnd["A"] = 0.34367
+    bnd["C"] = 0.55146
     bands["MFHS1"] = bnd
 
     bnd = OrderedDict()
@@ -482,8 +482,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.17
-    bnd["C"] = 0.76
+    bnd["A"] = 0.23568
+    bnd["C"] = 0.69235
     bands["MFHS2"] = bnd
 
     bnd = OrderedDict()
@@ -547,8 +547,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.30
-    bnd["C"] = 0.58
+    bnd["A"] = 0.27678
+    bnd["C"] = 0.63879
     bands["HFS1"] = bnd
 
     bnd = OrderedDict()
@@ -560,8 +560,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.36
-    bnd["C"] = 0.49
+    bnd["A"] = 0.32478
+    bnd["C"] = 0.57615
     bands["HFS2"] = bnd
 
     cnf["bands"] = bands
