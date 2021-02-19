@@ -301,12 +301,12 @@ def get_example():
     bnd["low"] = 21.5
     bnd["high"] = 30.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 287.4
+    bnd["NET"] = 275.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.09
-    bnd["C"] = 0.87
+    bnd["A"] = 0.09185
+    bnd["C"] = 0.88031
     bands["LFL1"] = bnd
 
     bnd = OrderedDict()
@@ -314,12 +314,12 @@ def get_example():
     bnd["low"] = 30.0
     bnd["high"] = 47.5
     bnd["bandpass"] = ""
-    bnd["NET"] = 241.4
+    bnd["NET"] = 215.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.25
-    bnd["C"] = 0.64
+    bnd["A"] = 0.28098
+    bnd["C"] = 0.63360
     bands["LFL2"] = bnd
 
     bnd = OrderedDict()
@@ -379,12 +379,12 @@ def get_example():
     bnd["low"] = 77.0
     bnd["high"] = 106.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 274.5
+    bnd["NET"] = 251.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.14
-    bnd["C"] = 0.80
+    bnd["A"] = 0.21316
+    bnd["C"] = 0.72197
     bands["MFL1"] = bnd
 
     bnd = OrderedDict()
@@ -392,12 +392,12 @@ def get_example():
     bnd["low"] = 128.0
     bnd["high"] = 169.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 310.0
+    bnd["NET"] = 280.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.17
-    bnd["C"] = 0.76
+    bnd["A"] = 0.25419
+    bnd["C"] = 0.66817
     bands["MFL2"] = bnd
 
     bnd = OrderedDict()
@@ -483,12 +483,12 @@ def get_example():
     bnd["low"] = 198.0
     bnd["high"] = 256.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 723.0
+    bnd["NET"] = 625.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.30
-    bnd["C"] = 0.58
+    bnd["A"] = 0.36575
+    bnd["C"] = 0.52282
     bands["HFL1"] = bnd
 
     bnd = OrderedDict()
@@ -496,12 +496,12 @@ def get_example():
     bnd["low"] = 256.0
     bnd["high"] = 315.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 1821.5
+    bnd["NET"] = 1528.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.36
-    bnd["C"] = 0.49
+    bnd["A"] = 0.44808
+    bnd["C"] = 0.41546
     bands["HFL2"] = bnd
 
     bnd = OrderedDict()
