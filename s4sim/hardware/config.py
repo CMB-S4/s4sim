@@ -357,8 +357,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.21119
-    bnd["C"] = 0.72431
+    bnd["A"] = 0.18693
+    bnd["C"] = 0.75616
     bands["LFS1"] = bnd
 
     bnd = OrderedDict()
@@ -370,8 +370,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.46752
-    bnd["C"] = 0.38995
+    bnd["A"] = 0.44737
+    bnd["C"] = 0.41660
     bands["LFS2"] = bnd
 
     bnd = OrderedDict()
@@ -435,8 +435,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.41637
-    bnd["C"] = 0.45661
+    bnd["A"] = 0.39787
+    bnd["C"] = 0.48099
     bands["MFLS1"] = bnd
 
     bnd = OrderedDict()
@@ -448,8 +448,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.24727
-    bnd["C"] = 0.67730
+    bnd["A"] = 0.23642
+    bnd["C"] = 0.69144
     bands["MFLS2"] = bnd
 
     bnd = OrderedDict()
@@ -461,8 +461,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.34367
-    bnd["C"] = 0.55146
+    bnd["A"] = 0.32643
+    bnd["C"] = 0.57410
     bands["MFHS1"] = bnd
 
     bnd = OrderedDict()
@@ -474,8 +474,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.23568
-    bnd["C"] = 0.69235
+    bnd["A"] = 0.22547
+    bnd["C"] = 0.70578
     bands["MFHS2"] = bnd
 
     bnd = OrderedDict()
@@ -539,8 +539,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.27678
-    bnd["C"] = 0.63879
+    bnd["A"] = 0.26844
+    bnd["C"] = 0.64976
     bands["HFS1"] = bnd
 
     bnd = OrderedDict()
@@ -552,8 +552,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.32478
-    bnd["C"] = 0.57615
+    bnd["A"] = 0.31749
+    bnd["C"] = 0.58575
     bands["HFS2"] = bnd
 
     cnf["bands"] = bands
