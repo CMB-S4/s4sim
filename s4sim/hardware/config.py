@@ -292,8 +292,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.11318
-    bnd["C"] = 0.85219
+    bnd["A"] = 0.08517
+    bnd["C"] = 0.88885
     bands["ULFPL1"] = bnd
 
     bnd = OrderedDict()
@@ -331,8 +331,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.14567
-    bnd["C"] = 0.80971
+    bnd["A"] = 0.11010
+    bnd["C"] = 0.85631
     bands["LFPL1"] = bnd
 
     bnd = OrderedDict()
@@ -344,8 +344,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.43134
-    bnd["C"] = 0.43711
+    bnd["A"] = 0.39135
+    bnd["C"] = 0.48954
     bands["LFPL2"] = bnd
 
     bnd = OrderedDict()
@@ -409,8 +409,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.32097
-    bnd["C"] = 0.58104
+    bnd["A"] = 0.28598
+    bnd["C"] = 0.62687
     bands["MFPL1"] = bnd
     
     bnd = OrderedDict()
@@ -422,8 +422,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.25828
-    bnd["C"] = 0.66275
+    bnd["A"] = 0.23723
+    bnd["C"] = 0.69026
     bands["MFPL2"] = bnd
 
     bnd = OrderedDict()
@@ -513,8 +513,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.32046
-    bnd["C"] = 0.58175
+    bnd["A"] = 0.30291
+    bnd["C"] = 0.60477
     bands["HFPL1"] = bnd
     
     bnd = OrderedDict()
@@ -526,8 +526,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.37458
-    bnd["C"] = 0.51111
+    bnd["A"] = 0.36240
+    bnd["C"] = 0.52713
     bands["HFPL2"] = bnd
 
     bnd = OrderedDict()
