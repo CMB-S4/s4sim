@@ -5,7 +5,6 @@ s4_hardware_sim --out hardware_CMBS4 --overwrite
 s4_hardware_trim --hardware hardware_CMBS4.toml.gz --telescopes LAT0 --out hardware_LAT_HFL --overwrite
 s4_hardware_trim --hardware hardware_CMBS4.toml.gz --telescopes LAT0 --out hardware_LAT_MFL --overwrite
 s4_hardware_trim --hardware hardware_CMBS4.toml.gz --telescopes LAT0 --out hardware_LAT_LFL --overwrite
-s4_hardware_trim --hardware hardware_CMBS4.toml.gz --telescopes LAT2 --out hardware_LAT_ULFL --overwrite
 
 s4_hardware_trim --hardware hardware_CMBS4.toml.gz --telescopes LAT2 --out hardware_LAT_HFPL --overwrite
 s4_hardware_trim --hardware hardware_CMBS4.toml.gz --telescopes LAT2 --out hardware_LAT_MFPL --overwrite

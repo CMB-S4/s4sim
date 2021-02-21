@@ -33,9 +33,6 @@ echo "            ntask = ${ntask}"
 echo "      nnode_group = ${nnode_group}"
 echo "        groupsize = ${groupsize}"
 
-export PYTHONSTARTUP=""
-export PYTHONNOUSERSITE=1
-
 logdir=atm_logs
 mkdir -p $logdir
 
@@ -57,7 +54,8 @@ for site in pole chile; do
                 nside=512
                 # Minimum is 14.5 deg
                 fpradius=16
-                hardware=hardware_SAT_LFS.toml.gz
+                #hardware=hardware_SAT_LFS.toml.gz
+                hardware=hardware_SAT_LFS.pkl
                 ;;
             lat)
                 case $site in
@@ -65,12 +63,14 @@ for site in pole chile; do
                         # Center tube on LAT0
                         tube=LT0
                         band=HFL1
-                        hardware=hardware_LAT_HFL.toml.gz
+                        #hardware=hardware_LAT_HFL.toml.gz
+                        hardware=hardware_LAT_HFL.pkl
                         ;;
                     pole)
                         tube=LT170
                         band=MFPL1
-                        hardware=hardware_LAT_MFPL.toml.gz
+                        #hardware=hardware_LAT_MFPL.toml.gz
+                        hardware=hardware_LAT_MFPL.pkl
                         ;;
                     *) echo "Unknown telescope: $tel"; exit;;
                 esac

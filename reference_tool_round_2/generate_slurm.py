@@ -4,10 +4,12 @@
 """
 
 
+from glob import glob
 import os
 import sys
 
 """
+
   --bands BANDS         Comma-separated list of bands: ULFPL1 (20 GHz, Pole
                         LAT), LFL1 (27 GHz LAT), LFL2 (39 GHz, LAT), LFPL1 (27
                         GHz Pole LAT), LFPL2 (39 GHz, Pole LAT), LFS1 (30 GHz,
@@ -17,27 +19,33 @@ import sys
                         SAT), MFHS1 (95 GHz, SAT), MFHS2 (155.1 GHz, SAT),
                         HFL1(225 GHz, LAT), HFL2 (278 GHz, LAT), HFPL1 (225
                         GHz, Pole LAT), HFPL2 (278 GHz, Pole LAT), HFS1 (220
-                        GHz, SAT), HFS2 (270 GHz, SAT).Length of list must
-                        equal --tubes
-  --tubes TUBES         Comma-separated list of optics tubes: LT0 (HFL), LT1
-                        (HFL), LT2 (HFL), LT3 (HFL), LT4 (HFL), LT5 (MFL), LT6
-                        (MFL), LT7 (MFL), LT8 (MFL), LT9 (MFL), LT10 (MFL),
-                        LT11 (MFL), LT12 (MFL), LT13 (MFL), LT14 (MFL), LT15
-                        (MFL), LT16 (MFL), LT17 (LFL), LT18 (LFL), LT19 (HFL),
-                        LT20 (HFL), LT21 (HFL), LT22 (HFL), LT23 (HFL), LT24
-                        (MFL), LT25 (MFL), LT26 (MFL), LT27 (MFL), LT28 (MFL),
-                        LT29 (MFL), LT30 (MFL), LT31 (MFL), LT32 (MFL), LT33
-                        (MFL), LT34 (MFL), LT35 (MFL), LT36 (LFL), LT37 (LFL),
-                        LT38 (HFPL), LT39 (HFPL), LT40 (HFPL), LT41 (HFPL),
-                        LT42 (MFPL), LT43 (MFPL), LT44 (MFPL), LT45 (MFPL),
-                        LT46 (MFPL), LT47 (MFPL), LT48 (MFPL), LT49 (MFPL),
-                        LT50 (MFPL), LT51 (MFPL), LT52 (MFPL), LT53 (MFPL),
-                        LT54 (LFPL), LT55 (LFPL), LT56 (ULFPL), ST0 (MFLS),
-                        ST1 (MFLS), ST2 (MFLS), ST3 (MFLS), ST4 (MFLS), ST5
-                        (MFLS), ST6 (MFHS), ST7 (MFHS), ST8 (MFHS), ST9
-                        (MFHS), ST10 (MFHS), ST11 (MFHS), ST12 (HFS),ST13
-                        (HFS), ST14 (HFS), ST15 (HFS), ST16 (LFS), ST17
-                        (LFS).Length of list must equal --bands
+                        GHz, SAT), HFS2 (270 GHz, SAT).
+  --tubes TUBES         Comma-separated list of optics tubes: LAT0-LFL : LT63,
+                        LT66, LT67, LT70, LT75, LT78, LT79, LT82. LAT0-MFL :
+                        LT19..LT22, LT25..LT31, LT34..LT62, LT64, LT65, LT68,
+                        LT69, LT71..LT74, LT76, LT77, LT80, LT81, LT83, LT84.
+                        LAT0-HFL : LT0..LT18, LT23, LT24, LT32, LT33. LAT1-LFL
+                        : LT148, LT151, LT152, LT155, LT160, LT163, LT164,
+                        LT167. LAT1-MFL : LT104..LT107, LT110..LT116,
+                        LT119..LT150, LT153, LT154, LT156..LT159, LT161,
+                        LT162, LT165, LT166, LT168, LT169. LAT1-HFL :
+                        LT85..LT103, LT108, LT109, LT117, LT118. LAT2-ULFPL :
+                        LT178, LT182, LT184, LT188. LAT2-LFPL : LT232, LT234,
+                        LT236, LT239, LT242, LT245, LT248, LT251, LT254.
+                        LAT2-MFPL : LT170..LT176, LT180, LT186, LT189..LT206,
+                        LT208, LT210, LT212, LT214, LT216, LT218, LT220,
+                        LT222, LT224, LT226, LT228, LT230, LT231, LT233,
+                        LT235, LT237, LT238, LT240, LT241, LT243, LT244,
+                        LT246, LT247, LT249, LT250, LT252, LT253. LAT2-HFPL :
+                        LT177, LT179, LT181, LT183, LT185, LT187, LT207,
+                        LT209, LT211, LT213, LT215, LT217, LT219, LT221,
+                        LT223, LT225, LT227, LT229. SAT0-MFLS : ST0. SAT0-MFHS
+                        : ST1. SAT0-HFS : ST2. SAT1-MFLS : ST3. SAT1-MFHS :
+                        ST4. SAT1-HFS : ST5. SAT2-MFLS : ST6. SAT2-MFHS : ST7.
+                        SAT2-HFS : ST8. SAT3-MFLS : ST9. SAT3-MFHS : ST10.
+                        SAT3-HFS : ST11. SAT4-LFS : ST14. SAT4-MFLS : ST12.
+                        SAT4-MFHS : ST13. SAT5-LFS : ST17. SAT5-MFLS : ST15.
+                        SAT6-MFHS : ST16.
 
 """
 
@@ -46,10 +54,10 @@ input_map_dir = "/global/cscratch1/sd/zonca/cmbs4/map_based_simulations/202006_f
 flavors = (
     "noise",
     "atmosphere",
-    "cmb-unlensed", # cmb_unlensed_solardipole_nest
-    "cmb-lensing", # cmb_lensing_signal
-    "cmb-tensors", # cmb_tensor_nest
-    "foreground", # combined_foregrounds
+    #"cmb-unlensed", # cmb_unlensed_solardipole_nest
+    #"cmb-lensing", # cmb_lensing_signal
+    #"cmb-tensors", # cmb_tensor_nest
+    #"foreground", # combined_foregrounds
 )
 
 telescopes = {
@@ -70,94 +78,139 @@ telescopes = {
     },
 }
 
-for telescope, tubes in telescopes.items():
-    if telescope == "LAT":
-        nside = 4096
-        fsample = 200
-        hwprpm = None
-        scan_rate = 1
-        scan_accel = 1
-        poly_order = 15
-        ground_order = 25
-        fpradius = 4.3
-        nnode = 64
-        nthread = 16
-        nnode_group = 1
-        madampars = {
-            "madam-concatenate-messages": None,
-            "madam-allreduce": None,
-            "madam-precond-width": 30,
-            "nside-submap": 16,
-            "madam-baseline-length": 1,
-            "madam-noisefilter": None,
-        }
-        cosecant_scan = True
-        thinfp = 8
-    elif telescope == "SAT":
-        nside = 512
-        fsample = 20
-        hwprpm = 120
-        scan_rate = 1
-        scan_accel = 1
-        poly_order = 5
-        ground_order = 10
-        nnode = 16
-        fpradius = 20.5
-        nthread = 4
-        nnode_group = 1
-        madampars = {
-            "no-madam-allreduce": None,
-            "madam-precond-width": 30,
-            "nside-submap": 16,
-            "madam-baseline-length": 1,
-            "madam-noisefilter": None,
-        }
-        cosecant_scan = False
-        thinfp = 4
-    else:
-        raise RuntimeError("Unknown telescope: {}".format(telescope))
 
+def get_n_obs(site, telescope):
+    fnames = glob(f"scan_strategy/{site}_{telescope}/split_schedules/*txt".lower())
+    return len(fnames)
+
+
+for telescope in "SAT", "LAT":
     # For now, we disable destriping and only output filtered maps
     madampars = {
         # Comment out skip-madam for a pure binned map (2 separate Madam calls)
         "skip-madam": None,
         "no-destripe": None,
     }
-
-    for site in "chile", "pole":
+    atm_cache = "atm_cache"
+    for site in "pole", "chile":
+        schedule = "scan_strategy/{}_{}/schedules/{}_schedule_{}.txt".format(
+            site, telescope.lower(), site, telescope.lower()
+        )
+        hwprpm = None
+        cosecant_scan = False
+        poly_order_2d = None
         if site == "chile":
             weather = "weather_Atacama.fits"
         elif site == "pole":
             weather = "weather_South_Pole.fits"
-            hwprpm = None
-            cosecant_scan = False
+        if telescope == "LAT":
+            nside = 4096
+            fsample = 200
+            fpradius = 5.0
+            nthread = 4
+            """
+            madampars = {
+                "madam-concatenate-messages": None,
+                "madam-allreduce": None,
+                "madam-precond-width": 30,
+                "nside-submap": 16,
+                "madam-baseline-length": 1,
+                "madam-noisefilter": None,
+            }
+            """
+            thinfp = {
+                "ULFPL" : 4,
+                "LFPL" : 4,
+                "MFPL" : 16,
+                "HFPL" : 16,
+                "LFL" : 4,
+                "MFL" : 16,
+                "HFL" : 16,
+            }
+            if site == "pole":
+                nnode_group = 2
+                nnode = 181 * nnode_group
+                scan_rate = 1.0
+                scan_accel = 1.0
+                telescope_name = "LAT2"
+                pixel_types = {"ULFPL" : None, "LFPL" : None, "MFPL" : None, "HFPL" : None}
+                poly_order = 10
+                ground_order = 100
+            elif site == "chile":
+                nnode_group = 2
+                nnode = 500
+                scan_rate = 0.5
+                scan_accel = 3.0
+                cosecant_scan = True
+                telescope_name = "LAT0"
+                pixel_types = {"LFL" : None, "MFL" : None, "HFL" : None}
+                poly_order = 25
+                ground_order = 15
+                #poly_order_2d = 1
+                atm_cache = "atm_cache_test"
+            else:
+                raise RuntimeError(f"Unknown site: {site}")
+        elif telescope == "SAT":
+            nnode = 16
+            fpradius = 16
+            nthread = 4
+            nnode_group = 1
+            """
+            madampars = {
+                "no-madam-allreduce": None,
+                "madam-precond-width": 30,
+                "nside-submap": 16,
+                "madam-baseline-length": 1,
+                "madam-noisefilter": None,
+            }
+            """
+            thinfp = {
+                "LFS" : 4,
+                "MFLS" : 4,
+                "MFHS" : 4,
+                "HFS" : 8,
+            }
+            nside = 512
+            fsample = 20
+            poly_order = 3
+            telescope_name = None
+            pixel_types = {
+                "LFS" : "--tubes ST14",
+                "MFLS" : "--tubes ST0",
+                "MFHS" : "--tubes ST1",
+                "HFS" : "--tubes ST2",
+            }
+            if site == "pole":
+                scan_rate = 1.5
+                scan_accel = 0.97
+                ground_order = 50
+            elif site == "chile":
+                scan_rate = 1.0
+                scan_accel = 1.0
+                hwprpm = 120
+                ground_order = 10
+            else:
+                raise RuntimeError(f"Unknown site: {site}")
         else:
-            raise RuntimeError("Unknown site: {}".format(site))
+            raise RuntimeError(f"Unknown telescope: {telescope}")
 
-        schedule = "scan_strategy/{}_{}/schedules/{}_schedule_{}.txt".format(
-            site, telescope.lower(), site, telescope.lower()
-        )
-
-        for tube, bands in tubes.items():
-            for band in bands:
-                if telescope == "LAT" and site == "pole" and "P" not in band:
+        
+        for pixel_type, tubes in pixel_types.items():
+            for i_band in [1, 2]:
+                band = f"{pixel_type}{i_band}"
+                if band == "ULFPL2":
                     continue
-                if telescope == "LAT" and site == "chile" and "P" in band and band != "ULFPL1":
-                    continue
-                thinfp_temp = thinfp
-                if band.startswith("ULF") or band.startswith("LF"):
-                    thinfp_temp = 1
-                elif band.startswith("HFS"):
-                    thinfp_temp = 8
-                hardware = "hardware_{}_{}.toml.gz".format(telescope, band[:-1])
+                thinfp_temp = thinfp[pixel_type]
+                #hardware = f"hardware_{telescope}_{pixel_type}.toml.gz"
+                hardware = f"hardware_{telescope}_{pixel_type}.pkl"
                 for flavor in flavors:
+                    parfiles = "@general.par"
                     rootname = "{}_{}_{}_{}".format(site, flavor, telescope, band.replace("P", ""))
                     os.makedirs("slurm", exist_ok=True)
                     os.makedirs("logs", exist_ok=True)
 
                     params = {
                         "bands": band,
-                        "tubes": tube,
                         "sample-rate": fsample,
                         "scan-rate": scan_rate,
                         "scan-accel": scan_accel,
@@ -171,15 +224,27 @@ for telescope, tubes in telescopes.items():
                         "madam-prefix": rootname,
                         "thinfp": thinfp_temp,
                         "hardware": hardware,
-                        "out" : "out-hwp",
+                        "out" : "out",
                     }
-                    if hwprpm:
+
+                    # HACK for fixed CHLAT noise level
+                    #if telescope == "LAT" and site == "chile":
+                    #    params["no-elevation-noise"] = None
+
+                    if telescope_name is not None:
+                        params["telescope"] = telescope_name
+                    if tubes is not None:
+                        params["tubes"] = tubes
+                    if hwprpm is not None:
                         params["hwp-rpm"] = hwprpm
                     if cosecant_scan:
                         params["scan-cosecant-modulate"] = None
                     if poly_order is not None:
                         params["polyfilter"] = None
                         params["poly-order"] = poly_order
+                    if poly_order_2d is not None:
+                        params["polyfilter2D"] = None
+                        params["poly-order2D"] = poly_order_2d
                     if ground_order is not None:
                         params["groundfilter"] = None
                         params["ground-order"] = ground_order
@@ -190,17 +255,16 @@ for telescope, tubes in telescopes.items():
                         params["wcov"] = None
                         params["wcov-inv"] = None
                         params["MC-count"] = 8
-                        if telescope == "LAT":
-                            walltime = "02:00:00"
-                        else:
-                            walltime = "08:00:00"
+                        walltime = "08:00:00"
                     elif flavor == "atmosphere":
+                        parfiles += f" @atmosphere_{site}.par"
                         params["simulate-atmosphere"] = None
                         params["no-hits"] = None
                         params["no-wcov"] = None
                         params["no-wcov-inv"] = None
                         params["MC-count"] = 8
-                        walltime = "24:00:00"
+                        params["atm-cache"] = atm_cache
+                        walltime = "08:00:00"
                     elif flavor in [
                         "cmb-unlensed",
                         "cmb-lensing",
@@ -281,13 +345,12 @@ for telescope, tubes in telescopes.items():
                             'echo "            ntask = ${ntask}"',
                             'echo "      nnode_group = ${nnode_group}"',
                             'echo "        groupsize = ${groupsize}"',
-                            '\nexport PYTHONSTARTUP=""',
-                            "export PYTHONNOUSERSITE=1",
                             "\nlogfile=logs/{}.log\n".format(rootname),
                             "if [[ ! -e $logfile ]]; then",
-                            '    echo "Writing $logfile"',
+                            '    echo "Writing $logfile at" `date`',
+                            "    date > ${logfile}",    
                             "    srun -n $ntask -c $ncore --cpu_bind=cores \\",
-                            "        toast_s4_sim.py @general.par \\",
+                            "        toast_s4_sim.py {} \\".format(parfiles),
                             "        --group-size $groupsize \\",
                         ]:
                             slurm.write(line + "\n")
@@ -301,7 +364,9 @@ for telescope, tubes in telescopes.items():
                                 )
 
                         for line in [
-                            "    >& ${logfile}",
+                            "    >> ${logfile} 2>&1",
+                            "    date >> ${logfile}",
+                            '    echo "Done with $logfile at" `date`',
                             "else",
                             '    echo "$logfile exists"',
                             "fi",
