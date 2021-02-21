@@ -1,6 +1,8 @@
 # Copyright (c) 2020-2020 CMB-S4 Collaboration.
 # Full license can be found in the top level "LICENSE" file.
 
+import pickle
+
 import numpy as np
 
 from toast.pipeline_tools import Telescope, Focalplane, Site, Schedule, CES
@@ -227,7 +229,11 @@ def get_hardware(args, comm, verbose=False):
     if comm.world_rank == 0:
         if args.hardware:
             log.info("Loading hardware configuration from {}...".format(args.hardware))
-            hw = hardware.Hardware(args.hardware)
+            if args.hardware.endswith(".pkl"):
+                with open(args.hardware, "rb") as fin:
+                    hw = pickle.load(fin)
+            else:
+                hw = hardware.Hardware(args.hardware)
             timer.report_clear("Load {}".format(args.hardware))
         else:
             log.info("Simulating default hardware configuration")

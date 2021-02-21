@@ -77,6 +77,7 @@ def parse_arguments(comm):
     toast_tools.add_todground_args(parser)
     toast_tools.add_pointing_args(parser)
     toast_tools.add_polyfilter_args(parser)
+    toast_tools.add_polyfilter2D_args(parser)
     toast_tools.add_groundfilter_args(parser)
     toast_tools.add_atmosphere_args(parser)
     toast_tools.add_noise_args(parser)
@@ -147,11 +148,7 @@ def parse_arguments(comm):
         comm = Comm(groupsize=args.group_size)
 
     if comm.world_rank == 0:
-        if not os.path.isdir(args.outdir):
-            try:
-                os.makedirs(args.outdir)
-            except FileExistsError:
-                pass
+        os.makedirs(args.outdir, exist_ok=True)
         timer.report_clear("Parse arguments")
 
     return args, comm
@@ -160,11 +157,7 @@ def parse_arguments(comm):
 def setup_output(args, comm, mc):
     outpath = "{}/{:08}".format(args.outdir, mc)
     if comm.world_rank == 0:
-        if not os.path.isdir(outpath):
-            try:
-                os.makedirs(outpath)
-            except FileExistsError:
-                pass
+        os.makedirs(outpath, exist_ok=True)
     return outpath
 
 
@@ -409,9 +402,11 @@ def main():
                 first_call=(mc == firstmc),
             )
 
-        if args.apply_polyfilter or args.apply_groundfilter:
+        if args.apply_polyfilter or args.apply_groundfilter or args.apply_polyfilter2D:
 
             # Filter signal
+
+            toast_tools.apply_polyfilter2D(args, comm, data, totalname)
 
             toast_tools.apply_polyfilter(args, comm, data, totalname)
 
