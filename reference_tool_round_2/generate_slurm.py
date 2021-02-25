@@ -54,6 +54,7 @@ input_map_dir = "/global/cscratch1/sd/zonca/cmbs4/map_based_simulations/202006_f
 flavors = (
     "noise",
     "atmosphere",
+    "obs_matrix",
     #"cmb-unlensed", # cmb_unlensed_solardipole_nest
     #"cmb-lensing", # cmb_lensing_signal
     #"cmb-tensors", # cmb_tensor_nest
@@ -99,6 +100,7 @@ for telescope in "SAT", "LAT":
         hwprpm = None
         cosecant_scan = False
         poly_order_2d = None
+        filterbin = False
         if site == "chile":
             weather = "weather_Atacama.fits"
         elif site == "pole":
@@ -107,7 +109,6 @@ for telescope in "SAT", "LAT":
             nside = 4096
             fsample = 200
             fpradius = 5.0
-            nthread = 4
             """
             madampars = {
                 "madam-concatenate-messages": None,
@@ -119,7 +120,7 @@ for telescope in "SAT", "LAT":
             }
             """
             thinfp = {
-                "ULFPL" : 4,
+                "ULFPL" : 1,
                 "LFPL" : 4,
                 "MFPL" : 16,
                 "HFPL" : 16,
@@ -130,6 +131,7 @@ for telescope in "SAT", "LAT":
             if site == "pole":
                 nnode_group = 2
                 nnode = 181 * nnode_group
+                nthread = 8
                 scan_rate = 1.0
                 scan_accel = 1.0
                 telescope_name = "LAT2"
@@ -139,6 +141,7 @@ for telescope in "SAT", "LAT":
             elif site == "chile":
                 nnode_group = 2
                 nnode = 500
+                nthread = 4
                 scan_rate = 0.5
                 scan_accel = 3.0
                 cosecant_scan = True
@@ -146,7 +149,7 @@ for telescope in "SAT", "LAT":
                 pixel_types = {"LFL" : None, "MFL" : None, "HFL" : None}
                 poly_order = 25
                 ground_order = 15
-                #poly_order_2d = 1
+                poly_order_2d = 1
                 atm_cache = "atm_cache_test"
             else:
                 raise RuntimeError(f"Unknown site: {site}")
@@ -165,7 +168,7 @@ for telescope in "SAT", "LAT":
             }
             """
             thinfp = {
-                "LFS" : 4,
+                "LFS" : 1,
                 "MFLS" : 4,
                 "MFHS" : 4,
                 "HFS" : 8,
@@ -173,17 +176,18 @@ for telescope in "SAT", "LAT":
             nside = 512
             fsample = 20
             poly_order = 3
+            filterbin = True
             telescope_name = None
             pixel_types = {
-                "LFS" : "--tubes ST14",
-                "MFLS" : "--tubes ST0",
-                "MFHS" : "--tubes ST1",
-                "HFS" : "--tubes ST2",
+                "LFS" : "ST14",
+                "MFLS" : "ST0",
+                "MFHS" : "ST1",
+                "HFS" : "ST2",
             }
             if site == "pole":
                 scan_rate = 1.5
                 scan_accel = 0.97
-                ground_order = 50
+                ground_order = 10
             elif site == "chile":
                 scan_rate = 1.0
                 scan_accel = 1.0
@@ -208,6 +212,9 @@ for telescope in "SAT", "LAT":
                     rootname = "{}_{}_{}_{}".format(site, flavor, telescope, band.replace("P", ""))
                     os.makedirs("slurm", exist_ok=True)
                     os.makedirs("logs", exist_ok=True)
+                    nnode_temp = nnode
+                    nnode_group_temp = nnode_group
+                    nthread_temp = nthread
 
                     params = {
                         "bands": band,
@@ -222,14 +229,11 @@ for telescope in "SAT", "LAT":
                         "no-madam-allreduce": None,
                         "focalplane-radius": fpradius,
                         "madam-prefix": rootname,
+                        "filterbin-prefix": rootname,
                         "thinfp": thinfp_temp,
                         "hardware": hardware,
                         "out" : "out",
                     }
-
-                    # HACK for fixed CHLAT noise level
-                    #if telescope == "LAT" and site == "chile":
-                    #    params["no-elevation-noise"] = None
 
                     if telescope_name is not None:
                         params["telescope"] = telescope_name
@@ -240,14 +244,22 @@ for telescope in "SAT", "LAT":
                     if cosecant_scan:
                         params["scan-cosecant-modulate"] = None
                     if poly_order is not None:
-                        params["polyfilter"] = None
-                        params["poly-order"] = poly_order
+                        if filterbin:
+                            params["no-polyfilter"] = None
+                            params["filterbin-poly-order"] = poly_order
+                        else:
+                            params["polyfilter"] = None
+                            params["poly-order"] = poly_order
                     if poly_order_2d is not None:
                         params["polyfilter2D"] = None
                         params["poly-order2D"] = poly_order_2d
                     if ground_order is not None:
-                        params["groundfilter"] = None
-                        params["ground-order"] = ground_order
+                        if filterbin:
+                            params["no-groundfilter"] = None
+                            params["filterbin-ground-order"] = ground_order
+                        else:
+                            params["groundfilter"] = None
+                            params["ground-order"] = ground_order
 
                     if flavor == "noise":
                         params["simulate-noise"] = None
@@ -256,6 +268,21 @@ for telescope in "SAT", "LAT":
                         params["wcov-inv"] = None
                         params["MC-count"] = 8
                         walltime = "08:00:00"
+                    elif flavor == "obs_matrix":
+                        if telescope != "SAT" or site != "pole":
+                            continue
+                        params["simulate-noise"] = None
+                        params["filterbin-obs-matrix"] = None
+                        params["filterbin-prefix"] = rootname.replace("obs_matrix", "noise_4Hz")
+                        params["no-hits"] = None
+                        params["no-wcov"] = None
+                        params["no-wcov-inv"] = None
+                        params["MC-count"] = 1
+                        walltime = "04:00:00"
+                        nnode_temp = 200
+                        nnode_group_temp = 20
+                        nthread_temp = 16
+                        params["sample-rate"] = 4
                     elif flavor == "atmosphere":
                         parfiles += f" @atmosphere_{site}.par"
                         params["simulate-atmosphere"] = None
@@ -317,7 +344,7 @@ for telescope in "SAT", "LAT":
                             "#!/bin/bash",
                             "#SBATCH --partition=regular",
                             "#SBATCH --time={}".format(walltime),
-                            "#SBATCH --nodes={}".format(nnode),
+                            "#SBATCH --nodes={}".format(nnode_temp),
                             "#SBATCH --job-name={}".format(rootname),
                             "#SBATCH --licenses=SCRATCH",
                             "#SBATCH --constraint=knl",
@@ -328,15 +355,15 @@ for telescope in "SAT", "LAT":
                             'export PYTHONSTARTUP=""',
                             "export PYTHONNOUSERSITE=1",
                             "export HOME=$SCRATCH",
-                            "export OMP_NUM_THREADS={}".format(nthread),
+                            "export OMP_NUM_THREADS={}".format(nthread_temp),
                             "export OMP_PLACES=threads",
                             "export OMP_PROC_BIND=spread",
-                            "\nlet nnode={}".format(nnode),
+                            "\nlet nnode={}".format(nnode_temp),
                             "let ntask_node=64/$OMP_NUM_THREADS",
                             "let ntask=$nnode*$ntask_node",
                             "let ncore=4*$OMP_NUM_THREADS",
                             "# Make sure nnode is divisible by nnode_group",
-                            "let nnode_group={}".format(nnode_group),
+                            "let nnode_group={}".format(nnode_group_temp),
                             "let groupsize=nnode_group*ntask_node",
                             '\necho "Running with"',
                             'echo "            nnode = ${nnode}"',

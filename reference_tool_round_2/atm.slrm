@@ -76,7 +76,7 @@ for site in pole chile; do
                 esac
                 nside=4096
                 # Minimum is 4.08 deg
-                fpradius=4.3
+                fpradius=5.0
                 ;;
             *) echo "Unknown telescope: $tel"; exit;;
         esac

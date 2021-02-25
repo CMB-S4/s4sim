@@ -96,8 +96,9 @@ for flavor in flavors:
                     #if site == "chile" and telescope == "LAT" and "P" not in band:
                     #    continue
                     for mc in range(100):
-                        fname = "out/{:08}/{}_{}_{}_{}_filtered_telescope_all_time_all_bmap.fits".format(mc, site, flavor, telescope, band)
-                        if not os.path.isfile(fname):
+                        fname1 = f"out/{mc:08}/{site}_{flavor}_{telescope}_{band}_filtered_telescope_all_time_all_bmap.fits"
+                        fname2 = f"out/{mc:08}/{site}_{flavor}_{telescope}_{band}_telescope_all_time_all_filtered.fits.gz"
+                        if not os.path.isfile(fname1) and not os.path.isfile(fname2):
                             break
                     if mc == 0:
                         print("{:6}".format(""), end="")
