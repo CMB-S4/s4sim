@@ -55,10 +55,10 @@ flavors = (
     "noise",
     "atmosphere",
     "obs_matrix",
-    #"cmb-unlensed", # cmb_unlensed_solardipole_nest
-    #"cmb-lensing", # cmb_lensing_signal
-    #"cmb-tensors", # cmb_tensor_nest
-    #"foreground", # combined_foregrounds
+    "cmb_unlensed_solardipole",
+    "cmb_lensing_signal",
+    "cmb_tensor",
+    "combined_foregrounds",
 )
 
 telescopes = {
@@ -281,7 +281,7 @@ for telescope in "SAT", "LAT":
                         walltime = "04:00:00"
                         nnode_temp = 200
                         nnode_group_temp = 20
-                        nthread_temp = 16
+                        nthread_temp = 8
                         params["sample-rate"] = 4
                     elif flavor == "atmosphere":
                         parfiles += f" @atmosphere_{site}.par"
@@ -293,43 +293,21 @@ for telescope in "SAT", "LAT":
                         params["atm-cache"] = atm_cache
                         walltime = "08:00:00"
                     elif flavor in [
-                        "cmb-unlensed",
-                        "cmb-lensing",
-                        "cmb-tensors",
-                        "foreground",
+                            "cmb_unlensed_solardipole",
+                            "cmb_lensing_signal",
+                            "cmb_tensor",
+                            "combined_foregrounds",
                     ]:
                         # params["input-map"] = input_map
                         params["no-hits"] = None
                         params["no-wcov"] = None
                         params["no-wcov-inv"] = None
                         params["skip-madam"] = None
-                        signal_name = {
-                            "cmb-unlensed" : "cmb_unlensed_solardipole_nest",
-                            "cmb-lensing" : "cmb_lensing_signal",
-                            #"cmb-tensors" : "cmb_tensor_nest",
-                            "cmb-tensors" : "cmb_tensor",
-                            "foreground" : "combined_foregrounds",
-                        }[flavor]
-                        num = "0000"
-                        if flavor == "cmb-tensors":
-                            # cmb_tensor/4096/cmbs4_cmb_tensor_uKCMB_LAT-HFL1_nside4096_0000.fits
-                            params["input-map"] = os.path.join(
-                                "cmb_tensor",
-                                str(nside),
-                                "cmbs4_cmb_tensor_uKCMB_{}-{}_nside{}_{}.fits".format(
-                                    telescope, band.replace("P", ""), nside, num
-                                )
-                            )
-                        else:
-                            params["input-map"] = os.path.join(
-                                input_map_dir,
-                                str(nside),
-                                signal_name,
-                                num,
-                                "cmbs4_{}_uKCMB_{}-{}_nside{}_{}.fits".format(
-                                    signal_name, telescope, band.replace("P", ""), nside, num
-                                )
-                            )
+                        num = 0
+                        params["input-map"] = os.path.join(
+                            "/global/cscratch1/sd/zonca/cmbs4/map_based_simulations/202102_design_tool_input",
+                            f"{nside}/{flavor}/{num:04d}/cmbs4_{flavor}_uKCMB_{telescope}-{band}_nside{nside}_{num:04d}.fits",
+                        )
                         walltime = "02:00:00"
                     else:
                         raise RuntimeError(

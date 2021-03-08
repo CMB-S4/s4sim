@@ -1,0 +1,78 @@
+#!/bin/bash
+#SBATCH --partition=regular
+#SBATCH --qos=premium
+#SBATCH --time=01:00:00
+#SBATCH --nodes=128
+#SBATCH --job-name=chile_noise_LAT_MFL1
+#SBATCH --licenses=SCRATCH
+#SBATCH --constraint=knl
+#SBATCH --core-spec=4
+#SBATCH --account=mp107
+
+ulimit -c unlimited
+export MALLOC_MMAP_THRESHOLD_=131072
+export PYTHONSTARTUP=""
+export PYTHONNOUSERSITE=1
+export HOME=$SCRATCH
+export OMP_NUM_THREADS=4
+export OMP_PLACES=threads
+export OMP_PROC_BIND=spread
+
+let nnode=128
+let ntask_node=64/$OMP_NUM_THREADS
+let ntask=$nnode*$ntask_node
+let ncore=4*$OMP_NUM_THREADS
+# Make sure nnode is divisible by nnode_group
+let nnode_group=1
+let groupsize=nnode_group*ntask_node
+
+echo "Running with"
+echo "            nnode = ${nnode}"
+echo "  OMP_NUM_THREADS = ${OMP_NUM_THREADS}"
+echo "       ntask_node = ${ntask_node}"
+echo "            ntask = ${ntask}"
+echo "      nnode_group = ${nnode_group}"
+echo "        groupsize = ${groupsize}"
+
+for el in 30 35 40 45 50 55 60; do
+    logfile=logs/chile_lat_scans.$el.log
+    if [[ ! -e $logfile ]]; then
+        echo "Writing $logfile at" `date`
+        date > ${logfile}
+        srun -n $ntask -c $ncore --cpu_bind=cores \
+             toast_s4_sim.py @general.par \
+             --group-size $groupsize \
+             --MC-count 1 \
+             --bands MFL1 \
+             --focalplane-radius 5.0 \
+             --hardware hardware_LAT_MFL.pkl \
+             --hits \
+             --madam-concatenate-messages \
+             --madam-prefix chile_noise_LAT_MFL1_el${el} \
+             --no-destripe \
+             --no-madam-allreduce \
+             --nside 512 \
+             --out out-experimental \
+             --no-groundfilter \
+             --polyfilter \
+             --poly-order 1 \
+             --sample-rate 10 \
+             --scan-accel 3.0 \
+             --scan-cosecant-modulate \
+             --scan-rate 0.5 \
+             --schedule scan_strategy/chile_lat_experimental/schedules/chile_schedule_lat.$el.txt \
+             --simulate-noise \
+             --site chile \
+             --skip-madam \
+             --telescope LAT0 \
+             --thinfp 8 \
+             --wcov \
+             --wcov-inv \
+             --weather weather_Atacama.fits \
+             >> ${logfile} 2>&1
+        date >> ${logfile}
+        echo "Done with $logfile at" `date`
+    else
+        echo "$logfile exists"
+    fi
+done

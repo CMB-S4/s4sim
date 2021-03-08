@@ -172,23 +172,39 @@ def outputs_exist(args, comm, outpath):
                     outpath, args.mapmaker_prefix + "_telescope_all_time_all_bmap.fits"
                 )
                 there = os.path.isfile(fname)
+                if there:
+                    print(f"{fname} exists", flush=True)
+                else:
+                    print(f"{fname} does not exist", flush=True)
             if there and args.destripe:
                 fname = os.path.join(
                     outpath, args.mapmaker_prefix + "_telescope_all_time_all_map.fits"
                 )
                 there = os.path.isfile(fname)
+                if there:
+                    print(f"{fname} exists", flush=True)
+                else:
+                    print(f"{fname} does not exist", flush=True)
         if there and (args.apply_polyfilter or args.apply_groundfilter):
             fname = os.path.join(
                 outpath,
                 args.mapmaker_prefix + "_filtered" + "_telescope_all_time_all_bmap.fits",
             )
             there = os.path.isfile(fname)
+            if there:
+                print(f"{fname} exists", flush=True)
+            else:
+                print(f"{fname} does not exist", flush=True)
         if there and (args.filterbin_ground_order or args.filterbin_poly_order):
             fname = os.path.join(
                 outpath,
                 args.filterbin_prefix + "_telescope_all_time_all_filtered.fits",
             )
-            there = os.path.isfile(fname)
+            there = os.path.isfile(fname) or os.path.isfile(fname + ".gz")
+            if there:
+                print(f"{fname} exists", flush=True)
+            else:
+                print(f"{fname} does not exist", flush=True)
     there = comm.comm_world.bcast(there)
     return there
 

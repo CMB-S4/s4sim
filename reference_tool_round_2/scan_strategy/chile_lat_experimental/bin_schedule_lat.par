@@ -1,0 +1,9 @@
+--tubes
+LT42
+--bands
+MFL1
+--site
+chile
+--schedule
+schedules/chile_schedule_lat.txt
+--scan-cosecant-modulate

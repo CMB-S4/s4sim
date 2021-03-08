@@ -33,16 +33,16 @@ REVERSE = '\033[7m'
 
 flavors = (
     "noise",
+    "obs_matrix",
     "atmosphere",
-    "cmb-unlensed",
-    "cmb-lensing",
-    "cmb-tensors",
-    "foreground",
-    #"cmb-scalar",
+    "cmb_unlensed_solardipole",
+    "cmb_lensing_signal",
+    "cmb_tensor",
+    "combined_foregrounds",
+    #"cmb-unlensed",
     #"cmb-lensing",
     #"cmb-tensors",
-    #"galactic",
-    #"extra-galactic",
+    #"foreground",
 )
 
 telescopes = OrderedDict()
@@ -70,10 +70,10 @@ rootdir = "out"
 print('\nSimulation status:\n')
 
 sites = "chile", "pole"
-print("{:12}{:90}{:90}".format("", "Chile", "Pole"))
-print("{:12}{:42}{:48}{:42}{:48}".format("", "LAT", "SAT", "LAT", "SAT"))
+print("{:15}{:90}{:90}".format("", "Chile", "Pole"))
+print("{:15}{:42}{:48}{:42}{:48}".format("", "LAT", "SAT", "LAT", "SAT"))
 
-print("{:12}".format("flavor"), end="")
+print("{:15}".format("flavor"), end="")
 for site in sites:
     for telescope, tubes in telescopes.items():
         for tube, bands in tubes.items():
@@ -86,7 +86,7 @@ for site in sites:
 print()
 
 for flavor in flavors:
-    print("{:12}".format(flavor), end="")
+    print("{:15}".format(f"{flavor:100}"[:15]), end="")
     for site in sites:
         for telescope, tubes in telescopes.items():
             for tube, bands in tubes.items():
@@ -98,6 +98,8 @@ for flavor in flavors:
                     for mc in range(100):
                         fname1 = f"out/{mc:08}/{site}_{flavor}_{telescope}_{band}_filtered_telescope_all_time_all_bmap.fits"
                         fname2 = f"out/{mc:08}/{site}_{flavor}_{telescope}_{band}_telescope_all_time_all_filtered.fits.gz"
+                        if flavor == "obs_matrix":
+                            fname2 = f"out/{mc:08}/{site}_noise_4Hz_{telescope}_{band}_telescope_all_time_all_obs_matrix.npz"
                         if not os.path.isfile(fname1) and not os.path.isfile(fname2):
                             break
                     if mc == 0:
