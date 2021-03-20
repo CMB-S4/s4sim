@@ -65,7 +65,7 @@ for el in 30, 35, 40, 45, 50, 55, 60:
         ndet = len(hw_band.data["detectors"])
 
         bdata = hw_band.data["bands"][band]
-        net =  bdata["NET"] / (bdata["A"] / sin_el + bdata["C"])
+        net =  bdata["NET"] * (bdata["A"] / sin_el + bdata["C"])
 
         w_band = w * ndet_ref / ndet * nday_ref / nday * net / net_ref / ntele / obs_eff
         w_band[:, bad] = 0
@@ -74,8 +74,8 @@ for el in 30, 35, 40, 45, 50, 55, 60:
         depth[:, bad] = hp.UNSEEN
 
         fname_out = f"out-experimental/00000000/noise_depth_LAT_{band}_el{el}.fits"
-        if not os.path.isfile(fname_out):
-            hp.write_map(fname_out, depth, overwrite=True)
+        #if not os.path.isfile(fname_out):
+        hp.write_map(fname_out, depth, overwrite=True)
 
         depth_I_raw = np.mean(depth[0, not_bad])
         depth_Q_raw = np.mean(depth[1, not_bad])
