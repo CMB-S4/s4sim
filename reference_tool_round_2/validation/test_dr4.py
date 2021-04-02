@@ -12,7 +12,8 @@ import requirements as req
 #pylab.rc('font', family='serif')
 
 telescope = "LAT"
-bands = "LFL1", "LFL2", "MFL1", "MFL2", "HFL1", "HFL2"
+#bands = "LFL1", "LFL2", "MFL1", "MFL2", "HFL1", "HFL2"
+bands = "MFL1", "MFL2"
 nband = len(bands)
 site = "chile"
 nside = 4096
@@ -23,6 +24,14 @@ flavor = "noise_atmo_7splits" # cmb_r0  cmb_tensor_only_r3e-3  foregrounds  nois
 split = 1
 nsplits = 1
 
+# Mock the ACT processing mask.  This is 525 sq.deg (0.0127 fsky)
+
+npix = 12 * nside ** 2
+pix = np.arange(npix)
+vec = hp.pix2vec(nside, pix)
+lon, lat = hp.vec2dir(vec, lonlat=True)
+mask = np.logical_and(lon > -4, lon < 40) * np.logical_and(lat > -8, lat < 4)
+
 # Deep56 is 565 sq.deg (0.0137 fsky) of which 340 sq.deg (0.00824 fsky) is usable for power spectrum estimation
 # ell pa1(150GHz) pa2(150GHz) pa3(150GHz) pa3(98GHz) pa3(98x150GHz)
 act_tt = np.genfromtxt("deep56_TT_Nl_out_210317.txt", skip_header=1).T
@@ -30,13 +39,16 @@ act_ee = np.genfromtxt("deep56_EE_Nl_out_210317.txt", skip_header=1).T
 
 
 def map2cl(m, hits):
+    """
     good = hits > 0
     ngood = np.sum(good)
     sorted_hits = np.sort(hits[good])
     
     hit_lim = sorted_hits[np.int(ngood * .01)]
     mask = hits > hit_lim
+    """
     fsky = np.sum(mask) / mask.size
+    m[0] -= np.mean(m[0][mask])
     cl = hp.anafast(m * mask, lmax=lmax, iter=0) / fsky
     
     return cl
@@ -46,7 +58,7 @@ def get_cl(fname_cl, fname_map, fname_hits):
     if os.path.isfile(fname_cl):
         cl = hp.read_cl(fname_cl)
     else:
-        hits = hp.read_map(path_hits)
+        hits = None # hp.read_map(path_hits)
         m = hp.read_map(fname_map, None)
         cl = map2cl(m, hits)
         hp.write_cl(fname_cl, cl)
@@ -61,7 +73,7 @@ def get_tf(fname_tf, fname_cmb_unlensed, fname_cmb_lensing, fname_output, fname_
         inmap *= 1e-6  # into K_CMB
         inmap[0] = hp.remove_dipole(inmap[0])
         outmap = hp.read_map(fname_output, None)
-        hits = hp.read_map(fname_hits)
+        hits = None # hp.read_map(fname_hits)
         cl_in = map2cl(inmap, hits)
         cl_out = map2cl(outmap, hits)
         tf = cl_out / cl_in
@@ -88,7 +100,7 @@ for band in bands:
         f"{telescope}-{band}_{site}/cmbs4_hitmap_{telescope}-{band}_{site}_nside{nside}_{split}_of_{nsplits}.fits",
     )
     # Transfer function
-    path_tf = f"tf_{telescope}_{band}_{site}.fits"
+    path_tf = f"tf_{telescope}_{band}_{site}.deep56.fits"
     path_cmb_unlensed = os.path.join(
         "/global/cscratch1/sd/zonca/cmbs4/map_based_simulations/202102_design_tool_input",
         f"{nside}/cmb_unlensed_solardipole/0000/"
@@ -106,7 +118,7 @@ for band in bands:
     )
     tf = get_tf(path_tf, path_cmb_unlensed, path_cmb_lensing, path_cmb_output, path_hits)
     # N_ell
-    path_cl = f"cl_{telescope}_{band}_{site}_{flavor}.fits"
+    path_cl = f"cl_{telescope}_{band}_{site}_{flavor}.deep56.fits"
     path_noise_map = os.path.join(
         rootdir,
         flavor,
@@ -125,14 +137,18 @@ for band in bands:
     nltt = req.NlTT_Chile_LAT[freq]
     nlee = req.NlEE_Chile_LAT[freq]
 
+    act_obs_eff = 0.1  # fraction of dedicated to deep56 in 2015, includes cutting daytime observations
+    scale_t = 7 / 1 * (1 / 68) / act_obs_eff
+    scale_p = scale_t * 100  # last factor accounts for differences in FP size
+
     iplot += 1
     ax = fig2.add_subplot(nrow, ncol, iplot)
     ax.set_title(f"TT {band} / {freq}GHz")
     ax.set_xlabel("Multipole, $\ell$")
     ax.set_ylabel("D$\ell$ [$\mu$K$^2$]")
     ax.loglog(req.fiducial_ell, req.fiducial_TT, "k", label="CMB")
-    ax.loglog(req.ells, nltt, label="requirement")
-    ax.loglog(ell, ellnorm * cl[0] * bl, label=f"Sim")
+    #ax.loglog(req.ells, nltt, label="requirement")
+    ax.loglog(ell, ellnorm * cl[0] * bl * scale_t, label=f"Sim")
     if band == "MFL1":
         ax.loglog(act_tt[0], act_tt[4], label="ACT PA3")
     elif band == "MFL2":
@@ -148,10 +164,10 @@ for band in bands:
     ax = fig2.add_subplot(nrow, ncol, iplot)
     ax.set_title(f"EE {band} / {freq}GHz")
     ax.set_xlabel("Multipole, $\ell$")
-    ax.set_ylabel("D$\ell$ [$\mu$K$^2$]")
+    ax.set_ylabel("C$\ell$ [$\mu$K$^2$]")
     ax.loglog(req.fiducial_ell, req.fiducial_EE, "k", label="CMB")
-    ax.loglog(req.ells, nlee, label="requirement")
-    ax.loglog(ell, ellnorm * cl[1] * bl, label=f"Sim")
+    #ax.loglog(req.ells, nlee, label="requirement")
+    ax.loglog(ell, ellnorm * cl[1] * bl * scale_p, label=f"Sim")
     if band == "MFL1":
         ax.loglog(act_ee[0], act_ee[4], label="ACT PA3")
     elif band == "MFL2":
@@ -167,10 +183,10 @@ for band in bands:
     ax = fig2.add_subplot(nrow, ncol, iplot)
     ax.set_title(f"BB {band} / {freq}GHz")
     ax.set_xlabel("Multipole, $\ell$")
-    ax.set_ylabel("D$\ell$ [$\mu$K$^2$]")
+    ax.set_ylabel("C$\ell$ [$\mu$K$^2$]")
     ax.loglog(req.fiducial_ell, req.fiducial_BB, "k", label="CMB")
-    ax.loglog(req.ells, nlee, label="requirement")
-    ax.loglog(ell, ellnorm * cl[2] * bl, label=f"Sim")
+    #ax.loglog(req.ells, nlee, label="requirement")
+    ax.loglog(ell, ellnorm * cl[2] * bl * scale_p, label=f"Sim")
     if band == "MFL1":
         ax.loglog(act_ee[0], act_ee[4], label="ACT PA3")
     elif band == "MFL2":
@@ -191,7 +207,7 @@ for ax in [ax1, ax2, ax3]:
     ax.axhline(1.0, color="k", linestyle="--")
     ax.set_xscale("log")
 ax3.legend(loc="best")
-fig1.savefig("chile_lat_tf.png")
+fig1.savefig("chile_lat_tf.deep56.png")
 
-fig2.savefig(f"chile_lat_validation.{flavor}.png")
+fig2.savefig(f"chile_lat_validation.{flavor}.deep56.png")
 plt.show()

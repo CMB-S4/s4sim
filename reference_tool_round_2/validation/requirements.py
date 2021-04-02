@@ -17,6 +17,7 @@ with open("fiducialSpectra.pkl", "rb") as f:
     cambPowersFid = pickle.load(f, encoding="latin1")
 
 fiducial_ell = cambPowersFid["lensed"]["l"]
+fiducial_ellnorm = fiducial_ell * (fiducial_ell + 1) / (2 * np.pi)
 fiducial_TT = cambPowersFid["lensed"]["dl_TT"]
 fiducial_EE = cambPowersFid["lensed"]["dl_EE"]
 fiducial_BB = cambPowersFid["lensed"]["dl_BB"]
