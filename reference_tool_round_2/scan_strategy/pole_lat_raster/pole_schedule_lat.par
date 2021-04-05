@@ -36,9 +36,9 @@ C
 --gap-small
 0
 --pole-ces-time
-7200
+3600
 --ces-max-time
-7200
+3600
 --fp-radius
 0
 --out
@@ -49,4 +49,4 @@ schedules/pole_schedule_lat.txt
 --boresight-angle-time
 1440
 --pole-el-step-deg
-6.0
+3.0
