@@ -9,9 +9,9 @@
 --atm-lmax-sigma
 0
 --atm-gain-coarse
-1e-4
+5e-5
 --atm-gain
-8e-5
+4e-5
 --atm-zatm
 40000
 --atm-zmax
