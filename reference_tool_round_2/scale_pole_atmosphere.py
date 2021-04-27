@@ -11,8 +11,10 @@ import numpy as np
 
 scale = 0.5
 
-fnames = sorted(glob("out/*/pole_atmosphere_*fits"))
+fnames = sorted(glob("out/*/pole_atmosphere_*fits*"))
 for fname in fnames:
+    if "hits" in fname or "wcov" in fname:
+        continue
     print(f"Loading {fname}")
     hdulist = pf.open(fname, "update", memmap=False)
     hdu = hdulist[1]
