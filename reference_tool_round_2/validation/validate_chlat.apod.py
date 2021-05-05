@@ -16,8 +16,9 @@ bands = "LFL1", "LFL2", "MFL1", "MFL2", "HFL1", "HFL2"
 nband = len(bands)
 site = "chile"
 nside = 4096
-lmax = 2 * nside
 lmax_tf = 2048
+npix = 12 * nside ** 2
+lmax = 2 * nside
 flavor = "noise_atmo_7splits" # cmb_r0  cmb_tensor_only_r3e-3  foregrounds  noise_atmo_7splits
 #flavor = "noise" # cmb_r0  cmb_tensor_only_r3e-3  foregrounds  noise_atmo_7splits
 
@@ -30,16 +31,37 @@ act_tt = np.genfromtxt("deep56_TT_Nl_out_210317.txt", skip_header=1).T
 act_ee = np.genfromtxt("deep56_EE_Nl_out_210317.txt", skip_header=1).T
 
 
-def map2cl(m, hits):
-    good = hits > 0
-    ngood = np.sum(good)
-    sorted_hits = np.sort(hits[good])
-    
-    hit_lim = sorted_hits[np.int(ngood * .01)]
-    mask = hits > hit_lim
+def get_mask(fname_hits):
+    fname_mask = "mask_" + os.path.basename(fname_hits)
+    if os.path.isfile(fname_mask):
+        mask = hp.read_map(fname_mask)
+    else:
+        hits = hp.read_map(fname_hits)
+        good = hits > 0
+        ngood = np.sum(good)
+        sorted_hits = np.sort(hits[good])
+
+        hit_lim = sorted_hits[np.int(ngood * .01)]
+        mask = hits > hit_lim
+
+        pix = np.arange(hits.size)
+        lon, lat = hp.pix2ang(nside, pix, lonlat=True)
+        lat_min = np.amin(lat[mask])
+        lat_max = np.amax(lat[mask])
+
+        mask = np.zeros(npix)
+        tol = 10.0  # degrees
+        mask[np.logical_and(lat_min + tol < lat, lat < lat_max - tol)] = 1
+        mask = hp.smoothing(mask, fwhm=np.radians(3), lmax=2048)
+        hp.write_map(fname_mask, mask)
+    return mask
+
+
+def map2cl(m, mask):
+    m[0] = hp.remove_dipole(m[0])
+    m[m == hp.UNSEEN] = 0
     fsky = np.sum(mask) / mask.size
     cl = hp.anafast(m * mask, lmax=lmax, iter=0) / fsky
-    
     return cl
 
 
@@ -47,9 +69,9 @@ def get_cl(fname_cl, fname_map, fname_hits):
     if os.path.isfile(fname_cl):
         cl = hp.read_cl(fname_cl)
     else:
-        hits = hp.read_map(path_hits)
+        mask = get_mask(fname_hits)
         m = hp.read_map(fname_map, None)
-        cl = map2cl(m, hits)
+        cl = map2cl(m, mask)
         hp.write_cl(fname_cl, cl)
     return cl
 
@@ -62,9 +84,9 @@ def get_tf(fname_tf, fname_cmb_unlensed, fname_cmb_lensing, fname_output, fname_
         inmap *= 1e-6  # into K_CMB
         inmap[0] = hp.remove_dipole(inmap[0])
         outmap = hp.read_map(fname_output, None)
-        hits = hp.read_map(fname_hits)
-        cl_in = map2cl(inmap, hits)
-        cl_out = map2cl(outmap, hits)
+        mask = get_mask(fname_hits)
+        cl_in = map2cl(inmap, mask)
+        cl_out = map2cl(outmap, mask)
         tf = cl_out / cl_in
         hp.write_cl(fname_tf, tf)
     tf[:, lmax_tf:] = 1
