@@ -67,7 +67,11 @@ def main():
         with open(fname, "w") as fout:
             for det_name in sorted(wafer_data):
                 x, y, psi = wafer_data[det_name]
-                fout.write(f"{det_name} {x - xoffset} {y - yoffset} {psi}\n")
+                x -= xoffset
+                y -= yoffset
+                phi = np.degrees(np.arcsin(x))
+                theta = np.degrees(np.arcsin(y))
+                fout.write(f"{det_name} {phi} {theta} {psi}\n")
 
     return
 
