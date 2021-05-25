@@ -288,150 +288,142 @@ def get_example():
     bnd["low"] = 17.5
     bnd["high"] = 22.5
     bnd["bandpass"] = ""
-    bnd["NET"] = 473.0
+    bnd["NET"] = 332.2
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    # Noise elevation scaling fits from Carlos Sierra
-    # These numbers are for V3 LAT baseline
-    bnd["A"] = 0.09
-    bnd["C"] = 0.87
+    bnd["A"] = 0.08517
+    bnd["C"] = 0.88885
     bands["ULFPL1"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 27.0
-    bnd["low"] = 24.0
+    bnd["center"] = 25.75
+    bnd["low"] = 21.5
     bnd["high"] = 30.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 429.0
+    bnd["NET"] = 275.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    # Noise elevation scaling fits from Carlos Sierra
-    # These numbers are for V3 LAT baseline
-    bnd["A"] = 0.09
-    bnd["C"] = 0.87
+    bnd["A"] = 0.09185
+    bnd["C"] = 0.88031
     bands["LFL1"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 39.0
+    bnd["center"] = 38.75
     bnd["low"] = 30.0
-    bnd["high"] = 48.0
+    bnd["high"] = 47.5
     bnd["bandpass"] = ""
-    bnd["NET"] = 261.0
+    bnd["NET"] = 215.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.25
-    bnd["C"] = 0.64
+    bnd["A"] = 0.28098
+    bnd["C"] = 0.63360
     bands["LFL2"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 27.0
-    bnd["low"] = 24.0
+    bnd["center"] = 25.75
+    bnd["low"] = 21.5
     bnd["high"] = 30.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 445.0
+    bnd["NET"] = 278.6
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    # Noise elevation scaling fits from Carlos Sierra
-    # These numbers are for V3 LAT baseline
-    bnd["A"] = 0.09
-    bnd["C"] = 0.87
+    bnd["A"] = 0.11010
+    bnd["C"] = 0.85631
     bands["LFPL1"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 39.0
+    bnd["center"] = 38.75
     bnd["low"] = 30.0
-    bnd["high"] = 48.0
+    bnd["high"] = 47.5
     bnd["bandpass"] = ""
-    bnd["NET"] = 320.0
+    bnd["NET"] = 268.6
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.25
-    bnd["C"] = 0.64
+    bnd["A"] = 0.39135
+    bnd["C"] = 0.48954
     bands["LFPL2"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 30.0
-    bnd["low"] = 25.5
-    bnd["high"] = 34.5
+    bnd["center"] = 25.75
+    bnd["low"] = 21.5
+    bnd["high"] = 30.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 177.0
+    bnd["NET"] = 169.2
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    # Noise elevation scaling fits from Carlos Sierra
-    # These numbers are for V3 LAT baseline
-    bnd["A"] = 0.09
-    bnd["C"] = 0.87
+    bnd["A"] = 0.18693
+    bnd["C"] = 0.75616
     bands["LFS1"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 40.0
-    bnd["low"] = 34.0
-    bnd["high"] = 46.0
+    bnd["center"] = 38.75
+    bnd["low"] = 30.0
+    bnd["high"] = 47.5
     bnd["bandpass"] = ""
-    bnd["NET"] = 224.0
+    bnd["NET"] = 204.3
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.25
-    bnd["C"] = 0.64
+    bnd["A"] = 0.44737
+    bnd["C"] = 0.41660
     bands["LFS2"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 93.0
-    bnd["low"] = 75.5
-    bnd["high"] = 110.5
+    bnd["center"] = 91.5
+    bnd["low"] = 77.0
+    bnd["high"] = 106.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 305.0
+    bnd["NET"] = 251.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.14
-    bnd["C"] = 0.80
+    bnd["A"] = 0.21316
+    bnd["C"] = 0.72197
     bands["MFL1"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 145.0
-    bnd["low"] = 125.0
-    bnd["high"] = 165.0
+    bnd["center"] = 148.5
+    bnd["low"] = 128.0
+    bnd["high"] = 169.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 385.0
+    bnd["NET"] = 280.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.17
-    bnd["C"] = 0.76
+    bnd["A"] = 0.25419
+    bnd["C"] = 0.66817
     bands["MFL2"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 93.0
-    bnd["low"] = 75.5
-    bnd["high"] = 110.5
+    bnd["center"] = 91.5
+    bnd["low"] = 77.0
+    bnd["high"] = 106.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 347.0
+    bnd["NET"] = 285.2
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.14
-    bnd["C"] = 0.80
+    bnd["A"] = 0.28598
+    bnd["C"] = 0.62687
     bands["MFPL1"] = bnd
     
     bnd = OrderedDict()
-    bnd["center"] = 145.0
-    bnd["low"] = 125.0
-    bnd["high"] = 165.0
+    bnd["center"] = 148.5
+    bnd["low"] = 128.0
+    bnd["high"] = 169.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 374.0
+    bnd["NET"] = 264.6
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.17
-    bnd["C"] = 0.76
+    bnd["A"] = 0.23723
+    bnd["C"] = 0.69026
     bands["MFPL2"] = bnd
 
     bnd = OrderedDict()
@@ -439,25 +431,25 @@ def get_example():
     bnd["low"] = 74.8
     bnd["high"] = 95.2
     bnd["bandpass"] = ""
-    bnd["NET"] = 270.0
+    bnd["NET"] = 290.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.14
-    bnd["C"] = 0.80
+    bnd["A"] = 0.39787
+    bnd["C"] = 0.48099
     bands["MFLS1"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 145.1
+    bnd["center"] = 145.0
     bnd["low"] = 129.1
     bnd["high"] = 161.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 309.0
+    bnd["NET"] = 280.4
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.17
-    bnd["C"] = 0.76
+    bnd["A"] = 0.23642
+    bnd["C"] = 0.69144
     bands["MFLS2"] = bnd
 
     bnd = OrderedDict()
@@ -465,12 +457,12 @@ def get_example():
     bnd["low"] = 83.6
     bnd["high"] = 106.4
     bnd["bandpass"] = ""
-    bnd["NET"] = 238.0
+    bnd["NET"] = 248.2
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.14
-    bnd["C"] = 0.80
+    bnd["A"] = 0.32643
+    bnd["C"] = 0.57410
     bands["MFHS1"] = bnd
 
     bnd = OrderedDict()
@@ -478,90 +470,90 @@ def get_example():
     bnd["low"] = 138.0
     bnd["high"] = 172.1
     bnd["bandpass"] = ""
-    bnd["NET"] = 331.0
+    bnd["NET"] = 297.4
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.17
-    bnd["C"] = 0.76
+    bnd["A"] = 0.22547
+    bnd["C"] = 0.70578
     bands["MFHS2"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 225.0
-    bnd["low"] = 195.0
-    bnd["high"] = 255.0
+    bnd["center"] = 227.0
+    bnd["low"] = 198.0
+    bnd["high"] = 256.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 792.0
+    bnd["NET"] = 625.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.30
-    bnd["C"] = 0.58
+    bnd["A"] = 0.36575
+    bnd["C"] = 0.52282
     bands["HFL1"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 278.0
-    bnd["low"] = 255.5
-    bnd["high"] = 300.5
+    bnd["center"] = 285.5
+    bnd["low"] = 256.0
+    bnd["high"] = 315.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 1990.0
+    bnd["NET"] = 1528.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.36
-    bnd["C"] = 0.49
+    bnd["A"] = 0.44808
+    bnd["C"] = 0.41546
     bands["HFL2"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 225.0
-    bnd["low"] = 195.0
-    bnd["high"] = 255.0
+    bnd["center"] = 227.0
+    bnd["low"] = 198.0
+    bnd["high"] = 256.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 664.0
+    bnd["NET"] = 534.9
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.30
-    bnd["C"] = 0.58
+    bnd["A"] = 0.30291
+    bnd["C"] = 0.60477
     bands["HFPL1"] = bnd
     
     bnd = OrderedDict()
-    bnd["center"] = 278.0
-    bnd["low"] = 255.5
-    bnd["high"] = 300.5
+    bnd["center"] = 285.5
+    bnd["low"] = 256.0
+    bnd["high"] = 315.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 1609.0
+    bnd["NET"] = 1228.3
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.36
-    bnd["C"] = 0.49
+    bnd["A"] = 0.36240
+    bnd["C"] = 0.52713
     bands["HFPL2"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 220.0
-    bnd["low"] = 195.8
-    bnd["high"] = 244.2
+    bnd["center"] = 227.0
+    bnd["low"] = 198.0
+    bnd["high"] = 256.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 747.0
+    bnd["NET"] = 609.10
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.30
-    bnd["C"] = 0.58
+    bnd["A"] = 0.26844
+    bnd["C"] = 0.64976
     bands["HFS1"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 270.0
-    bnd["low"] = 240.3
-    bnd["high"] = 299.7
+    bnd["center"] = 285.5
+    bnd["low"] = 256.0
+    bnd["high"] = 315.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 1281.0
+    bnd["NET"] = 1434.9
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.36
-    bnd["C"] = 0.49
+    bnd["A"] = 0.31749
+    bnd["C"] = 0.58575
     bands["HFS2"] = bnd
 
     cnf["bands"] = bands
@@ -571,17 +563,17 @@ def get_example():
     wtypes = ["ULFPL", "LFL", "LFPL", "LFS", "MFL", "MFPL", "MFLS", "MFHS", "HFL", "HFPL", "HFS"]
     # partial wafers will be counted as individual wafers since we make a full wafer then kill pixels
     wcnt = {
-        "ULFPL": (3 + 3) * 1,
-        "LFL": (3 + 3) * (2 * 2),
-        "LFPL": (3 + 3) * 2,
-        "LFS": (10 + 4) * 2,
-        "MFL": (3 + 3) * (12 * 2),
-        "MFPL": (3 + 3) * 12,
-        "MFLS": (10 + 4) * 6,
-        "MFHS": (10 + 4) * 6,
-        "HFL": (3 + 3) * (5 * 2),
-        "HFPL": (3 + 3) * 4,
-        "HFS": (7 + 6) * 4,
+        "ULFPL": 4,
+        "LFL": 8*2,
+        "LFPL": 9,
+        "LFS": (12) * 2,
+        "MFL": 54*2,
+        "MFPL": 54,
+        "MFLS": (12) * 6,
+        "MFHS": (12) * 6,
+        "HFL": 23*2,
+        "HFPL": 18,
+        "HFS": (6 + 6) * 4,
     }
     wpac = {
         "ULFPL": "RP",
@@ -692,6 +684,52 @@ def get_example():
         "HFL",
         "HFL",
         "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "HFL",
+        "HFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "HFL",
+        "HFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
         "MFL",
         "MFL",
         "MFL",
@@ -705,45 +743,197 @@ def get_example():
         "MFL",
         "MFL",
         "LFL",
+        "MFL",
+        "MFL",
         "LFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
+        "LFL",
         "MFL",
         "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
+        "LFL",
         "MFL",
         "MFL",
         "MFL",
         "MFL",
         "LFL",
+        "MFL",
+        "MFL",
         "LFL",
+        "LFL",
+        "MFL",
+        "MFL",
+        "LFL",
+        "MFL",
+        "MFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "HFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "HFL",
+        "HFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "HFL",
+        "HFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "LFL",
+        "MFL",
+        "MFL",
+        "LFL",
+        "LFL",
+        "MFL",
+        "MFL",
+        "LFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "MFL",
+        "LFL",
+        "MFL",
+        "MFL",
+        "LFL",
+        "LFL",
+        "MFL",
+        "MFL",
+        "LFL",
+        "MFL",
+        "MFL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
         "HFPL",
-        "HFPL",
-        "HFPL",
-        "HFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "LFPL",
-        "LFPL",
         "ULFPL",
+        "HFPL",
+        "MFPL",
+        "HFPL",
+        "ULFPL",
+        "HFPL",
+        "ULFPL",
+        "HFPL",
+        "MFPL",
+        "HFPL",
+        "ULFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "MFPL",
+        "HFPL",
+        "MFPL",
+        "HFPL",
+        "MFPL",
+        "HFPL",
+        "MFPL",
+        "HFPL",
+        "MFPL",
+        "HFPL",
+        "MFPL",
+        "HFPL",
+        "MFPL",
+        "HFPL",
+        "MFPL",
+        "HFPL",
+        "MFPL",
+        "HFPL",
+        "MFPL",
+        "HFPL",
+        "MFPL",
+        "HFPL",
+        "MFPL",
+        "HFPL",
+        "MFPL",
+        "MFPL",
+        "LFPL",
+        "MFPL",
+        "LFPL",
+        "MFPL",
+        "LFPL",
+        "MFPL",
+        "MFPL",
+        "LFPL",
+        "MFPL",
+        "MFPL",
+        "LFPL",
+        "MFPL",
+        "MFPL",
+        "LFPL",
+        "MFPL",
+        "MFPL",
+        "LFPL",
+        "MFPL",
+        "MFPL",
+        "LFPL",
+        "MFPL",
+        "MFPL",
+        "LFPL",
     ]
     ltubepos = [
         0,
@@ -765,6 +955,72 @@ def get_example():
         16,
         17,
         18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        62,
+        63,
+        64,
+        65,
+        67,
+        68,
+        69,
+        70,
+        72,
+        73,
+        74,
+        75,
+        77,
+        78,
+        79,
+        80,
+        82,
+        83,
+        84,
+        85,
+        87,
+        88,
+        89,
+        90,
         0,
         1,
         2,
@@ -784,6 +1040,72 @@ def get_example():
         16,
         17,
         18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        62,
+        63,
+        64,
+        65,
+        67,
+        68,
+        69,
+        70,
+        72,
+        73,
+        74,
+        75,
+        77,
+        78,
+        79,
+        80,
+        82,
+        83,
+        84,
+        85,
+        87,
+        88,
+        89,
+        90,
         0,
         1,
         2,
@@ -803,17 +1125,83 @@ def get_example():
         16,
         17,
         18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        39,
+        40,
+        41,
+        42,
+        43,
+        44,
+        45,
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        62,
+        63,
+        64,
+        65,
+        67,
+        68,
+        69,
+        70,
+        72,
+        73,
+        74,
+        75,
+        77,
+        78,
+        79,
+        80,
+        82,
+        83,
+        84,
+        85,
+        87,
+        88,
+        89,
+        90
     ]
-    # tindx is the tube number we have 19*3=57
-    for tindx in range(57):
+    # tindx is the tube number we have 85*3=255
+    for tindx in range(255):
         nm = "LT{:d}".format(tindx)
         ttyp = ltubes[tindx]
         tb = OrderedDict()
         tb["type"] = ttyp
-        tb["waferspace"] = 127.89
+        tb["waferspace"] = 124.
         tb["wafers"] = list()
         # tw is the wafer number in the tube. Here we use 6 for the 3 full and 3 partial wafers/tube
-        for tw in range(6):
+        for tw in range(1):
             off = 0
             for w, props in cnf["wafers"].items():
                 if props["type"] == ttyp:
@@ -822,28 +1210,28 @@ def get_example():
                         woff[ttyp] += 1
                         break
                     off += 1
-        tb["platescale"] = 0.00495
+        tb["platescale"] = 0.0047619
         tb["location"] = ltubepos[tindx]
         tubes[nm] = tb
 
     stubes = [
         "MFLS",
-        "MFLS",
-        "MFLS",
-        "MFLS",
-        "MFLS",
-        "MFLS",
-        "MFHS",
-        "MFHS",
-        "MFHS",
-        "MFHS",
-        "MFHS",
         "MFHS",
         "HFS",
+        "MFLS",
+        "MFHS",
         "HFS",
+        "MFLS",
+        "MFHS",
         "HFS",
+        "MFLS",
+        "MFHS",
         "HFS",
+        "MFLS",
+        "MFHS",
         "LFS",
+        "MFLS",
+        "MFHS",
         "LFS",
     ]
     stubepos = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -852,11 +1240,11 @@ def get_example():
         ttyp = stubes[tindx]
         tb = OrderedDict()
         tb["type"] = ttyp
-        tb["waferspace"] = 127.89
+        tb["waferspace"] = 124.
         tb["wafers"] = list()
         # HF tubes have 8 full wafers + 2 partial, all others 11+2
         if ttyp == "HFS":
-            for tw in range(13):
+            for tw in range(12):
                 off = 0
                 for w, props in cnf["wafers"].items():
                     if props["type"] == ttyp:
@@ -865,10 +1253,10 @@ def get_example():
                             woff[ttyp] += 1
                             break
                         off += 1
-            # 35.0/(3*127.89)
-            tb["platescale"] = 0.091224
+            # 29.0 deg/(422mm)
+            tb["platescale"] = 0.0687
         else:
-            for tw in range(14):
+            for tw in range(12):
                 off = 0
                 for w, props in cnf["wafers"].items():
                     if props["type"] == ttyp:
@@ -877,8 +1265,8 @@ def get_example():
                             woff[ttyp] += 1
                             break
                         off += 1
-            # 29.0/(4*127.89)
-            tb["platescale"] = 0.056689
+            # 29.0/(490mm)
+            tb["platescale"] = 0.0592
         tb["location"] = stubepos[tindx]
         tubes[nm] = tb
 
@@ -887,19 +1275,19 @@ def get_example():
     telescopes = OrderedDict()
 
     lfwhm = OrderedDict()
-    lfwhm["ULFPL1"] = 10.0
+    lfwhm["ULFPL1"] = 11.4
     lfwhm["LFL1"] = 7.4
-    lfwhm["LFPL1"] = 7.4
+    lfwhm["LFPL1"] = 8.4
     lfwhm["LFL2"] = 5.1
-    lfwhm["LFPL2"] = 5.1
+    lfwhm["LFPL2"] = 5.8
     lfwhm["MFL1"] = 2.2
-    lfwhm["MFPL1"] = 2.2
+    lfwhm["MFPL1"] = 2.5
     lfwhm["MFL2"] = 1.4
-    lfwhm["MFPL2"] = 1.4
+    lfwhm["MFPL2"] = 1.6
     lfwhm["HFL1"] = 1.0
-    lfwhm["HFPL1"] = 1.0
+    lfwhm["HFPL1"] = 1.1
     lfwhm["HFL2"] = 0.9
-    lfwhm["HFPL2"] = 0.9
+    lfwhm["HFPL2"] = 1.0
 
     tele = OrderedDict()
     tele["tubes"] = [
@@ -922,16 +1310,6 @@ def get_example():
         "LT16",
         "LT17",
         "LT18",
-    ]
-    tele["platescale"] = 0.00495
-    # This tube spacing in mm corresponds to 1.78 degrees projected on
-    # the sky at a plate scale of 0.00495 deg/mm.
-    tele["tubespace"] = 359.6
-    tele["fwhm"] = lfwhm
-    telescopes["LAT0"] = tele
-
-    tele = OrderedDict()
-    tele["tubes"] = [
         "LT19",
         "LT20",
         "LT21",
@@ -951,16 +1329,6 @@ def get_example():
         "LT35",
         "LT36",
         "LT37",
-    ]
-    tele["platescale"] = 0.00495
-    # This tube spacing in mm corresponds to 1.78 degrees projected on
-    # the sky at a plate scale of 0.00495 deg/mm.
-    tele["tubespace"] = 359.6
-    tele["fwhm"] = lfwhm
-    telescopes["LAT1"] = tele
-
-    tele = OrderedDict()
-    tele["tubes"] = [
         "LT38",
         "LT39",
         "LT40",
@@ -980,11 +1348,232 @@ def get_example():
         "LT54",
         "LT55",
         "LT56",
+        "LT57",
+        "LT58",
+        "LT59",
+        "LT60",
+        "LT61",
+        "LT62",
+        "LT63",
+        "LT64",
+        "LT65",
+        "LT66",
+        "LT67",
+        "LT68",
+        "LT69",
+        "LT70",
+        "LT71",
+        "LT72",
+        "LT73",
+        "LT74",
+        "LT75",
+        "LT76",
+        "LT77",
+        "LT78",
+        "LT79",
+        "LT80",
+        "LT81",
+        "LT82",
+        "LT83",
+        "LT84"
     ]
-    tele["platescale"] = 0.00495
-    # This tube spacing in mm corresponds to 1.78 degrees projected on
-    # the sky at a plate scale of 0.00495 deg/mm.
-    tele["tubespace"] = 359.6
+    tele["platescale"] = 0.0047619
+    # This tube spacing in mm corresponds to 0.83 degrees projected on
+    # the sky at a plate scale of 210 mm/deg or 0.0047619 deg/mm
+    # The physical tube spacing is actually 210 mm.
+    tele["tubespace"] =  174.3
+    tele["fwhm"] = lfwhm
+    telescopes["LAT0"] = tele
+
+    tele = OrderedDict()
+    tele["tubes"] = [
+        "LT85",
+        "LT86",
+        "LT87",
+        "LT88",
+        "LT89",
+        "LT90",
+        "LT91",
+        "LT92",
+        "LT93",
+        "LT94",
+        "LT95",
+        "LT96",
+        "LT97",
+        "LT98",
+        "LT99",
+        "LT100",
+        "LT101",
+        "LT102",
+        "LT103",
+        "LT104",
+        "LT105",
+        "LT106",
+        "LT107",
+        "LT108",
+        "LT109",
+        "LT110",
+        "LT111",
+        "LT112",
+        "LT113",
+        "LT114",
+        "LT115",
+        "LT116",
+        "LT117",
+        "LT118",
+        "LT119",
+        "LT120",
+        "LT121",
+        "LT122",
+        "LT123",
+        "LT124",
+        "LT125",
+        "LT126",
+        "LT127",
+        "LT128",
+        "LT129",
+        "LT130",
+        "LT131",
+        "LT132",
+        "LT133",
+        "LT134",
+        "LT135",
+        "LT136",
+        "LT137",
+        "LT138",
+        "LT139",
+        "LT140",
+        "LT141",
+        "LT142",
+        "LT143",
+        "LT144",
+        "LT145",
+        "LT146",
+        "LT147",
+        "LT148",
+        "LT149",
+        "LT150",
+        "LT151",
+        "LT152",
+        "LT153",
+        "LT154",
+        "LT155",
+        "LT156",
+        "LT157",
+        "LT158",
+        "LT159",
+        "LT160",
+        "LT161",
+        "LT162",
+        "LT163",
+        "LT164",
+        "LT165",
+        "LT166",
+        "LT167",
+        "LT168",
+        "LT169"
+    ]
+    tele["platescale"] =  0.0047619
+    # This tube spacing in mm corresponds to 0.83 degrees projected on
+    # the sky at a plate scale of 210 mm/deg or 0.0047619 deg/mm
+    # The physical tube spacing is actually 210 mm.
+    tele["tubespace"] =  174.3
+    tele["fwhm"] = lfwhm
+    telescopes["LAT1"] = tele
+
+    tele = OrderedDict()
+    tele["tubes"] = [
+        "LT170",
+        "LT171",
+        "LT172",
+        "LT173",
+        "LT174",
+        "LT175",
+        "LT176",
+        "LT177",
+        "LT178",
+        "LT179",
+        "LT180",
+        "LT181",
+        "LT182",
+        "LT183",
+        "LT184",
+        "LT185",
+        "LT186",
+        "LT187",
+        "LT188",
+        "LT189",
+        "LT190",
+        "LT191",
+        "LT192",
+        "LT193",
+        "LT194",
+        "LT195",
+        "LT196",
+        "LT197",
+        "LT198",
+        "LT199",
+        "LT200",
+        "LT201",
+        "LT202",
+        "LT203",
+        "LT204",
+        "LT205",
+        "LT206",
+        "LT207",
+        "LT208",
+        "LT209",
+        "LT210",
+        "LT211",
+        "LT212",
+        "LT213",
+        "LT214",
+        "LT215",
+        "LT216",
+        "LT217",
+        "LT218",
+        "LT219",
+        "LT220",
+        "LT221",
+        "LT222",
+        "LT223",
+        "LT224",
+        "LT225",
+        "LT226",
+        "LT227",
+        "LT228",
+        "LT229",
+        "LT230",
+        "LT231",
+        "LT232",
+        "LT233",
+        "LT234",
+        "LT235",
+        "LT236",
+        "LT237",
+        "LT238",
+        "LT239",
+        "LT240",
+        "LT241",
+        "LT242",
+        "LT243",
+        "LT244",
+        "LT245",
+        "LT246",
+        "LT247",
+        "LT248",
+        "LT249",
+        "LT250",
+        "LT251",
+        "LT252",
+        "LT253",
+        "LT254"
+    ]
+    tele["platescale"] = 0.0047619
+    # This tube spacing in mm corresponds to 0.83 degrees projected on
+    # the sky at a plate scale of 210 mm/deg or 0.0047619 deg/mm
+    # The physical tube spacing is actually 210 mm.
+    tele["tubespace"] =  174.3
     tele["fwhm"] = lfwhm
     telescopes["LAT2"] = tele
 
@@ -1029,7 +1618,7 @@ def get_example():
 
     tele = OrderedDict()
     tele["tubes"] = ["ST12", "ST13", "ST14"]
-    tele["platescale"] = 0.091224
+    tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT4"] = tele

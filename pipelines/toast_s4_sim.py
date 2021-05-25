@@ -30,6 +30,7 @@ import pickle
 import re
 import sys
 import traceback
+from time import time
 
 import argparse
 import dateutil.parser
@@ -76,6 +77,7 @@ def parse_arguments(comm):
     toast_tools.add_todground_args(parser)
     toast_tools.add_pointing_args(parser)
     toast_tools.add_polyfilter_args(parser)
+    toast_tools.add_polyfilter2D_args(parser)
     toast_tools.add_groundfilter_args(parser)
     toast_tools.add_atmosphere_args(parser)
     toast_tools.add_noise_args(parser)
@@ -105,6 +107,14 @@ def parse_arguments(comm):
         default=False,
         action="store_true",
         help="Skip the first Madam call.",
+    )
+
+    parser.add_argument(
+        "--pairdiff",
+        required=False,
+        default=False,
+        action="store_true",
+        help="Pair-difference TOD and pointing.",
     )
 
     parser.add_argument(
@@ -138,11 +148,7 @@ def parse_arguments(comm):
         comm = Comm(groupsize=args.group_size)
 
     if comm.world_rank == 0:
-        if not os.path.isdir(args.outdir):
-            try:
-                os.makedirs(args.outdir)
-            except FileExistsError:
-                pass
+        os.makedirs(args.outdir, exist_ok=True)
         timer.report_clear("Parse arguments")
 
     return args, comm
@@ -151,11 +157,7 @@ def parse_arguments(comm):
 def setup_output(args, comm, mc):
     outpath = "{}/{:08}".format(args.outdir, mc)
     if comm.world_rank == 0:
-        if not os.path.isdir(outpath):
-            try:
-                os.makedirs(outpath)
-            except FileExistsError:
-                pass
+        os.makedirs(outpath, exist_ok=True)
     return outpath
 
 
@@ -170,26 +172,83 @@ def outputs_exist(args, comm, outpath):
                     outpath, args.mapmaker_prefix + "_telescope_all_time_all_bmap.fits"
                 )
                 there = os.path.isfile(fname)
+                if there:
+                    print(f"{fname} exists", flush=True)
+                else:
+                    print(f"{fname} does not exist", flush=True)
             if there and args.destripe:
                 fname = os.path.join(
                     outpath, args.mapmaker_prefix + "_telescope_all_time_all_map.fits"
                 )
                 there = os.path.isfile(fname)
+                if there:
+                    print(f"{fname} exists", flush=True)
+                else:
+                    print(f"{fname} does not exist", flush=True)
         if there and (args.apply_polyfilter or args.apply_groundfilter):
             fname = os.path.join(
                 outpath,
                 args.mapmaker_prefix + "_filtered" + "_telescope_all_time_all_bmap.fits",
             )
             there = os.path.isfile(fname)
+            if there:
+                print(f"{fname} exists", flush=True)
+            else:
+                print(f"{fname} does not exist", flush=True)
         if there and (args.filterbin_ground_order or args.filterbin_poly_order):
             fname = os.path.join(
                 outpath,
                 args.filterbin_prefix + "_telescope_all_time_all_filtered.fits",
             )
-            there = os.path.isfile(fname)
+            there = os.path.isfile(fname) or os.path.isfile(fname + ".gz")
+            if there:
+                print(f"{fname} exists", flush=True)
+            else:
+                print(f"{fname} does not exist", flush=True)
     there = comm.comm_world.bcast(there)
     return there
 
+
+def pairdiff(data, args, comm, name, do_pointing):
+    if not args.pairdiff:
+        return
+    t1 = time()
+    if comm.comm_world.rank == 0:
+        print("Pair differencing data", flush=True)
+
+    for obs in data.obs:
+        tod = obs["tod"]
+        for det in tod.local_dets:
+            signal = tod.local_signal(det, name)
+            if det.endswith("A"):
+                pairdet = det[:-1] + "B"
+                if pairdet not in tod.local_dets:
+                    raise RuntimeError(
+                        "Detector pair not available ({}, {})".format(det, pairdet)
+                    )
+            else:
+                continue
+            # signal
+            pairsignal = tod.local_signal(pairdet, name)
+            signal[:], pairsignal[:] = [
+                0.5 * (signal + pairsignal), 0.5 * (signal - pairsignal)
+            ]
+            if do_pointing:
+                # flags
+                flags = tod.local_flags(det)
+                pairflags = tod.local_flags(pairdet)
+                flags |= pairflags
+                pairflags[:] = flags
+                # pointing weights
+                weights = tod.cache.reference("weights_" + det)
+                pairweights = tod.cache.reference("weights_" + pairdet)
+                weights[:], pairweights[:] = [
+                    0.5 * (weights + pairweights), 0.5 * (weights - pairweights)
+                ]
+
+    if comm.comm_world.rank == 0:
+        print("Pair differenced in {:.1f} s".format(time() - t1), flush=True)
+    return
 
 def main():
     log = Logger.get()
@@ -327,6 +386,8 @@ def main():
 
         # Bin and destripe maps
 
+        pairdiff(data, args, comm, totalname, mc == firstmc)
+
         if not args.skip_madam:
             toast_tools.apply_madam(
                 args,
@@ -357,9 +418,11 @@ def main():
                 first_call=(mc == firstmc),
             )
 
-        if args.apply_polyfilter or args.apply_groundfilter:
+        if args.apply_polyfilter or args.apply_groundfilter or args.apply_polyfilter2D:
 
             # Filter signal
+
+            toast_tools.apply_polyfilter2D(args, comm, data, totalname)
 
             toast_tools.apply_polyfilter(args, comm, data, totalname)
 

@@ -1,6 +1,8 @@
 # Copyright (c) 2020-2020 CMB-S4 Collaboration.
 # Full license can be found in the top level "LICENSE" file.
 
+import pickle
+
 import numpy as np
 
 from toast.pipeline_tools import Telescope, Focalplane, Site, Schedule, CES
@@ -19,12 +21,12 @@ FOCALPLANE_RADII_DEG = {
     "LAT0": 3.9,
     "LAT1": 3.9,
     "LAT2": 3.9,
-    "SAT0": 14.5,
-    "SAT1": 14.5,
-    "SAT2": 14.5,
-    "SAT3": 14.5,
-    "SAT4": 17.5,
-    "SAT5": 17.5,
+    "SAT0": 17.5,
+    "SAT1": 17.5,
+    "SAT2": 17.5,
+    "SAT3": 17.5,
+    "SAT4": 14.5,
+    "SAT5": 14.5,
 }
 
 
@@ -92,25 +94,45 @@ def add_hw_args(parser):
         "MFLS2 (145.1 GHz, SAT), MFHS1 (95 GHz, SAT), MFHS2 (155.1 GHz, SAT), "
         "HFL1(225 GHz, LAT), HFL2 (278 GHz, LAT), HFPL1 (225 GHz, Pole LAT), "
         "HFPL2 (278 GHz, Pole LAT), HFS1 (220 GHz, SAT), HFS2 (270 GHz, SAT)."
-        "Length of list must equal --tubes",
     )
     parser.add_argument(
         "--tubes",
-        required=True,
-        help="Comma-separated list of optics tubes: LT0 (HFL), LT1 (HFL), LT2 (HFL), "
-        "LT3 (HFL), LT4 (HFL), LT5 (MFL), LT6 (MFL), LT7 (MFL), LT8 (MFL), LT9 (MFL), "
-        "LT10 (MFL), LT11 (MFL),  LT12 (MFL), LT13 (MFL), LT14 (MFL), LT15 (MFL), "
-        "LT16 (MFL), LT17 (LFL), LT18 (LFL), LT19 (HFL), LT20 (HFL), LT21 (HFL), "
-        "LT22 (HFL), LT23 (HFL), LT24 (MFL), LT25 (MFL), LT26 (MFL), LT27 (MFL), "
-        "LT28 (MFL), LT29 (MFL), LT30 (MFL),  LT31 (MFL), LT32 (MFL), LT33 (MFL), "
-        "LT34 (MFL), LT35 (MFL), LT36 (LFL), LT37 (LFL), LT38 (HFPL), LT39 (HFPL), "
-        "LT40 (HFPL), LT41 (HFPL), LT42 (MFPL), LT43 (MFPL), LT44 (MFPL), LT45 (MFPL), "
-        "LT46 (MFPL), LT47 (MFPL), LT48 (MFPL),  LT49 (MFPL), LT50 (MFPL), LT51 (MFPL), "
-        "LT52 (MFPL), LT53 (MFPL), LT54 (LFPL), LT55 (LFPL), LT56 (ULFPL), ST0 (MFLS), "
-        "ST1 (MFLS), ST2 (MFLS), ST3 (MFLS), ST4 (MFLS), ST5 (MFLS), ST6 (MFHS), "
-        "ST7 (MFHS), ST8 (MFHS), ST9 (MFHS), ST10 (MFHS), ST11 (MFHS), ST12 (HFS),"
-        "ST13 (HFS), ST14 (HFS), ST15 (HFS), ST16 (LFS), ST17 (LFS)."
-        "Length of list must equal --bands",
+        required=False,
+        help="Comma-separated list of optics tubes:\n"
+        "LAT0-LFL : LT63, LT66, LT67, LT70, LT75, LT78, LT79, LT82. "
+        "LAT0-MFL : LT19..LT22, LT25..LT31, LT34..LT62, LT64, LT65, LT68, LT69, LT71..LT74, LT76, LT77, LT80, LT81, LT83, LT84. "
+        "LAT0-HFL : LT0..LT18, LT23, LT24, LT32, LT33. "
+        "LAT1-LFL : LT148, LT151, LT152, LT155, LT160, LT163, LT164, LT167. "
+        "LAT1-MFL : LT104..LT107, LT110..LT116, LT119..LT150, LT153, LT154, LT156..LT159, LT161, LT162, LT165, LT166, LT168, LT169. "
+        "LAT1-HFL : LT85..LT103, LT108, LT109, LT117, LT118. "
+        "LAT2-ULFPL : LT178, LT182, LT184, LT188. "
+        "LAT2-LFPL : LT232, LT234, LT236, LT239, LT242, LT245, LT248, LT251, LT254. "
+        "LAT2-MFPL : LT170..LT176, LT180, LT186, LT189..LT206, LT208, LT210, LT212, LT214, LT216, LT218, LT220, LT222, LT224, LT226, LT228, LT230, LT231, LT233, LT235, LT237, LT238, LT240, LT241, LT243, LT244, LT246, LT247, LT249, LT250, LT252, LT253. "
+        "LAT2-HFPL : LT177, LT179, LT181, LT183, LT185, LT187, LT207, LT209, LT211, LT213, LT215, LT217, LT219, LT221, LT223, LT225, LT227, LT229. "
+        "SAT0-MFLS : ST0. "
+        "SAT0-MFHS : ST1. "
+        "SAT0-HFS : ST2. "
+        "SAT1-MFLS : ST3. "
+        "SAT1-MFHS : ST4. "
+        "SAT1-HFS : ST5. "
+        "SAT2-MFLS : ST6. "
+        "SAT2-MFHS : ST7. "
+        "SAT2-HFS : ST8. "
+        "SAT3-MFLS : ST9. "
+        "SAT3-MFHS : ST10. "
+        "SAT3-HFS : ST11. "
+        "SAT4-LFS : ST14. "
+        "SAT4-MFLS : ST12. "
+        "SAT4-MFHS : ST13. "
+        "SAT5-LFS : ST17. "
+        "SAT5-MFLS : ST15. "
+        "SAT6-MFHS : ST16."
+    )
+    parser.add_argument(
+        "--telescope",
+        required=False,
+        help="Telescope, one of: LAT0, LAT1, LAT2, SAT0, SAT1, SAT2, "
+        "SAT3, SAT4, SAT5",
     )
     return
 
@@ -207,7 +229,11 @@ def get_hardware(args, comm, verbose=False):
     if comm.world_rank == 0:
         if args.hardware:
             log.info("Loading hardware configuration from {}...".format(args.hardware))
-            hw = hardware.Hardware(args.hardware)
+            if args.hardware.endswith(".pkl"):
+                with open(args.hardware, "rb") as fin:
+                    hw = pickle.load(fin)
+            else:
+                hw = hardware.Hardware(args.hardware)
             timer.report_clear("Load {}".format(args.hardware))
         else:
             log.info("Simulating default hardware configuration")
@@ -221,7 +247,10 @@ def get_hardware(args, comm, verbose=False):
         for idet, det in enumerate(sorted(hw.data["detectors"])):
             det_index[det] = idet
         match = {"band": args.bands.replace(",", "|")}
-        tubes = args.tubes.split(",")
+        if args.tubes is None:
+            tubes = None
+        else:
+            tubes = args.tubes.split(",")
         # If one provides both telescopes and tubes, the tubes matching *either*
         # will be concatenated
         # hw = hw.select(telescopes=[telescope.name], tubes=tubes, match=match)
@@ -287,6 +316,8 @@ def get_hardware(args, comm, verbose=False):
 def get_telescope(args, comm, verbose=False):
     """ Determine which telescope matches the detector selections
     """
+    if args.telescope is not None:
+        return S4Telescope(args.telescope, site=args.site)
     telescope = None
     if comm.world_rank == 0:
         hwexample = hardware.get_example()
@@ -301,7 +332,7 @@ def get_telescope(args, comm, verbose=False):
                             "Tubes '{}' span more than one telescope".format(tubes)
                         )
                     break
-            if telescope is None:
+            else:
                 raise RuntimeError(
                     "Failed to match tube = '{}' with a telescope".format(tube)
                 )
@@ -340,6 +371,10 @@ def get_focalplane(args, comm, hw, det_index, verbose=False):
             for telescope_name, telescope_data in hw.data["telescopes"].items():
                 if tube_name in telescope_data["tubes"]:
                     break
+            else:
+                raise RuntimeError(
+                    "Unable to match tube {} to a telescope".format(tube_name)
+                )
             fpradius = max(fpradius, FOCALPLANE_RADII_DEG[telescope_name])
             det_params = DetectorParams(
                 det_data,

@@ -1,0 +1,116 @@
+#!/bin/bash
+#SBATCH --partition=regular
+#SBATCH --time=08:00:00
+#SBATCH --nodes=1
+#SBATCH --job-name=cache_atm
+#SBATCH --licenses=SCRATCH
+#SBATCH --constraint=knl
+#SBATCH --core-spec=4
+#SBATCH --account=mp107
+
+ulimit -c unlimited
+export MALLOC_MMAP_THRESHOLD_=131072
+export PYTHONSTARTUP=""
+export PYTHONNOUSERSITE=1
+export HOME=$SCRATCH
+export OMP_NUM_THREADS=4
+export OMP_PLACES=threads
+export OMP_PROC_BIND=spread
+
+let nnode=1
+let ntask_node=64/$OMP_NUM_THREADS
+let ntask=$nnode*$ntask_node
+let ncore=4*$OMP_NUM_THREADS
+# Make sure nnode is divisible by nnode_group
+let nnode_group=$nnode
+let groupsize=nnode_group*ntask_node
+
+echo "Running with"
+echo "            nnode = ${nnode}"
+echo "  OMP_NUM_THREADS = ${OMP_NUM_THREADS}"
+echo "       ntask_node = ${ntask_node}"
+echo "            ntask = ${ntask}"
+echo "      nnode_group = ${nnode_group}"
+echo "        groupsize = ${groupsize}"
+
+logdir=atm_logs
+mkdir -p $logdir
+
+for site in pole chile; do
+    case $site in
+        chile)
+            weather="weather_Atacama.fits"
+            ;;
+        pole)
+            weather="weather_South_Pole.fits"
+            ;;
+        *) echo "Unknown telescope: $tel"; exit;;
+    esac
+    for tel in sat lat; do
+        case $tel in
+            sat)
+                tube=ST17
+                band=LFS1
+                nside=512
+                # Minimum is 14.5 deg
+                fpradius=16
+                #hardware=hardware_SAT_LFS.toml.gz
+                hardware=hardware_SAT_LFS.pkl
+                ;;
+            lat)
+                case $site in
+                    chile)
+                        # Center tube on LAT0
+                        tube=LT0
+                        band=HFL1
+                        #hardware=hardware_LAT_HFL.toml.gz
+                        hardware=hardware_LAT_HFL.pkl
+                        ;;
+                    pole)
+                        tube=LT170
+                        band=MFPL1
+                        #hardware=hardware_LAT_MFPL.toml.gz
+                        hardware=hardware_LAT_MFPL.pkl
+                        ;;
+                    *) echo "Unknown telescope: $tel"; exit;;
+                esac
+                nside=4096
+                # Minimum is 4.08 deg
+                fpradius=5.0
+                ;;
+            *) echo "Unknown telescope: $tel"; exit;;
+        esac
+            
+        fnames=scan_strategy/${site}_${tel}/split_schedules/*
+        # Random wait time to reduce clashes
+        sleep $((RANDOM % 15))
+        for schedule in $fnames; do
+            rootname=`basename $schedule .txt`
+            rootname=${site}_${rootname}
+            logfile=$logdir/${rootname}.log
+            if [[ ! -e $logfile ]]; then
+                echo "Writing $logfile"
+                srun -n $ntask -c $ncore --cpu_bind=cores \
+                     toast_s4_sim.py @general.par @atmosphere_${site}.par \
+                     --group-size $groupsize \
+                     --MC-count 8 \
+                     --bands $band \
+                     --focalplane-radius $fpradius \
+                     --hardware $hardware \
+                     --no-maps \
+                     --sample-rate 10 \
+                     --scan-accel 1 \
+                     --scan-rate 1 \
+                     --schedule $schedule \
+                     --site $site \
+                     --thinfp 1 \
+                     --tubes $tube \
+                     --weather $weather \
+                     >& ${logfile}
+                exit
+            else
+                echo "$logfile exists"
+            fi
+        done
+    done
+done

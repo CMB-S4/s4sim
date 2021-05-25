@@ -37,6 +37,21 @@ def create_observation(args, comm, telescope, ces, verbose=True):
     else:
         el_nod = None
 
+    # Create a list of detector break indices that avoids splitting detector pairs
+    detlist = sorted(list(focalplane.detquats.keys()))
+    detbreaks = []
+    last_det = None
+    ndet_target = len(detlist) // ndetrank
+    if ndet_target * ndetrank < len(detlist):
+        ndet_target += 1
+    ndet = 0
+    for idet, det in enumerate(detlist):
+        if ndet >= ndet_target and det[:-1] != last_det[:-1]:
+            ndet = 0
+            detbreaks.append(idet)
+        ndet += 1
+        last_det = det
+
     try:
         tod = TODGround(
             comm.comm_group,
@@ -72,6 +87,7 @@ def create_observation(args, comm, telescope, ces, verbose=True):
             hwprpm=args.hwp_rpm,
             hwpstep=args.hwp_step_deg,
             hwpsteptime=args.hwp_step_time_s,
+            detbreaks=detbreaks,
         )
     except RuntimeError as e:
         raise RuntimeError(

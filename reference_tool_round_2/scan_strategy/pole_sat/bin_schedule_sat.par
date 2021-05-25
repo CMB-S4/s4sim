@@ -1,0 +1,8 @@
+--tubes
+ST0
+--bands
+MFLS1
+--site
+pole
+--schedule
+schedules/pole_schedule_sat.txt
