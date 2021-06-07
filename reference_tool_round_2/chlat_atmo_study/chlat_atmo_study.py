@@ -68,20 +68,56 @@ fname_atmo0 = os.path.join(rootdir, "chile_atmosphere_LAT_MFL2_filtered_telescop
 fname_atmo1 = os.path.join(rootdir, "chile_atmosphere_2Dorder2_LAT_MFL2_filtered_telescope_all_time_all_bmap.fits")
 fname_atmo2 = os.path.join(rootdir, "chile_atmosphere_2Dorder5_LAT_MFL2_filtered_telescope_all_time_all_bmap.fits")
 fname_atmo3 = os.path.join(rootdir, "chile_atmosphere_2Dorder10_LAT_MFL2_filtered_telescope_all_time_all_bmap.fits")
-fname_atmo4 = os.path.join(rootdir, "chile_atmosphere_2Dorder20_LAT_MFL2_filtered_telescope_all_time_all_bmap.fits")
+#fname_atmo4 = os.path.join(rootdir, "chile_atmosphere_2Dorder20_LAT_MFL2_filtered_telescope_all_time_all_bmap.fits")
+fname_atmo4 = os.path.join(rootdir, "chile_atmosphere_2Dorder0_by_tube_LAT_MFL2_filtered_telescope_all_time_all_bmap.fits")
+fname_atmo5 = os.path.join(rootdir, "chile_atmosphere_2Dorder1_by_tube_LAT_MFL2_filtered_telescope_all_time_all_bmap.fits")
 fname_cmb00 = os.path.join(rootdir, "chile_cmb_unlensed_solardipole_2DorderNO_LAT_MFL2_filtered_telescope_all_time_all_bmap.fits")
 fname_cmb0 = os.path.join(rootdir, "chile_cmb_unlensed_solardipole_LAT_MFL2_filtered_telescope_all_time_all_bmap.fits")
 fname_cmb1 = os.path.join(rootdir, "chile_cmb_unlensed_solardipole_2Dorder2_LAT_MFL2_filtered_telescope_all_time_all_bmap.fits")
 fname_cmb2 = os.path.join(rootdir, "chile_cmb_unlensed_solardipole_2Dorder5_LAT_MFL2_filtered_telescope_all_time_all_bmap.fits")
 fname_cmb3 = os.path.join(rootdir, "chile_cmb_unlensed_solardipole_2Dorder10_LAT_MFL2_filtered_telescope_all_time_all_bmap.fits")
-fname_cmb4 = os.path.join(rootdir, "chile_cmb_unlensed_solardipole_2Dorder20_LAT_MFL2_filtered_telescope_all_time_all_bmap.fits")
+#fname_cmb4 = os.path.join(rootdir, "chile_cmb_unlensed_solardipole_2Dorder20_LAT_MFL2_filtered_telescope_all_time_all_bmap.fits")
+fname_cmb4 = os.path.join(rootdir, "chile_cmb_unlensed_solardipole_2Dorder0_by_tube_LAT_MFL2_filtered_telescope_all_time_all_bmap.fits")
+fname_cmb5 = os.path.join(rootdir, "chile_cmb_unlensed_solardipole_2Dorder1_by_tube_LAT_MFL2_filtered_telescope_all_time_all_bmap.fits")
 
 fname_cmb_input = "/global/cscratch1/sd/zonca/cmbs4/map_based_simulations/202102_design_tool_input/4096/cmb_unlensed_solardipole/0000/cmbs4_cmb_unlensed_solardipole_uKCMB_LAT-MFL2_nside4096_0000.fits"
 
 for fname_map in (
-        fname_atmo00, fname_atmo0, fname_atmo1, fname_atmo2, fname_atmo3, fname_atmo4,
-        fname_cmb00,fname_cmb0, fname_cmb1, fname_cmb2, fname_cmb3, fname_cmb4, fname_cmb_input):
+        fname_atmo00, fname_atmo0, fname_atmo1, fname_atmo2, fname_atmo3, fname_atmo4, fname_atmo5,
+        fname_cmb00,fname_cmb0, fname_cmb1, fname_cmb2, fname_cmb3, fname_cmb4, fname_cmb5,
+        fname_cmb_input):
     get_cl(fname_map, fname_hits)
+
+"""
+nrow, ncol = 2, 6
+fig = plt.figure(figsize=[4 * ncol, 5 * nrow])
+reso = 1
+xsize = 800
+cl_cmb_in = get_cl(fname_cmb_input)
+for icol, (fname1, fname2, name) in enumerate([
+        (fname_cmb00, fname_atmo00, "2Dorder=NO"),
+        (fname_cmb0, fname_atmo0, "2Dorder=1"),
+        (fname_cmb1, fname_atmo1, "2Dorder=2"),
+        (fname_cmb2, fname_atmo2, "2Dorder=5"),
+        (fname_cmb3, fname_atmo3, "2Dorder=10"),
+        (fname_cmb4, fname_atmo3, "2Dorder=1 by tube"),
+]):
+    cl_cmb = get_cl(fname1)
+    tf = cl_cmb_in[0] / cl_cmb[0]
+    tf[lmax_tf:] = 1
+    tf[:30] = 1
+    m1 = hp.read_map(fname1)
+    m2 = hp.read_map(fname2)
+    for m in m1, m2,:
+        alm = hp.map2alm(m, lmax=lmax, iter=0)
+        alm = hp.almxfl(alm, tf ** .5)
+        m[:] = hp.alm2map(alm, nside, lmax=lmax)
+
+    hp.gnomview(m1, reso=reso, xsize=xsize, sub=[nrow, ncol, icol + 1], title="CMB " + name, min=-350, max=350)
+    #hp.gnomview(m2, reso=reso, xsize=xsize, sub=[nrow, ncol, icol + 1 + ncol], title="Atmo " + name, min=-4e-3, max=4e-3)
+    hp.gnomview(m2, reso=reso, xsize=xsize, sub=[nrow, ncol, icol + 1 + ncol], title="Atmo " + name, min=-0.005, max=0.005)
+fig.savefig("stamps.deconv.png")
+"""
 
 nrow, ncol = 1, 2
 fig = plt.figure(figsize=[6 * ncol, 6 * nrow])
@@ -149,6 +185,23 @@ tf[:, lmax_tf:] = 1
 ax1.loglog(ell[2:], (norm * cl_atmo[col])[2:] * tf[col][2:], color="tab:brown", ls="-", label="2Dorder=20")
 ax2.loglog(ell[2:], (norm * cl_cmb[col])[2:], color="tab:brown", ls="-", label="2Dorder=20")
 """
+
+cl_atmo = get_cl(fname_atmo4)
+cl_cmb = get_cl(fname_cmb4)
+tf = cl_cmb_in / cl_cmb
+tf[:, lmax_tf:] = 1
+#ax.loglog(ell[2:], (norm * cl_atmo[col])[2:], color="tab:green", ls="--")
+ax1.loglog(ell[2:], (norm * cl_atmo[col])[2:] * tf[col][2:], color="tab:red", ls="-", label="2Dorder=0 by tube")
+ax2.loglog(ell[2:], (norm * cl_cmb[col])[2:], color="tab:red", ls="-", label="2Dorder=0 by tube")
+
+cl_atmo = get_cl(fname_atmo5)
+cl_cmb = get_cl(fname_cmb5)
+tf = cl_cmb_in / cl_cmb
+tf[:, lmax_tf:] = 1
+#ax.loglog(ell[2:], (norm * cl_atmo[col])[2:], color="tab:green", ls="--")
+ax1.loglog(ell[2:], (norm * cl_atmo[col])[2:] * tf[col][2:], color="tab:brown", ls="-", label="2Dorder=1 by tube")
+ax2.loglog(ell[2:], (norm * cl_cmb[col])[2:], color="tab:brown", ls="-", label="2Dorder=1 by tube")
+
 
 for ax in ax1, ax2:
     ax.set_xlabel("Multipole, $\ell$")
