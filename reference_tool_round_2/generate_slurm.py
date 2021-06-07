@@ -61,24 +61,6 @@ flavors = (
     "combined_foregrounds",
 )
 
-telescopes = {
-    "LAT": {
-        "LT0": ["HFL1", "HFL2"], #           225 & 278 GHz
-        "LT5": ["MFL1", "MFL2"],  #           93 & 145 GHz
-        "LT17": ["LFL1", "LFL2"],  #          27 &  39 GHz
-        "LT38": ["HFPL1", "HFPL2"],  #  Pole 225 & 278 GHz
-        "LT42": ["MFPL1", "MFPL2"],  #  Pole  93 & 145 GHz
-        "LT54": ["LFPL1", "LFPL2"],  #  Pole  27 &  39 GHz
-        "LT56": ["ULFPL1"],  #          Pole 20 GHz
-    },
-    "SAT": {
-        "ST0": ["MFLS1", "MFLS2"],  #  85 & 145.1 GHz - SAT0 - FOV 14.5 deg
-        "ST6": ["MFHS1", "MFHS2"],  #  95 & 155.1 GHz - SAT2 - FOV 14.5 deg
-        "ST12": ["HFS1", "HFS2"],  #  220 & 270 GHz - SAT4 - FOV 17.5 deg
-        "ST16": ["LFS1", "LFS2"],  #   30 &  40 GHz - SAT5 - FOV 17.5 deg
-    },
-}
-
 
 def get_n_obs(site, telescope):
     fnames = glob(f"scan_strategy/{site}_{telescope}/split_schedules/*txt".lower())
@@ -100,6 +82,7 @@ for telescope in "SAT", "LAT":
         hwprpm = None
         cosecant_scan = False
         poly_order_2d = None
+        common_mode_key = None
         filterbin = False
         if site == "chile":
             weather = "weather_Atacama.fits"
@@ -137,6 +120,7 @@ for telescope in "SAT", "LAT":
                 telescope_name = "LAT2"
                 pixel_types = {"ULFPL" : None, "LFPL" : None, "MFPL" : None, "HFPL" : None}
                 poly_order = 10
+                common_mode_key = '"tube"'
                 ground_order = 100
             elif site == "chile":
                 nnode_group = 2
@@ -149,7 +133,8 @@ for telescope in "SAT", "LAT":
                 pixel_types = {"LFL" : None, "MFL" : None, "HFL" : None}
                 poly_order = 25
                 ground_order = 15
-                poly_order_2d = 1
+                #poly_order_2d = 1
+                common_mode_key = '"tube"'
                 atm_cache = "atm_cache_test"
             else:
                 raise RuntimeError(f"Unknown site: {site}")
@@ -253,6 +238,9 @@ for telescope in "SAT", "LAT":
                     if poly_order_2d is not None:
                         params["polyfilter2D"] = None
                         params["poly-order2D"] = poly_order_2d
+                    if common_mode_key is not None:
+                        params["common-mode-filter"] = None
+                        params["common-mode-filter-key"] = common_mode_key
                     if ground_order is not None:
                         if filterbin:
                             params["no-groundfilter"] = None

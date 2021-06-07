@@ -54,7 +54,7 @@ def get_nl(
     return nl
 
 band2freq = {
-    "ULF" : 20,
+    "ULFL1" : 20,
     "LFL1" : 27,
     "LFL2" : 39,
     "MFL1" : 93,

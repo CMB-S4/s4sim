@@ -4,44 +4,73 @@ import sys
 import healpy as hp
 import matplotlib.pyplot as plt
 import numpy as np
-
 import pylab
 
 import requirements as req
 
-fiducial_ellnorm = req.fiducial_ellnorm
+#pylab.rc('text', usetex=True)
+#pylab.rc('font', family='serif')
 
-telescope = "SAT"
-bands = "LFS1", "LFS2", "MFLS1", "MFLS2", "MFHS1", "MFHS2", "HFS1", "HFS2"
+telescope = "LAT"
+bands = "ULFPL1", "LFPL1", "LFPL2", "MFPL1", "MFPL2", "HFPL1", "HFPL2"
 nband = len(bands)
 site = "pole"
-nside = 512
+nside = 4096
+lmax_tf = 2048
+npix = 12 * nside ** 2
 lmax = 2 * nside
 flavor = "noise_atmo_7splits" # cmb_r0  cmb_tensor_only_r3e-3  foregrounds  noise_atmo_7splits
-#flavor = "noise"
+#flavor = "noise" # cmb_r0  cmb_tensor_only_r3e-3  foregrounds  noise_atmo_7splits
 
 split = 1
 nsplits = 1
 
-bk15 = np.genfromtxt("BK15_Nell", skip_header=13).T
-bk15_ellnorm = bk15[0] * (bk15[0] + 1) / (2 * np.pi)
-bl_bk15_95 = np.exp(-bk15[0] * (bk15[0] + 1) * np.radians(0.30) ** 2)
-bl_bk15_150 = np.exp(-bk15[0] * (bk15[0] + 1) * np.radians(0.21) ** 2)
-bl_bk15_220 = np.exp(bk15[0] * (bk15[0] + 1) * np.radians(0.14) ** 2)
-bk15[1:4] *= bl_bk15_95 / bk15_ellnorm
-bk15[4:7] *= bl_bk15_150 / bk15_ellnorm
-bk15[7:10] *= bl_bk15_220 / bk15_ellnorm
+# Deep56 is 565 sq.deg (0.0137 fsky) of which 340 sq.deg (0.00824 fsky) is usable for power spectrum estimation
+# ell pa1(150GHz) pa2(150GHz) pa3(150GHz) pa3(98GHz) pa3(98x150GHz)
+"""
+act_tt = np.genfromtxt("deep56_TT_Nl_out_210317.txt", skip_header=1).T
+act_ee = np.genfromtxt("deep56_EE_Nl_out_210317.txt", skip_header=1).T
+"""
 
 
-def map2cl(m, hits):
-    good = hits > 0
-    ngood = np.sum(good)
-    sorted_hits = np.sort(hits[good])
-    hit_lim = sorted_hits[np.int(ngood * .5)]
-    mask = hits > hit_lim
+def get_mask(fname_hits):
+    fname_mask = "mask_" + os.path.basename(fname_hits)
+    if os.path.isfile(fname_mask):
+        mask = hp.read_map(fname_mask)
+    else:
+        hits = hp.read_map(fname_hits)
+        if True:
+            good = hits > 0
+            ngood = np.sum(good)
+            sorted_hits = np.sort(hits[good])
+            hit_lim = sorted_hits[np.int(ngood * .5)]
+            mask = hits > hit_lim
+        else:
+            good = hits > 0
+            ngood = np.sum(good)
+            sorted_hits = np.sort(hits[good])
+
+            hit_lim = sorted_hits[np.int(ngood * .01)]
+            mask = hits > hit_lim
+
+            pix = np.arange(hits.size)
+            lon, lat = hp.pix2ang(nside, pix, lonlat=True)
+            lat_min = np.amin(lat[mask])
+            lat_max = np.amax(lat[mask])
+
+            mask = np.zeros(npix)
+            tol = 10.0  # degrees
+            mask[np.logical_and(lat_min + tol < lat, lat < lat_max - tol)] = 1
+        mask = hp.smoothing(mask, fwhm=np.radians(3), lmax=2048)
+        hp.write_map(fname_mask, mask)
+    return mask
+
+
+def map2cl(m, mask):
+    m[0] = hp.remove_dipole(m[0])
+    m[m == hp.UNSEEN] = 0
     fsky = np.sum(mask) / mask.size
     cl = hp.anafast(m * mask, lmax=lmax, iter=0) / fsky
-
     return cl
 
 
@@ -49,9 +78,9 @@ def get_cl(fname_cl, fname_map, fname_hits):
     if os.path.isfile(fname_cl):
         cl = hp.read_cl(fname_cl)
     else:
-        hits = hp.read_map(path_hits)
+        mask = get_mask(fname_hits)
         m = hp.read_map(fname_map, None)
-        cl = map2cl(m, hits)
+        cl = map2cl(m, mask)
         hp.write_cl(fname_cl, cl)
     return cl
 
@@ -64,16 +93,17 @@ def get_tf(fname_tf, fname_cmb_unlensed, fname_cmb_lensing, fname_output, fname_
         inmap *= 1e-6  # into K_CMB
         inmap[0] = hp.remove_dipole(inmap[0])
         outmap = hp.read_map(fname_output, None)
-        hits = hp.read_map(fname_hits)
-        cl_in = map2cl(inmap, hits)
-        cl_out = map2cl(outmap, hits)
+        mask = get_mask(fname_hits)
+        cl_in = map2cl(inmap, mask)
+        cl_out = map2cl(outmap, mask)
         tf = cl_out / cl_in
         hp.write_cl(fname_tf, tf)
+    tf[:, lmax_tf:] = 1
+    tf[tf > 1] = 1
     return tf
 
 
 rootdir = "/global/cscratch1/sd/zonca/cmbs4/map_based_simulations/202102_design_tool_run"
-rootdir_bk15 = "/global/cscratch1/sd/zonca/cmbs4/map_based_simulations/202103_bicepkeck/noise_atmo"
 
 nrow, ncol = nband, 3
 fig1 = plt.figure(figsize=[6 * ncol, 6 * 1])
@@ -82,8 +112,7 @@ ax2 = fig1.add_subplot(1, 3, 2)
 ax3 = fig1.add_subplot(1, 3, 3)
 fig2 = plt.figure(figsize=[6 * ncol, 6 * nrow])
 ell = np.arange(lmax + 1)
-# ellnorm = ell * (ell + 1) / (2 * np.pi) * 1e12
-ellnorm = 1e12
+ellnorm = ell * (ell + 1) / (2 * np.pi) * 1e12
 iplot = 0
 
 for band in bands:
@@ -97,11 +126,13 @@ for band in bands:
     path_cmb_unlensed = os.path.join(
         "/global/cscratch1/sd/zonca/cmbs4/map_based_simulations/202102_design_tool_input",
         f"{nside}/cmb_unlensed_solardipole/0000/"
+        #f"cmbs4_cmb_unlensed_solardipole_uKCMB_{telescope}-{band.replace('P', '')}_nside{nside}_0000.fits",
         f"cmbs4_cmb_unlensed_solardipole_uKCMB_{telescope}-{band}_nside{nside}_0000.fits",
     )
     path_cmb_lensing = os.path.join(
         "/global/cscratch1/sd/zonca/cmbs4/map_based_simulations/202102_design_tool_input",
         f"{nside}/cmb_lensing_signal/0000/"
+        #f"cmbs4_cmb_lensing_signal_uKCMB_{telescope}-{band.replace('P', '')}_nside{nside}_0000.fits",
         f"cmbs4_cmb_lensing_signal_uKCMB_{telescope}-{band}_nside{nside}_0000.fits",
     )
     path_cmb_output = os.path.join(
@@ -124,69 +155,75 @@ for band in bands:
     ax2.plot(ell[2:], tf[1][2:], label=band)
     ax3.plot(ell[2:], tf[2][2:], label=band)
 
-    freq = req.band2freq[band]
-    fwhm = req.Pole_SAT[freq][0]
+    freq = req.band2freq[band.replace("P", "")]
+    fwhm = req.Pole_LAT[freq][0]
     bl = req.get_bl(fwhm, ell)
-    nltt = req.NlTT_Pole_SAT[freq]
-    nlee = req.NlEE_Pole_SAT[freq]
+    nltt = req.NlTT_Pole_LAT[freq]
+    nlee = req.NlEE_Pole_LAT[freq]
 
     iplot += 1
     ax = fig2.add_subplot(nrow, ncol, iplot)
     ax.set_title(f"TT {band} / {freq}GHz")
     ax.set_xlabel("Multipole, $\ell$")
     ax.set_ylabel("D$\ell$ [$\mu$K$^2$]")
-    ax.loglog(req.fiducial_ell, req.fiducial_TT / fiducial_ellnorm, "k", label="CMB")
-    ax.loglog(req.ells, nltt / req.ellnorm, label="requirement")
+    ax.loglog(req.fiducial_ell, req.fiducial_TT, "k", label="CMB")
+    ax.loglog(req.ells, nltt, label="requirement")
     ax.loglog(ell, ellnorm * cl[0] * bl, label=f"Sim")
-    if band == "MFLS1" or band == "MFHS1":
-        ax.loglog(bk15[0], bk15[1], label="BK15 95GHz")
-    elif band == "MFLS2" or band == "MFHS2":
-        ax.loglog(bk15[0], bk15[4], label="BK15 150GHz")
-    elif band == "HFS1":
-        ax.loglog(bk15[0], bk15[7], label="BK15 220GHz")
+    """
+    if band == "MFL1":
+        ax.loglog(act_tt[0], act_tt[4], label="ACT PA3")
+    elif band == "MFL2":
+        ax.loglog(act_tt[0], act_tt[1], label="ACT PA1")
+        ax.loglog(act_tt[0], act_tt[2], label="ACT PA2")
+        ax.loglog(act_tt[0], act_tt[3], label="ACT PA3")
+    """
     #ax.set_xscale("linear")
     #ax.set_yscale("log")
-    ax.set_xlim([10, 1000])
-    ax.set_ylim([1e-8, 1e6])
+    ax.set_xlim([20, 8000])
+    ax.set_ylim([1e-3, 1e7])
 
     iplot += 1
     ax = fig2.add_subplot(nrow, ncol, iplot)
     ax.set_title(f"EE {band} / {freq}GHz")
     ax.set_xlabel("Multipole, $\ell$")
     ax.set_ylabel("D$\ell$ [$\mu$K$^2$]")
-    ax.loglog(req.fiducial_ell, req.fiducial_EE / fiducial_ellnorm, "k", label="CMB")
-    ax.loglog(req.ells, nlee / req.ellnorm, label="requirement")
+    ax.loglog(req.fiducial_ell, req.fiducial_EE, "k", label="CMB")
+    ax.loglog(req.ells, nlee, label="requirement")
     ax.loglog(ell, ellnorm * cl[1] * bl, label=f"Sim")
-    if band == "MFLS1" or band == "MFHS1":
-        ax.loglog(bk15[0], bk15[2], label="BK15 95GHz")
-    elif band == "MFLS2" or band == "MFHS2":
-        ax.loglog(bk15[0], bk15[5], label="BK15 150GHz")
-    elif band == "HFS1":
-        ax.loglog(bk15[0], bk15[8], label="BK15 220GHz")
+    """
+    if band == "MFL1":
+        ax.loglog(act_ee[0], act_ee[4], label="ACT PA3")
+    elif band == "MFL2":
+        ax.loglog(act_ee[0], act_ee[1], label="ACT PA1")
+        ax.loglog(act_ee[0], act_ee[2], label="ACT PA2")
+        ax.loglog(act_ee[0], act_ee[3], label="ACT PA3")
+    """
     #ax.set_xscale("linear")
     #ax.set_yscale("log")
-    ax.set_xlim([10, 1000])
-    ax.set_ylim([1e-8, 1e0])
-    
+    ax.set_xlim([20, 8000])
+    ax.set_ylim([1e-6, 1e5])
+
     iplot += 1
     ax = fig2.add_subplot(nrow, ncol, iplot)
     ax.set_title(f"BB {band} / {freq}GHz")
     ax.set_xlabel("Multipole, $\ell$")
     ax.set_ylabel("D$\ell$ [$\mu$K$^2$]")
-    ax.loglog(req.fiducial_ell, req.fiducial_BB / fiducial_ellnorm, "k", label="CMB")
-    ax.loglog(req.ells, nlee / req.ellnorm, label="requirement")
+    ax.loglog(req.fiducial_ell, req.fiducial_BB, "k", label="CMB")
+    ax.loglog(req.ells, nlee, label="requirement")
     ax.loglog(ell, ellnorm * cl[2] * bl, label=f"Sim")
-    if band == "MFLS1" or band == "MFHS1":
-        ax.loglog(bk15[0], bk15[3], label="BK15 95GHz")
-    elif band == "MFLS2" or band == "MFHS2":
-        ax.loglog(bk15[0], bk15[6], label="BK15 150GHz")
-    elif band == "HFS1":
-        ax.loglog(bk15[0], bk15[9], label="BK15 220GHz")
+    """
+    if band == "MFL1":
+        ax.loglog(act_ee[0], act_ee[4], label="ACT PA3")
+    elif band == "MFL2":
+        ax.loglog(act_ee[0], act_ee[1], label="ACT PA1")
+        ax.loglog(act_ee[0], act_ee[2], label="ACT PA2")
+        ax.loglog(act_ee[0], act_ee[3], label="ACT PA3")
+    """
     ax.legend(loc="best")
     #ax.set_xscale("linear")
     #ax.set_yscale("log")
-    ax.set_xlim([10, 1000])
-    ax.set_ylim([1e-8, 1e0])
+    ax.set_xlim([20, 8000])
+    ax.set_ylim([1e-6, 1e5])
 
 for ax in [ax1, ax2, ax3]:
     ax.set_xlabel(r"Multipole, $\ell$")
@@ -196,7 +233,7 @@ for ax in [ax1, ax2, ax3]:
     ax.axhline(1.0, color="k", linestyle="--")
     ax.set_xscale("log")
 ax3.legend(loc="best")
-fig1.savefig("pole_sat_tf.png")
+fig1.savefig(f"{site}_lat_tf.png")
 
-fig2.savefig(f"pole_sat_validation.{flavor}.png")
+fig2.savefig(f"{site}_lat_validation.{flavor}.png")
 plt.show()
