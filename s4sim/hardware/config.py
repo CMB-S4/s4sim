@@ -440,7 +440,7 @@ def get_example():
     bands["MFLS1"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 145.0
+    bnd["center"] = 145.1
     bnd["low"] = 129.1
     bnd["high"] = 161.0
     bnd["bandpass"] = ""
@@ -584,8 +584,8 @@ def get_example():
         "MFPL": "RP",
         "MFLS": "RP",
         "MFHS": "RP",
-        "HFL": "RP",
-        "HFPL": "RP",
+        "HFL": "HP",
+        "HFPL": "HP",
         "HFS": "HP",
     }
     wnp = {
@@ -597,8 +597,8 @@ def get_example():
         "MFPL": 432,
         "MFLS": 147,
         "MFHS": 147,
-        "HFL": 432,
-        "HFPL": 432,
+        "HFL": 469,
+        "HFPL": 469,
         "HFS": 469,
     }
     wpixmm = {
@@ -610,8 +610,8 @@ def get_example():
         "MFPL": 5.3,
         "MFLS": 9.4,
         "MFHS": 9.4,
-        "HFL": 5.3,
-        "HFPL": 5.3,
+        "HFL": 5.2,
+        "HFPL": 5.2,
         "HFS": 5.2,
     }
     wrhombgap = {
