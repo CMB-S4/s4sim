@@ -294,6 +294,7 @@ def get_example():
     bnd["alpha"] = 3.5
     bnd["A"] = 0.08517
     bnd["C"] = 0.88885
+    bnd["NET_corr"] = 1.
     bands["ULFPL1"] = bnd
 
     bnd = OrderedDict()
@@ -307,6 +308,7 @@ def get_example():
     bnd["alpha"] = 3.5
     bnd["A"] = 0.09185
     bnd["C"] = 0.88031
+    bnd["NET_corr"] = 1.
     bands["LFL1"] = bnd
 
     bnd = OrderedDict()
@@ -320,6 +322,7 @@ def get_example():
     bnd["alpha"] = 3.5
     bnd["A"] = 0.28098
     bnd["C"] = 0.63360
+    bnd["NET_corr"] = 1.
     bands["LFL2"] = bnd
 
     bnd = OrderedDict()
@@ -333,6 +336,7 @@ def get_example():
     bnd["alpha"] = 3.5
     bnd["A"] = 0.11010
     bnd["C"] = 0.85631
+    bnd["NET_corr"] = 1.
     bands["LFPL1"] = bnd
 
     bnd = OrderedDict()
@@ -346,6 +350,7 @@ def get_example():
     bnd["alpha"] = 3.5
     bnd["A"] = 0.39135
     bnd["C"] = 0.48954
+    bnd["NET_corr"] = 1.
     bands["LFPL2"] = bnd
 
     bnd = OrderedDict()
@@ -359,6 +364,7 @@ def get_example():
     bnd["alpha"] = 3.5
     bnd["A"] = 0.18693
     bnd["C"] = 0.75616
+    bnd["NET_corr"] = 1.
     bands["LFS1"] = bnd
 
     bnd = OrderedDict()
@@ -372,6 +378,7 @@ def get_example():
     bnd["alpha"] = 3.5
     bnd["A"] = 0.44737
     bnd["C"] = 0.41660
+    bnd["NET_corr"] = 1.
     bands["LFS2"] = bnd
 
     bnd = OrderedDict()
@@ -385,6 +392,7 @@ def get_example():
     bnd["alpha"] = 3.5
     bnd["A"] = 0.21316
     bnd["C"] = 0.72197
+    bnd["NET_corr"] = 1.
     bands["MFL1"] = bnd
 
     bnd = OrderedDict()
@@ -398,6 +406,7 @@ def get_example():
     bnd["alpha"] = 3.5
     bnd["A"] = 0.25419
     bnd["C"] = 0.66817
+    bnd["NET_corr"] = 1.
     bands["MFL2"] = bnd
 
     bnd = OrderedDict()
@@ -411,6 +420,7 @@ def get_example():
     bnd["alpha"] = 3.5
     bnd["A"] = 0.28598
     bnd["C"] = 0.62687
+    bnd["NET_corr"] = 1.
     bands["MFPL1"] = bnd
     
     bnd = OrderedDict()
@@ -424,6 +434,7 @@ def get_example():
     bnd["alpha"] = 3.5
     bnd["A"] = 0.23723
     bnd["C"] = 0.69026
+    bnd["NET_corr"] = 1.
     bands["MFPL2"] = bnd
 
     bnd = OrderedDict()
@@ -437,6 +448,7 @@ def get_example():
     bnd["alpha"] = 3.5
     bnd["A"] = 0.39787
     bnd["C"] = 0.48099
+    bnd["NET_corr"] = 1.
     bands["MFLS1"] = bnd
 
     bnd = OrderedDict()
@@ -450,6 +462,7 @@ def get_example():
     bnd["alpha"] = 3.5
     bnd["A"] = 0.23642
     bnd["C"] = 0.69144
+    bnd["NET_corr"] = 1.
     bands["MFLS2"] = bnd
 
     bnd = OrderedDict()
@@ -463,6 +476,7 @@ def get_example():
     bnd["alpha"] = 3.5
     bnd["A"] = 0.32643
     bnd["C"] = 0.57410
+    bnd["NET_corr"] = 1.
     bands["MFHS1"] = bnd
 
     bnd = OrderedDict()
@@ -476,6 +490,7 @@ def get_example():
     bnd["alpha"] = 3.5
     bnd["A"] = 0.22547
     bnd["C"] = 0.70578
+    bnd["NET_corr"] = 1.
     bands["MFHS2"] = bnd
 
     bnd = OrderedDict()
@@ -489,6 +504,7 @@ def get_example():
     bnd["alpha"] = 3.5
     bnd["A"] = 0.36575
     bnd["C"] = 0.52282
+    bnd["NET_corr"] = 1.
     bands["HFL1"] = bnd
 
     bnd = OrderedDict()
@@ -502,6 +518,7 @@ def get_example():
     bnd["alpha"] = 3.5
     bnd["A"] = 0.44808
     bnd["C"] = 0.41546
+    bnd["NET_corr"] = 1.
     bands["HFL2"] = bnd
 
     bnd = OrderedDict()
@@ -515,6 +532,7 @@ def get_example():
     bnd["alpha"] = 3.5
     bnd["A"] = 0.30291
     bnd["C"] = 0.60477
+    bnd["NET_corr"] = 1.
     bands["HFPL1"] = bnd
     
     bnd = OrderedDict()
@@ -528,6 +546,7 @@ def get_example():
     bnd["alpha"] = 3.5
     bnd["A"] = 0.36240
     bnd["C"] = 0.52713
+    bnd["NET_corr"] = 1.
     bands["HFPL2"] = bnd
 
     bnd = OrderedDict()
@@ -541,6 +560,7 @@ def get_example():
     bnd["alpha"] = 3.5
     bnd["A"] = 0.26844
     bnd["C"] = 0.64976
+    bnd["NET_corr"] = 1.
     bands["HFS1"] = bnd
 
     bnd = OrderedDict()
@@ -554,6 +574,7 @@ def get_example():
     bnd["alpha"] = 3.5
     bnd["A"] = 0.31749
     bnd["C"] = 0.58575
+    bnd["NET_corr"] = 1.
     bands["HFS2"] = bnd
 
     cnf["bands"] = bands
