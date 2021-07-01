@@ -292,8 +292,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.08517
-    bnd["C"] = 0.88885
+    bnd["A"] = 0.08470
+    bnd["C"] = 0.88954
     bnd["NET_corr"] = 1.22
     bands["SPLAT_f020"] = bnd
 
@@ -334,8 +334,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.11010
-    bnd["C"] = 0.85631
+    bnd["A"] = 0.10834
+    bnd["C"] = 0.85873
     bnd["NET_corr"] = 1.25
     bands["SPLAT_f030"] = bnd
 
@@ -348,8 +348,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.39135
-    bnd["C"] = 0.48954
+    bnd["A"] = 0.38645
+    bnd["C"] = 0.49638
     bnd["NET_corr"] = 1.04
     bands["SPLAT_f040"] = bnd
 
@@ -418,8 +418,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.28598
-    bnd["C"] = 0.62687
+    bnd["A"] = 0.28279
+    bnd["C"] = 0.63125
     bnd["NET_corr"] = 1.15
     bands["SPLAT_f090"] = bnd
     
@@ -432,8 +432,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.23723
-    bnd["C"] = 0.69026
+    bnd["A"] = 0.23236
+    bnd["C"] = 0.69688
     bnd["NET_corr"] = 1.01
     bands["SPLAT_f150"] = bnd
 
@@ -530,8 +530,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.30291
-    bnd["C"] = 0.60477
+    bnd["A"] = 0.29481
+    bnd["C"] = 0.61544
     bnd["NET_corr"] = 1.01
     bands["SPLAT_f220"] = bnd
     
@@ -544,8 +544,8 @@ def get_example():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.36240
-    bnd["C"] = 0.52713
+    bnd["A"] = 0.35064
+    bnd["C"] = 0.54274
     bnd["NET_corr"] = 1.01
     bands["SPLAT_f280"] = bnd
 
