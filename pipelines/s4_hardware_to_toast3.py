@@ -97,11 +97,16 @@ def main():
 
     for band_name, det_data in bands.items():
         n_det = len(det_data["name"])
+        print(f"Found {n_det} detectors in band {band_name}")
 
         band_data = hw.data["bands"][band_name]
         bandcenter = band_data["center"]
         bandwidth = band_data["high"] - band_data["low"]
         net = band_data["NET"] * 1e-6  # to K rts
+        if "NET_corr" in band_data:
+            net_corr = band_data["NET_corr"]
+            print(f"Scaling single detector NETs with the correlation factor: {net_corr}")
+            net *= net_corr
         fknee = band_data["fknee"] * 1e-3  # to Hz
         fmin = band_data["fmin"] * 1e-3  # to Hz
         # The `alpha` in the hardware map includes atmosphere and
