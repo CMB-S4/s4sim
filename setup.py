@@ -29,7 +29,7 @@ setup_opts["entry_points"] = {
     ]
 }
 
-pipes = ["pipelines/toast_s4_sim.py", "pipelines/pickle_hardware.py"]
+pipes = ["pipelines/toast_s4_sim.py", "pipelines/pickle_hardware.py", "pipelines/s4_hardware_to_toast3.py"]
 
 setup_opts["name"] = "s4sim"
 setup_opts["provides"] = ["s4sim"]

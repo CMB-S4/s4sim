@@ -78,6 +78,7 @@ def parse_arguments(comm):
     toast_tools.add_pointing_args(parser)
     toast_tools.add_polyfilter_args(parser)
     toast_tools.add_polyfilter2D_args(parser)
+    toast_tools.add_common_mode_filter_args(parser)
     toast_tools.add_groundfilter_args(parser)
     toast_tools.add_atmosphere_args(parser)
     toast_tools.add_noise_args(parser)
@@ -185,7 +186,12 @@ def outputs_exist(args, comm, outpath):
                     print(f"{fname} exists", flush=True)
                 else:
                     print(f"{fname} does not exist", flush=True)
-        if there and (args.apply_polyfilter or args.apply_groundfilter):
+        if there and (
+                args.apply_polyfilter
+                or args.apply_polyfilter2D
+                or args.apply_common_mode_filter
+                or args.apply_groundfilter
+        ):
             fname = os.path.join(
                 outpath,
                 args.mapmaker_prefix + "_filtered" + "_telescope_all_time_all_bmap.fits",
@@ -341,6 +347,9 @@ def main():
         if comm.world_rank == 0:
             log.info("Processing MC = {}".format(mc))
 
+        # Uncomment to run with new TOAST
+        #toast_tools.draw_weather(args, comm, data, mc)
+
         outpath = setup_output(args, comm, mc)
 
         if outputs_exist(args, comm, outpath):
@@ -418,9 +427,16 @@ def main():
                 first_call=(mc == firstmc),
             )
 
-        if args.apply_polyfilter or args.apply_groundfilter or args.apply_polyfilter2D:
+        if (
+                args.apply_polyfilter
+                or args.apply_polyfilter2D
+                or args.apply_common_mode_filter
+                or args.apply_groundfilter
+        ):
 
             # Filter signal
+
+            toast_tools.apply_common_mode_filter(args, comm, data, totalname)
 
             toast_tools.apply_polyfilter2D(args, comm, data, totalname)
 
