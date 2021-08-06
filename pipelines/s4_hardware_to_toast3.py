@@ -128,8 +128,8 @@ def main():
             Column(name="psd_net", data=ones * net, unit=(u.K * u.second ** .5)),
             Column(name="bandcenter", data=ones * bandcenter, unit=u.GHz),
             Column(name="bandwidth", data=ones * bandwidth, unit=u.GHz),
-            Column(name="A", data=ones * A, unit=None),
-            Column(name="C", data=ones * C, unit=None),
+            Column(name="elevation_noise_a", data=ones * A, unit=None),
+            Column(name="elevation_noise_c", data=ones * C, unit=None),
         ]
         for key, value in det_data.items():
             unit = None
