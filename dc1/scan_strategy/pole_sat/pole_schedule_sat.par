@@ -1,0 +1,47 @@
+--out
+schedules/pole_schedule_sat.txt
+--pole-mode
+--site-lat
+ -89:59.464
+--site-lon
+ -44:39
+--site-alt
+2843
+--site-name
+SOUTH_POLE
+--telescope
+SAT
+--patch
+POLE_DEEP,1,65, -52.5, 15, -55
+--patch-coord
+C
+--el-min
+0
+--el-max
+90
+--sun-el-max
+90
+--sun-avoidance-angle
+0
+--moon-avoidance-angle
+0
+--start
+2027-04-01 00:00:00
+--stop
+2027-11-01 00:00:00
+--gap-s
+360
+--gap-small
+0
+--pole-ces-time
+5040
+--ces-max-time
+86400
+--fp-radius
+0
+--boresight-angle-step
+45
+--boresight-angle-time
+1440
+--pole-el-step-deg
+0.25
