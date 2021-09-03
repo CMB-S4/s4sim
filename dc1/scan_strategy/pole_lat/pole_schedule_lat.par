@@ -50,10 +50,10 @@ C
 --boresight-angle-time
 1440
 --pole-el-step-deg
-1.0
+8.0
 --pole-raster-scan
 --pole-raster-el-step-deg
-0.16666666
+0.1666666666
 --az-rate-sky-deg
 1.0
 --az-accel-mount-deg
