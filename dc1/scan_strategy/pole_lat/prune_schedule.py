@@ -12,6 +12,9 @@ import toast.utils
 np.random.seed(673653982)
 realization = 0
 
+# Additional, random downtime
+fdown = 1.0
+
 # Fraction of the year surviving the weather cuts
 if False:
     # Measure the pwv_limit based on fyear
@@ -21,14 +24,9 @@ else:
     # Use a fixed pwv_limit
     fyear = None
     pwv_limit = 6.0
-# Down-time from 3-5 day long breaks
-break_length = 4 * 86400
-break_length_sigma = 1 * 86400
-fdown = 0.8
 
-
-fname_in = "schedules/chile_schedule_lat.txt"
-fname_out = "schedules/chile_schedule_lat.pruned.txt"
+fname_in = "schedules/pole_schedule_lat.txt"
+fname_out = "schedules/pole_schedule_lat.pruned.txt"
 
 first_time = dateutil.parser.parse(f"2027-01-01 00:00:00 00:00:00 +0000")
 
@@ -149,6 +147,7 @@ ax.set_xlabel("DOY")
 ax.set_ylabel("Obs. efficiency")
 ax.set_xlim([0, 366])
 
+"""
 # Add downtime
 nsecond = 365 * 86400
 good_seconds = np.ones(nsecond, dtype=bool)
@@ -160,6 +159,7 @@ while np.sum(good_seconds) / nsecond > fdown:
     stop = start + length
     breaks.append((start, stop))
     good_seconds[int(start) : int(stop)] = False
+"""
 
 # write out the observations that survive the cuts
 
@@ -172,12 +172,13 @@ with open(fname_out, "w") as schedule_out:
     for pwv, time, line in zip(pwvs, times, lines):
         if pwv > pwv_limit:
             continue
-        itime = int(time)
-        if itime >= nsecond or not good_seconds[itime]:
-            continue
-        schedule_out.write(line)
-        final_times.append(time)
-        final_pwvs.append(pwv)
+        #itime = int(time)
+        #if itime >= nsecond or not good_seconds[itime]:
+        #    continue
+        if np.random.rand() < fdown:
+            schedule_out.write(line)
+            final_times.append(time)
+            final_pwvs.append(pwv)
 
 ax = fig.add_subplot(nrow, ncol, 4)
 ax.plot(np.array(final_times) / 86400, final_pwvs, '.')
@@ -187,4 +188,4 @@ ax.set_title(f"{len(final_times)} observations after breaks")
 ax.set_xlim([0, 366])
 
 fig.subplots_adjust(hspace=0.4)
-fig.savefig("pwv_limit_CHLAT.png")
+fig.savefig("pwv_limit_SPLAT.png")

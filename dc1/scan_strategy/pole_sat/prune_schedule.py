@@ -107,6 +107,7 @@ ax.axhline(pwv_limit, color='k', linestyle="--")
 ax.set_xlabel("DOY")
 ax.set_ylabel("PWV [mm]")
 ax.set_title(f"All {len(lengths)} observations")
+ax.set_xlim([0, 366])
 
 ax = fig.add_subplot(nrow, ncol, 2)
 good = pwvs < pwv_limit
@@ -114,6 +115,7 @@ ax.plot(times[good] / 86400, pwvs[good], '.')
 ax.set_xlabel("DOY")
 ax.set_ylabel("PWV [mm]")
 ax.set_title(f"{n} observations after PWV cut")
+ax.set_xlim([0, 366])
 
 # Compute observing efficiencies
 
@@ -143,6 +145,7 @@ ax.axhline(1, color="k")
 ax.legend(loc="best")
 ax.set_xlabel("DOY")
 ax.set_ylabel("Obs. efficiency")
+ax.set_xlim([0, 366])
 
 """
 # Add downtime
@@ -182,6 +185,7 @@ ax.plot(np.array(final_times) / 86400, final_pwvs, '.')
 ax.set_xlabel("DOY")
 ax.set_ylabel("PWV [mm]")
 ax.set_title(f"{len(final_times)} observations after breaks")
+ax.set_xlim([0, 366])
 
 fig.subplots_adjust(hspace=0.4)
-fig.savefig("pwv_limit.png")
+fig.savefig("pwv_limit_SPSAT.png")
