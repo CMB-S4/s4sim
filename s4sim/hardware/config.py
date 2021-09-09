@@ -604,7 +604,7 @@ def get_example():
         "CHLAT_MF": "RP",
         "SPLAT_MF": "RP",
         "SAT_MFL": "RP",
-        "SAT_MFH": "RP",
+        "SAT_MFH": "HP",
         "CHLAT_HF": "HP",
         "SPLAT_HF": "HP",
         "SAT_HF": "HP",
@@ -617,7 +617,7 @@ def get_example():
         "CHLAT_MF": 432,
         "SPLAT_MF": 432,
         "SAT_MFL": 147,
-        "SAT_MFH": 147,
+        "SAT_MFH": 169,
         "CHLAT_HF": 469,
         "SPLAT_HF": 469,
         "SAT_HF": 469,
@@ -629,8 +629,8 @@ def get_example():
         "SAT_LF": 31.1,
         "CHLAT_MF": 5.3,
         "SPLAT_MF": 5.3,
-        "SAT_MFL": 9.4,
-        "SAT_MFH": 9.4,
+        "SAT_MFL": 9.5,
+        "SAT_MFH": 8.94,
         "CHLAT_HF": 5.2,
         "SPLAT_HF": 5.2,
         "SAT_HF": 5.2,
@@ -642,8 +642,8 @@ def get_example():
         "SAT_LF": 4.167,
         "CHLAT_MF": 0.71,
         "SPLAT_MF": 0.71,
-        "SAT_MFL": 1.259,
-        "SAT_MFH": 1.259,
+        "SAT_MFL": 1.273,
+        "SAT_MFH": 0.71,
         "CHLAT_HF": 0.71,
         "SPLAT_HF": 0.71,
         "SAT_HF": 0.71,
@@ -1276,6 +1276,35 @@ def get_example():
                         off += 1
             # 29.0 deg/(422mm)
             tb["platescale"] = 0.0687
+            tb["FOV_cut"] = 40.0
+        elif ttyp == "SAT_MFL":
+            for tw in range(12):
+                off = 0
+                for w, props in cnf["wafers"].items():
+                    if props["type"] == ttyp:
+                        if off == woff[ttyp]:
+                            tb["wafers"].append(w)
+                            woff[ttyp] += 1
+                            break
+                        off += 1
+            # 29.4/(420mm)
+            tb["platescale"] = 0.070
+            tb["FOV_cut"] = 29.4
+            tb["waferspace"] = 122.16
+        elif ttyp == "SAT_MFH":
+            for tw in range(12):
+                off = 0
+                for w, props in cnf["wafers"].items():
+                    if props["type"] == ttyp:
+                        if off == woff[ttyp]:
+                            tb["wafers"].append(w)
+                            woff[ttyp] += 1
+                            break
+                        off += 1
+            # 29.4/(420mm)
+            tb["platescale"] = 0.070
+            tb["FOV_cut"] = 29.4
+            tb["waferspace"] = 121.85
         else:
             for tw in range(12):
                 off = 0
@@ -1288,6 +1317,7 @@ def get_example():
                         off += 1
             # 29.0/(490mm)
             tb["platescale"] = 0.0592
+            tb["FOV_cut"] = 40.0
         tb["location"] = stubepos[tindx]
         tubes[nm] = tb
 
