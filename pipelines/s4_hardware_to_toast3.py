@@ -34,7 +34,7 @@ def main():
         required=False,
         help="Input hardware file.  Provide --telescope if not providing a file.",
     )
-    
+
     parser.add_argument(
         "--telescope",
         required=True,
@@ -97,7 +97,36 @@ def main():
 
     for band_name, det_data in bands.items():
         n_det = len(det_data["name"])
-        print(f"Found {n_det} detectors in band {band_name}")
+        print(f"\nFound {n_det} detectors in band {band_name}")
+
+        # Some optics tubes define
+        tubes = []
+        wafer_to_tube = {}
+        wafer_to_FOV_cut = {}
+        for wafer in set(det_data["wafer"]):
+            # Determine which tube has this wafer
+            for tube_name, tube_data in hw.data["tubes"].items():
+                if wafer in tube_data["wafers"]:
+                    break
+            else:
+                raise RuntimeError(f"Could not match wafer {wafer} to a tube.")
+            wafer_to_tube[wafer] = tube_name
+            tube_data = hw.data["tubes"][tube_name]
+            if "FOV_cut" in tube_data:
+                wafer_to_FOV_cut[wafer] = np.radians(tube_data["FOV_cut"])
+
+        # Cut detectors based on FOV_cut
+        cut = np.ones(n_det, dtype=np.bool)
+        for idet, (wafer, quat) in enumerate(
+                zip(det_data["wafer"], det_data["quat"])
+        ):
+            if wafer in wafer_to_FOV_cut:
+                theta_max = wafer_to_FOV_cut[wafer] / 2
+                theta, phi = qa.to_position(quat)
+                if theta > theta_max:
+                    cut[idet] = False
+        print(f"INFO: FOV_cut rejects {(1 - np.sum(cut) / n_det) * 100:.2f} % pixels")
+        n_det = np.sum(cut)
 
         band_data = hw.data["bands"][band_name]
         bandcenter = band_data["center"]
@@ -118,9 +147,13 @@ def main():
         pol_leakage = 0
 
         ones = np.ones(n_det)
+        names = []
+        for name, flag in zip(det_data["name"], cut):
+            if flag:
+                names.append(name)
         columns = [
-            Column(name="name", data=det_data["name"]),
-            Column(name="pol_leakage",data= ones * pol_leakage, unit=None),
+            Column(name="name", data=names),
+            Column(name="pol_leakage", data= ones * pol_leakage, unit=None),
             #Column(name="fwhm", data=ones * fwhm, unit=u.arcmin),
             Column(name="psd_fmin", data=ones * fmin, unit=u.Hz),
             Column(name="psd_fknee", data=ones * fknee, unit=u.Hz),
@@ -131,13 +164,14 @@ def main():
             Column(name="elevation_noise_a", data=ones * A, unit=None),
             Column(name="elevation_noise_c", data=ones * C, unit=None),
         ]
+
         for key, value in det_data.items():
             unit = None
             if key == "name":
                 continue
             if key == "fwhm":
                 unit = u.arcmin
-            columns.append(Column(name=key, data=value, unit=unit))
+            columns.append(Column(name=key, data=np.array(value)[cut], unit=unit))
 
         det_table = QTable(columns)
 
@@ -145,7 +179,7 @@ def main():
         fname = f"{args.out}_{args.telescope}_{band_name}.h5"
         fp.write(fname)
         print(f"Wrote {fname}")
-    
+
     return
 
 
