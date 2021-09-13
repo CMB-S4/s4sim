@@ -116,7 +116,7 @@ def main():
                 wafer_to_FOV_cut[wafer] = np.radians(tube_data["FOV_cut"])
 
         # Cut detectors based on FOV_cut
-        cut = np.ones(n_det, dtype=np.bool)
+        cut = np.ones(n_det, dtype=bool)
         for idet, (wafer, quat) in enumerate(
                 zip(det_data["wafer"], det_data["quat"])
         ):
@@ -126,6 +126,10 @@ def main():
                 if theta > theta_max:
                     cut[idet] = False
         print(f"INFO: FOV_cut rejects {(1 - np.sum(cut) / n_det) * 100:.2f} % pixels")
+        print(
+            f"INFO: FOV_cut: {cut.size:8} - {cut.size - np.sum(cut):8}"
+            f" = {np.sum(cut):8} detectors"
+        )
         n_det = np.sum(cut)
 
         band_data = hw.data["bands"][band_name]

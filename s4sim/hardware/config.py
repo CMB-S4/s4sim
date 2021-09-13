@@ -1302,7 +1302,7 @@ def get_example():
                             break
                         off += 1
             # 29.4/(420mm)
-            tb["platescale"] = 0.070
+            tb["platescale"] = 0.0701
             tb["FOV_cut"] = 29.4
             tb["waferspace"] = 121.85
         else:
