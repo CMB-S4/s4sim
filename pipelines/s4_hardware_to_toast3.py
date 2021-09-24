@@ -99,7 +99,6 @@ def main():
         n_det = len(det_data["name"])
         print(f"\nFound {n_det} detectors in band {band_name}")
 
-        # Some optics tubes define
         tubes = []
         wafer_to_tube = {}
         wafer_to_FOV_cut = {}
@@ -114,6 +113,16 @@ def main():
             tube_data = hw.data["tubes"][tube_name]
             if "FOV_cut" in tube_data:
                 wafer_to_FOV_cut[wafer] = np.radians(tube_data["FOV_cut"])
+
+        # Create the tube column
+        tubes = [wafer_to_tube[wafer] for wafer in det_data["wafer"]]
+        det_data["tube"] = tubes
+
+        # Make pixel ID unique
+        for idet, (tube, wafer, pixel) in enumerate(
+                zip(det_data["tube"], det_data["wafer"], det_data["pixel"])
+        ):
+            det_data["pixel"][idet] = f"{tube}-{wafer}-{pixel}"
 
         # Cut detectors based on FOV_cut
         cut = np.ones(n_det, dtype=bool)
