@@ -448,7 +448,7 @@ def get_example():
     bnd["alpha"] = 3.5
     bnd["A"] = 0.37419
     bnd["C"] = 0.51222
-    bnd["NET_corr"] = 1.04
+    bnd["NET_corr"] = 1.03
     bands["SAT_f085"] = bnd
 
     bnd = OrderedDict()
@@ -462,7 +462,7 @@ def get_example():
     bnd["alpha"] = 3.5
     bnd["A"] = 0.19900
     bnd["C"] = 0.74041
-    bnd["NET_corr"] = 1.01
+    bnd["NET_corr"] = 1.00
     bands["SAT_f145"] = bnd
 
     bnd = OrderedDict()
