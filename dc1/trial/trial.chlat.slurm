@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --partition=regular
-#SBATCH --time=04:00:00
+#SBATCH --time=01:00:00
 #SBATCH --nodes=32
 #SBATCH --job-name=DC1_trial
 #SBATCH --licenses=SCRATCH

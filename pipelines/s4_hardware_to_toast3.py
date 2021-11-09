@@ -51,7 +51,7 @@ def main():
 
     parser.add_argument(
         "--fsample",
-        required=True,
+        required=False,
         default=None,
         type=float,
         help="Sampling rate for the focalplane",
@@ -96,8 +96,21 @@ def main():
             bands[band][key].append(value)
 
     for band_name, det_data in bands.items():
+        if args.fsample is not None:
+            fsample = args.fsample
+        else:
+            # Hard-coded sampling rates
+            if args.telescope.startswith("SAT"):
+                fsample = 20
+            elif band_name.endswith("f220") or band_name.endswith("f280"):
+                fsample = 440
+            else:
+                fsample = 220
+                
         n_det = len(det_data["name"])
-        print(f"\nFound {n_det} detectors in band {band_name}")
+        print(
+            f"\nFound {n_det} detectors in band {band_name}, sampling at {fsample} Hz"
+        )
 
         tubes = []
         wafer_to_tube = {}
@@ -188,9 +201,9 @@ def main():
 
         det_table = QTable(columns)
 
-        fp = Focalplane(detector_data=det_table, sample_rate=args.fsample * u.Hz)
+        fp = Focalplane(detector_data=det_table, sample_rate=fsample * u.Hz)
         fname = f"{args.out}_{args.telescope}_{band_name}.h5"
-        fp.write(fname)
+        fp.save_hdf5(fname)
         print(f"Wrote {fname}")
 
     return
