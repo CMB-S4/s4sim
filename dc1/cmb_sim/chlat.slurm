@@ -2,7 +2,7 @@
 #SBATCH --partition=regular
 #SBATCH --time=00:30:00
 #SBATCH --nodes=32
-#SBATCH --job-name=DC1_trial
+#SBATCH --job-name=DC1_cmb
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=knl
 #SBATCH --core-spec=4
@@ -13,7 +13,7 @@ export MALLOC_MMAP_THRESHOLD_=131072
 export PYTHONSTARTUP=""
 export PYTHONNOUSERSITE=1
 export HOME=$SCRATCH
-export OMP_NUM_THREADS=4
+export OMP_NUM_THREADS=2
 export OMP_PLACES=threads
 export OMP_PROC_BIND=spread
 export TOAST_FUNCTIME=1
@@ -26,6 +26,7 @@ let ncore=4*$OMP_NUM_THREADS
 let nnode_group=32
 let groupsize=nnode_group*ntask_node
 
+echo "Start: " `date`
 echo "Running with"
 echo "            nnode = ${nnode}"
 echo "  OMP_NUM_THREADS = ${OMP_NUM_THREADS}"
@@ -46,10 +47,12 @@ for band in ${bands[*]}; do
     mkdir -p $logdir
 done
 
-fnames=split_schedules/${telescope}/*
+fnames=split_schedules/${telescope}/split_schedule_????.txt
 
 # Random wait time to reduce clashes
 sleep $((RANDOM % 15))
+
+echo "Looking for schedule at" `date`
 
 for schedule in $fnames; do
     rootname=`basename $schedule .txt`
