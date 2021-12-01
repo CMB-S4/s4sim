@@ -8,7 +8,8 @@ import numpy as np
 
 tele = "chlat"
 fnames = glob(f"split_schedules/{tele}/split_schedule_*.txt")
-nsplit = len(fnames)
+fnames_done = glob(f"split_schedules/{tele}/done/split_schedule_*.txt")
+nsplit = len(fnames) + len(fnames_done)
 print(f"Found {nsplit} split schedule files")
 
 for freq in 30, 40, 90, 150, 220, 280:

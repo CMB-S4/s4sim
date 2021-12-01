@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --partition=debug
+#SBATCH --partition=regular
 #SBATCH --time=00:30:00
-#SBATCH --nodes=32
-#SBATCH --job-name=DC1_cmb
+#SBATCH --nodes=512
+#SBATCH --job-name=DC1_noise
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=knl
 #SBATCH --core-spec=4
@@ -24,7 +24,7 @@ let ntask_node=64/$OMP_NUM_THREADS
 let ntask=$nnode*$ntask_node
 let ncore=4*$OMP_NUM_THREADS
 # Make sure nnode is divisible by nnode_group
-let nnode_group=32
+let nnode_group=1
 let groupsize=nnode_group*ntask_node
 
 echo "Start: " `date`
@@ -40,8 +40,9 @@ telescope=chlat
 site=chile
 TELESCOPE=LAT0_CHLAT
 # cannot have more than 384 MPI tasks in a group to process 30 and 40GHz
+bands=( f030 )
 #bands=(f030 f040)
-bands=(f090 f150 f220 f280)
+#bands=(f090 f150 f220 f280)
 
 for band in ${bands[*]}; do
     logdir=logs/${telescope}/${band}
@@ -50,8 +51,8 @@ done
 
 echo "Listing schedules at" `date`
 
-#fnames=split_schedules/${telescope}/split_schedule_????.txt
-fnames=(`python3 get_fnames.py split_schedules/${telescope} logs/${telescope} $telescope ${bands[*]}`)
+#fnames=split_schedules_1/${telescope}/split_schedule_????.txt
+fnames=(`python3 get_fnames.py split_schedules_1/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
 echo "Found ${#fnames[@]} schedule files"
 
 # Random wait time to reduce clashes
@@ -59,41 +60,50 @@ sleep $((RANDOM % 15))
 
 echo "Looking for schedule at" `date`
 
+let running=0
+
 for schedule in ${fnames[*]}; do
     rootname=`basename $schedule .txt`
-    rootname=${telescope}_${rootname}
+    rootname=${TELESCOPE}_${rootname}
     for band in ${bands[*]}; do
-        logdir=logs/${telescope}/${band}
+        logdir=logs/${TELESCOPE}/${band}
         logfile=$logdir/${rootname}_${band}.log
         if [[ ! -e $logfile ]]; then
             echo "Writing $logfile at" `date`
             date > ${logfile}
 
-            outdir=outputs/${telescope}/${band}/${rootname}
+            outdir=outputs/${TELESCOPE}/${band}/${rootname}
             mkdir -p $outdir
+            stripe_medium $outdir
         
-            srun -n $ntask -c $ncore --cpu_bind=cores toast_sim_ground.py \
+            srun -N 1 -n $ntask_node -c $ncore --cpu_bind=cores toast_sim_ground.py \
                  --config common.toml scanning_${telescope}.toml atmosphere_${site}.toml reduce_${telescope}.toml \
                  --focalplane ../focalplanes/focalplane_${TELESCOPE}_${band}.h5 \
+                 --telescope $TELESCOPE \
                  --schedule $schedule \
                  --out $outdir \
                  --job_group_size ${groupsize} \
                  --obsmaps \
                  --mem_count.enable \
-                 --scan_map.file input_maps/cmb.${telescope}.${band}.h5 \
-                 --sim_noise.disable \
-                 --sim_atmosphere.disable \
-                 --raw_statistics.disable \
-                 --filtered_statistics.disable \
+                 --scan_map.disable \
+                 --sim_atmosphere.cache_dir atm_cache_${telescope} \
                  --mapmaker.report_memory \
-                 --save_hdf5.disable \
-                 >> ${logfile} 2>&1
-            date >> ${logfile}
-            echo "Done with $logfile at" `date`
-            exit
-
+                 --save_hdf5.enable \
+                 --save_hdf5.volume $outdir \
+                 >> ${logfile} 2>&1 &
+            let running++
+            [[ $running -eq $nnode ]] && break
+            #date >> ${logfile}
+            #echo "Done with $logfile at" `date`
         else
             echo "$logfile exists"
         fi
     done
+    [[ $running -eq $nnode ]] && break
 done
+
+echo "Waiting for $running jobs to complete at" `date`
+
+wait
+
+echo "Jobs completed at" `date`
