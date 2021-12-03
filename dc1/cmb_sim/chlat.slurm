@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --partition=debug
+#SBATCH --partition=regular
 #SBATCH --time=00:30:00
 #SBATCH --nodes=32
 #SBATCH --job-name=DC1_cmb
