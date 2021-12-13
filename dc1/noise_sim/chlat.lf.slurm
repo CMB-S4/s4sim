@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --partition=regular
+#SBATCH --partition=debug
 #SBATCH --time=00:30:00
-#SBATCH --nodes=512
+#SBATCH --nodes=48
 #SBATCH --job-name=DC1_noise
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=knl
@@ -52,7 +52,8 @@ done
 echo "Listing schedules at" `date`
 
 #fnames=split_schedules_1/${telescope}/split_schedule_????.txt
-fnames=(`python3 get_fnames.py split_schedules_1/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+#fnames=(`python3 get_fnames.py split_schedules_1/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+fnames=(`python3 get_fnames_serial.py split_schedules_1/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
 echo "Found ${#fnames[@]} schedule files"
 
 # Random wait time to reduce clashes

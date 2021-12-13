@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --partition=debug
 #SBATCH --time=00:30:00
-#SBATCH --nodes=4
+#SBATCH --nodes=256
 #SBATCH --job-name=coadd_maps
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=knl
@@ -13,7 +13,7 @@ export MALLOC_MMAP_THRESHOLD_=131072
 export PYTHONSTARTUP=""
 export PYTHONNOUSERSITE=1
 export HOME=$SCRATCH
-export OMP_NUM_THREADS=16
+export OMP_NUM_THREADS=32
 export HDF5_USE_FILE_LOCKING=FALSE
 
 let nnode=$SLURM_JOB_NUM_NODES
@@ -45,7 +45,7 @@ for telescope in LAT0_CHLAT; do
             --rcond_limit 1e-3 \
             --invcov ${outroot}_invcov.fits \
             --cov ${outroot}_cov.fits \
-            ${indir}/${telescope}_split_schedule_00??/mapmaker_*_noiseweighted_map.h5 \
+            ${indir}/${telescope}_split_schedule_????/mapmaker_*_noiseweighted_map.h5 \
             >& $logfile
     done
 done
