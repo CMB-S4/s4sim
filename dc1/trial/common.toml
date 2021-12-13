@@ -59,7 +59,7 @@
     view = "None" # Use this view of the data in all observations
 
 [operators.scan_map]
-    class = "toast.ops.scan_healpix.ScanHealpix"
+    class = "toast.ops.scan_healpix.ScanHealpixMap"
     API = 0 # Internal interface version for this operator
     det_data = "signal" # Observation detdata key for accumulating output
     enabled = true # If True, this class instance is marked as enabled
