@@ -170,6 +170,7 @@ def main():
         alpha = 1.0
         A = band_data["A"]
         C = band_data["C"]
+        pwv_poly = band_data["pwv_poly"]
         pol_leakage = 0
 
         ones = np.ones(n_det)
@@ -189,6 +190,9 @@ def main():
             Column(name="bandwidth", data=ones * bandwidth, unit=u.GHz),
             Column(name="elevation_noise_a", data=ones * A, unit=None),
             Column(name="elevation_noise_c", data=ones * C, unit=None),
+            Column(name="pwv_noise_a0", data=ones * pwv_poly[0], unit=None),
+            Column(name="pwv_noise_a1", data=ones * pwv_poly[1], unit=None),
+            Column(name="pwv_noise_a2", data=ones * pwv_poly[2], unit=None),
         ]
 
         for key, value in det_data.items():
