@@ -11,11 +11,15 @@
     API = 0 # Internal interface version for this operator
     detector_pointing = "None" # Operator that translates boresight Az / El pointing into detector frame
     enabled = true # If True, this class instance is marked as enabled
+    modulate_pwv = true # If True, modulate the NET based on PWV
     name = "elevation_model" # The 'name' of this class instance
     noise_a = "None" # Parameter 'a' in (a / sin(el) + c).  If not set, look for one in the Focalplane.
     noise_c = "None" # Parameter 'c' in (a / sin(el) + c).  If not set, look for one in the Focalplane.
     noise_model = "noise_model" # The observation key containing the input noise model
     out_model = "noise_model" # Create a new noise model with this name
+    pwv_a0 = "None" # Parameter 'a0' in (a0 + pwv * a1 + pwv ** 2 * a2).  If not set, look for one in the Focalplane.
+    pwv_a1 = "None" # Parameter 'a1' in (a0 + pwv * a1 + pwv ** 2 * a2).  If not set, look for one in the Focalplane.
+    pwv_a2 = "None" # Parameter 'a2' in (a0 + pwv * a1 + pwv ** 2 * a2).  If not set, look for one in the Focalplane.
     view = "None" # Use this view of the data in all observations
 
 [operators.det_pointing_azel]

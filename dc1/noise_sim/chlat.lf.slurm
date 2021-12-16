@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --partition=debug
 #SBATCH --time=00:30:00
-#SBATCH --nodes=48
+#SBATCH --nodes=256
 #SBATCH --job-name=DC1_noise
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=knl
@@ -62,6 +62,10 @@ sleep $((RANDOM % 15))
 echo "Looking for schedule at" `date`
 
 let running=0
+for band in ${bands[*]}; do
+    logdir=logs/${TELESCOPE}/${band}
+    mkdir -p $logdir
+done
 
 for schedule in ${fnames[*]}; do
     rootname=`basename $schedule .txt`
@@ -74,7 +78,9 @@ for schedule in ${fnames[*]}; do
             date > ${logfile}
 
             outdir=outputs/${TELESCOPE}/${band}/${rootname}
-            mkdir -p $outdir
+            mkdir -p --mode=g+rXs-w $outdir
+            chgrp -R cmbs4 $outdir
+
             stripe_medium $outdir
         
             srun -N 1 -n $ntask_node -c $ncore --cpu_bind=cores toast_sim_ground.py \
