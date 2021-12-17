@@ -20,8 +20,6 @@ export TOAST_FUNCTIME=1
 export TOAST_LOGLEVEL=DEBUG
 #export KMP_AFFINITY=none,verbose
 
-export PYTHONPATH=/global/common/software/cmb/keskital/cmbenv-intel/lib/python3.7/site-packages:/global/common/software/cmb/cori/cmbenv-intel_20211021/cmbenv_aux/lib/python3.7/site-packages
-
 let nnode=$SLURM_JOB_NUM_NODES
 let ntask_node=64/$OMP_NUM_THREADS
 let ntask=$nnode*$ntask_node
