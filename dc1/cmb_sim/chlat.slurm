@@ -51,8 +51,8 @@ done
 echo "Listing schedules at" `date`
 
 #fnames=split_schedules/${telescope}/split_schedule_????.txt
-fnames=(`python3 get_fnames.py split_schedules/${telescope} logs/${telescope} $telescope ${bands[*]}`)
-echo "Found ${#fnames[@]} schedule files"
+#fnames=(`python3 get_fnames.py split_schedules/${telescope} logs/${telescope} $telescope ${bands[*]}`)
+fnames=(`python3 get_fnames_serial.py split_schedules/${telescope} logs/${telescope} $telescope ${bands[*]}`)
 
 # Random wait time to reduce clashes
 sleep $((RANDOM % 15))
