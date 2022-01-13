@@ -36,7 +36,7 @@
     pixel_dist = "pixel_dist" # The Data key where the PixelDist object should be stored
     pixel_pointing = "None" # This must be an instance of a pixel pointing operator.
     save_pointing = false # If True, do not clear pixel numbers after use
-    shared_flag_mask = 0 # Bit mask value for optional telescope flagging
+    shared_flag_mask = 1 # Bit mask value for optional telescope flagging
     shared_flags = "flags" # Observation shared key for telescope flags to use
     sync_type = "alltoallv" # Communication algorithm: 'allreduce' or 'alltoallv'
 
@@ -72,7 +72,7 @@
     boresight_azel = "boresight_azel" # Observation shared key for boresight Az/El
     det_data = "signal" # Observation detdata key for accumulating atmosphere timestreams
     det_flag_mask = 1 # Bit mask value for optional detector flagging
-    det_flags = "None" # Observation detdata key for flags to use
+    det_flags = "flags" # Observation detdata key for flags to use
     detrend = false # Subtract the fitted trend along with the ground template
     enabled = true # If True, this class instance is marked as enabled
     filter_order = 5 # Order of a Legendre polynomial to fit as a function of azimuth.
@@ -221,8 +221,8 @@
     binned = "binned" # The Data key where the binned map should be stored
     covariance = "covariance" # The Data key containing the noise covariance PixelData instance
     det_data = "signal" # Observation detdata key for the timestream data
-    det_flag_mask = 0 # Bit mask value for optional detector flagging
-    det_flags = "None" # Observation detdata key for flags to use
+    det_flag_mask = 1 # Bit mask value for optional detector flagging
+    det_flags = "flags" # Observation detdata key for flags to use
     enabled = false # If True, this class instance is marked as enabled
     full_pointing = false # If True, expand pointing for all detectors and save
     name = "binner_final" # The 'name' of this class instance
@@ -231,8 +231,8 @@
     pixel_dist = "pix_dist_final" # The Data key where the PixelDist object should be stored
     pixel_pointing = "None" # This must be an instance of a pixel pointing operator
     pre_process = "None" # Optional extra operator to run prior to binning
-    shared_flag_mask = 0 # Bit mask value for optional telescope flagging
-    shared_flags = "None" # Observation shared key for telescope flags to use
+    shared_flag_mask = 1 # Bit mask value for optional telescope flagging
+    shared_flags = "flags" # Observation shared key for telescope flags to use
     stokes_weights = "None" # This must be an instance of a Stokes weights operator
     sync_type = "alltoallv" # Communication algorithm: 'allreduce' or 'alltoallv'
 
@@ -249,14 +249,13 @@
     det_flag_mask = 1 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     enabled = false # If True, this class instance is marked as enabled
-    filter_flag_mask = 1 # Bit mask value for flagging samples that fail filtering
-    ground_filter_order = 5 # Order of a Legendre polynomial to fit as a function of azimuth.
+    ground_filter_order = 10 # Order of a Legendre polynomial to fit as a function of azimuth.
     leftright_mask = 8 # Bit mask value for left-to-right scans
     maskfile = "None" # Optional processing mask
     name = "filterbin" # The 'name' of this class instance
     output_dir = "." # Write output data products to this directory
-    poly_filter_order = 1 # Polynomial order
-    poly_filter_view = "throw" # Intervals for polynomial filtering
+    poly_filter_order = 3 # Polynomial order
+    poly_filter_view = "scanning" # Intervals for polynomial filtering
     rcond_threshold = 0.001 # Minimum value for inverse pixel condition number cut.
     report_memory = false # Report memory throughout the execution
     reset_pix_dist = false # Clear any existing pixel distribution.  Useful when applyingrepeatedly to different data objects.
@@ -264,14 +263,14 @@
     shared_flag_mask = 1 # Bit mask value for optional telescope flagging
     shared_flags = "flags" # Observation shared key for telescope flags to use
     split_ground_template = false # Apply a different template for left and right scans
-    write_cov = true # If True, write the white noise covariance matrices.
-    write_hdf5 = false # If True, output maps are in HDF5 rather than FITS format.
+    write_cov = false # If True, write the white noise covariance matrices.
+    write_hdf5 = true # If True, output maps are in HDF5 rather than FITS format.
     write_hits = true # If True, write the hits map
-    write_invcov = false # If True, write the inverse white noise covariance matrices.
-    write_map = true # If True, write the projected map
-    write_noiseweighted_map = false # If True, write the noise-weighted map
+    write_invcov = true # If True, write the inverse white noise covariance matrices.
+    write_map = false # If True, write the projected map
+    write_noiseweighted_map = true # If True, write the noise-weighted map
     write_obs_matrix = false # Write the observation matrix
-    write_rcond = true # If True, write the reciprocal condition numbers.
+    write_rcond = false # If True, write the reciprocal condition numbers.
 
 [operators.mem_count]
     class = "toast.ops.memory_counter.MemoryCounter"
