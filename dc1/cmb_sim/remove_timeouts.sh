@@ -2,7 +2,7 @@
 
 mkdir -p failed_logs
 
-fnames=(`grep -lR --include '*.log' -e CANCELLED -e Terminated -e myquota -e client_io_handler_start logs`)
+fnames=(`grep -lR --include '*.log' -e ModuleNotFoundError -e CANCELLED -e Terminated -e myquota -e client_io_handler_start logs/spsat`)
 echo "Removing ${#fnames[@]} cancelled logs"
 for fname in ${fnames[*]}; do
     echo "Removing $fname"

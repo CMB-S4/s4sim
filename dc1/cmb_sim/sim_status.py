@@ -13,7 +13,12 @@ for tele in "chlat", "splat", "spsat":
     nsplit = len(fnames) + len(fnames_done)
     print(f"Found {nsplit} split schedule files")
 
-    for freq in 30, 40, 90, 150, 220, 280:
+    if tele == "spsat":
+        freqs = [30, 40, 85, 95, 145, 155, 220, 280]
+    else:
+        freqs = 30, 40, 90, 150, 220, 280
+
+    for freq in freqs:
         fnames = glob(f"logs/{tele}/f{freq:03}/*.log")
         nlog = len(fnames)
         print(f"{freq:3} GHz is {nlog:5} / {nsplit:5} = {nlog / nsplit * 100:6.3f}% complete")

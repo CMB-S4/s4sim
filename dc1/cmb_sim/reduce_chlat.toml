@@ -200,6 +200,21 @@
     write_noiseweighted_map = true # If True, write the noise-weighted map
     write_rcond = false # If True, write the reciprocal condition numbers.
 
+[operators.pixels_radec]
+    class = "toast.ops.pixels_healpix.PixelsHealpix"
+    API = 0 # Internal interface version for this operator
+    create_dist = "None" # Create the submap distribution for all detectors and store in the Data key specified
+    detector_pointing = "None" # Operator that translates boresight pointing into detector frame
+    enabled = true # If True, this class instance is marked as enabled
+    name = "pixels_radec" # The 'name' of this class instance
+    nest = true # If True, use NESTED ordering instead of RING
+    nside = 4096 # The NSIDE resolution
+    nside_submap = 16 # The NSIDE of the submap resolution
+    pixels = "pixels" # Observation detdata key for output pixel indices
+    quats = "None" # Observation detdata key for output quaternions
+    single_precision = false # If True, use 32bit int in output
+    view = "None" # Use this view of the data in all observations
+
 [operators.pixels_radec_final]
     class = "toast.ops.pixels_healpix.PixelsHealpix"
     API = 0 # Internal interface version for this operator
