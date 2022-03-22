@@ -51,6 +51,7 @@ if [[ ! -e $logfile ]]; then
     srun -n $ntask -c $ncore --cpu_bind=cores toast_sim_ground.py \
          --config common.toml scanning_${telescope}.toml atmosphere_${site}.toml reduce_${telescope}.toml \
          --focalplane dummy_focalplane.440Hz.h5 \
+         --telescope $TELESCOPE \
          --schedule $schedule \
          --out $outdir \
          --job_group_size ${groupsize} \
@@ -58,7 +59,7 @@ if [[ ! -e $logfile ]]; then
          --scan_map.disable \
          --sim_noise.disable \
          --sim_atmosphere.enable \
-         --sim_atmosphere.cache_dir atm_cache_${telescope} \
+         --sim_atmosphere.cache_dir atm_cache_${TELESCOPE} \
          --sim_atmosphere.cache_only \
          --raw_statistics.disable \
          --filtered_statistics.disable \

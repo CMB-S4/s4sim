@@ -26,19 +26,21 @@ from fair_research_login import NativeClient
 SOURCE_ENDPOINT = '9d6d994a-6d04-11e5-ba46-22000b92c6ec'
 
 # NERSC DTN endpoint
-#DESTINATION_ENDPOINT = '9d6d994a-6d04-11e5-ba46-22000b92c6ec'
+DESTINATION_ENDPOINT = '9d6d994a-6d04-11e5-ba46-22000b92c6ec'
 
 # NERSC cmbs4 collaboration account endpoint
-DESTINATION_ENDPOINT = 'fb077a06-6f06-11ec-b2c3-1b99bfd4976a'
+#DESTINATION_ENDPOINT = 'fb077a06-6f06-11ec-b2c3-1b99bfd4976a'
 
 # Copy data off of the endpoint share
 #SOURCE_PATH = '/global/cscratch1/sd/keskital/s4sim/dc1/noise_sim/outputs/LAT0_CHLAT/f090/LAT0_CHLAT_split_schedule_1500'
 SOURCE_PATH = '/global/cscratch1/sd/keskital/s4sim/dc1/noise_sim/outputs/LAT0_CHLAT'
+#SOURCE_PATH = '/global/cscratch1/sd/keskital/s4sim/dc1/noise_sim/outputs/LAT0_CHLAT/f090/RISING_SCAN_40-229-7'
 
 # Destination Path -- The directory will be created if it doesn't exist
 #DESTINATION_PATH = '/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim/outputs/LAT0_CHLAT/f090/LAT0_CHLAT_split_schedule_1500'
 #DESTINATION_PATH = '/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim/outputs/LAT0_CHLAT'
-DESTINATION_PATH = '/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim/outputs_float32/LAT0_CHLAT'
+DESTINATION_PATH = '/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim/outputs_rk/LAT0_CHLAT'
+#DESTINATION_PATH = '/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim/outputs_float32/LAT0_CHLAT/f090/RISING_SCAN_40-229-7'
 
 TRANSFER_LABEL = 'DC1 Sync Test'
 

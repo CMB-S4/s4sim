@@ -35,7 +35,8 @@ echo "        groupsize = ${groupsize}"
 
 telescope=chlat
 site=chile
-TELESCOPE=LAT0_CHLAT
+#TELESCOPE=LAT0_CHLAT
+TELESCOPE=LAT1_CHLAT
 band=f220
 
 fnames=split_schedules_32/${telescope}/split_schedule_????.txt
@@ -45,7 +46,7 @@ sleep $((RANDOM % 15))
 
 echo "Looking for schedule at" `date`
 
-logdir=logs/cache/${telescope}
+logdir=logs/cache/${TELESCOPE}
 mkdir -p $logdir
 
 # srun -n $ntask -c $ncore --cpu_bind=cores check-hybrid.intel.cori > thread_affinity.log
