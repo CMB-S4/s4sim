@@ -67,7 +67,7 @@ with open(fname_in, "r") as schedule_in:
                 realization=realization,
             )
         else:
-            weather.set(time=mid_time)
+            weather.set(time=mid_time, site_uid=site_uid, realization=realization)
 
         pwvs.append(weather.pwv.to_value("mm"))
         times.append((mid_time - first_time).total_seconds())
