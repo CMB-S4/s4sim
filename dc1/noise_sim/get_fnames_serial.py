@@ -19,8 +19,9 @@ schedules = set()
 for band in bands:
     for schedule in all_schedules:
         obs = os.path.basename(schedule).replace(".txt", "")
-        logfile = f"{log_dir}/{band}/{obs}.log"
-        if not os.path.isfile(logfile):
+        logfile1 = f"{log_dir}/{band}/{obs}.log"
+        logfile2 = f"cleared_{log_dir}/{band}/{obs}.log"
+        if not os.path.isfile(logfile1) and not os.path.isfile(logfile2):
             schedules.add(schedule)
 
 schedules = list(schedules)
