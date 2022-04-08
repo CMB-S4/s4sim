@@ -26,13 +26,12 @@ echo "  OMP_NUM_THREADS = ${OMP_NUM_THREADS}"
 echo "       ntask_node = ${ntask_node}"
 echo "            ntask = ${ntask}"
 
-indir_root=/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim
-indir1=${indir_root}/outputs_rk
-indir2=${indir_root}/outputs_float32
-indir3=${indir_root}/outputs
+indir_root=/global/cfs/cdirs/cmbs4/dc/dc1/staging/cmb_sim
+indir=${indir_root}/outputs
 
-for telescope in LAT0_CHLAT; do
+for telescope in chlat; do
     outdir=outputs/coadd/${telescope}
+    mkdir -p $outdir
     #for band in f090; do
     for band in f150; do
         echo ${telescope} ${band}GHz
@@ -41,12 +40,10 @@ for telescope in LAT0_CHLAT; do
         let ntotal=0
         let nfail=0
         let nfound=0
-        for schedule in split_schedules_1_upto2mm/chlat/*txt; do
+        for schedule in ../noise_sim/split_schedules_1_upto2mm/chlat/*txt; do
             obs=`basename --suffix=.txt $schedule`
-            fname1="${indir1}/$telescope/${band}/${obs}/mapmaker_${obs}_noiseweighted_map.h5"
-            fname2="${indir2}/$telescope/${band}/${obs}/mapmaker_${obs}_noiseweighted_map.h5"
-            fname3="${indir3}/$telescope/${band}/${obs}/mapmaker_${obs}_noiseweighted_map.h5"
-            for fname in $fname1 $fname2 $fname3 FAILED; do
+            fname1="${indir}/$telescope/${band}/${obs}/mapmaker_${obs}_noiseweighted_map.h5"
+            for fname in $fname1 FAILED; do
                 [[ -e $fname ]] && break
             done
             if [[ $fname == FAILED ]]; then

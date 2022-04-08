@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --partition=debug
-#SBATCH --time=00:30:00
+#SBATCH --time=00:15:00
 #SBATCH --nodes=32
 #SBATCH --job-name=coadd_maps
 #SBATCH --licenses=SCRATCH
@@ -12,7 +12,7 @@ export MALLOC_MMAP_THRESHOLD_=131072
 export PYTHONSTARTUP=""
 export PYTHONNOUSERSITE=1
 export HOME=$SCRATCH
-export OMP_NUM_THREADS=16
+export OMP_NUM_THREADS=4
 export HDF5_USE_FILE_LOCKING=FALSE
 
 let nnode=$SLURM_JOB_NUM_NODES
@@ -33,10 +33,9 @@ indir3=${indir_root}/outputs
 
 for telescope in LAT0_CHLAT; do
     outdir=outputs/coadd/${telescope}
-    #for band in f090; do
-    for band in f150; do
+    for band in f090; do
         echo ${telescope} ${band}GHz
-        logfile=coadd_${telescope}_${band}.log
+        logfile=analyze_${telescope}_${band}.log
         input_maps=""
         let ntotal=0
         let nfail=0
@@ -64,14 +63,11 @@ for telescope in LAT0_CHLAT; do
         outroot=$outdir/coadd_${telescope}_${band}
         echo "Writing $logfile"
         date >> $logfile
-        srun -n $ntask -c $ncore --cpu_bind=cores toast_healpix_coadd \
-            --outmap ${outroot}_map.fits \
-            --rcond ${outroot}_rcond.fits \
-            --rcond_limit 1e-3 \
-            --invcov ${outroot}_invcov.fits \
-            --cov ${outroot}_cov.fits \
-            $input_maps \
-            >> $logfile 2>&1
+        srun -n $ntask -c $ncore --cpu_bind=cores \
+             python3 mapstats.py \
+             $input_maps \
+             >> $logfile 2>&1
+        mv mapstats.txt mapstats_${band}.txt
         date >> $logfile
     done
 done
