@@ -4,7 +4,7 @@ import sys
 import healpy as hp
 import matplotlib.pyplot as plt
 import numpy as np
-# from toast.pixels_io import read_healpix
+from toast.pixels_io import read_healpix
 
 import requirements as req
 
@@ -40,13 +40,16 @@ for band in 90, 150:
         lim = sorted_w[int(.99 * ngood)]
         mask = np.logical_and(w > 0, w < lim)
         print("Measuring C_ell")
+        m[0] = hp.remove_dipole(m[0] * mask, bad=0)
         cl = hp.anafast(m * mask, lmax=lmax, iter=0)
         fsky = np.sum(mask) / mask.size
         cl /= fsky
         print(f"Writing {fname_cl}")
         hp.write_cl(fname_cl, cl, overwrite=True)
 
-        inmap = hp.read_map(fname_input_map, None)
+        print(f"Loading {fname_input_map}")
+        inmap = read_healpix(fname_input_map, None)
+        inmap[0] = hp.remove_dipole(inmap[0] * mask, bad=0)
         print("Measuring input C_ell")
         cl_in = hp.anafast(inmap * mask, lmax=lmax, iter=0)
         cl_in /= fsky
@@ -63,7 +66,7 @@ for band in 90, 150:
     fig = plt.figure(figsize=[6 * ncol, 6 * nrow])
     ell = np.arange(lmax + 1)
     ellnorm = ell * (ell + 1) / (2 * np.pi) * 1e12
-    scale = 1 / ntele / nseason
+    scale = 1 # / ntele / nseason
 
     iplot = 1
     ax = fig.add_subplot(nrow, ncol, iplot)
@@ -72,8 +75,8 @@ for band in 90, 150:
     ax.set_ylabel("D$\ell$ [$\mu$K$^2$]")
     ax.loglog(req.fiducial_ell, req.fiducial_TT, "k", label="CMB")
     ax.loglog(req.ells, nltt, label="requirement")
-    ax.loglog(ell, ellnorm * cl_in[0] * bl * scale, label=f"DC1 input")
-    ax.loglog(ell, ellnorm * cl[0] * bl * scale, label=f"DC1 output")
+    ax.loglog(ell[2:], (ellnorm * cl_in[0] * bl * scale)[2:], label=f"DC1 input")
+    ax.loglog(ell[2:], (ellnorm * cl[0] * bl * scale)[2:], label=f"DC1 output")
 
     iplot += 1
     ax = fig.add_subplot(nrow, ncol, iplot)
@@ -82,8 +85,8 @@ for band in 90, 150:
     ax.set_ylabel("D$\ell$ [$\mu$K$^2$]")
     ax.loglog(req.fiducial_ell, req.fiducial_EE, "k", label="CMB")
     ax.loglog(req.ells, nlee, label="requirement")
-    ax.loglog(ell, ellnorm * cl_in[1] * bl * scale, label=f"DC1 input")
-    ax.loglog(ell, ellnorm * cl[1] * bl * scale, label=f"DC1 output")
+    ax.loglog(ell[2:], (ellnorm * cl_in[1] * bl * scale)[2:], label=f"DC1 input")
+    ax.loglog(ell[2:], (ellnorm * cl[1] * bl * scale)[2:], label=f"DC1 output")
 
     iplot += 1
     ax = fig.add_subplot(nrow, ncol, iplot)
@@ -92,8 +95,8 @@ for band in 90, 150:
     ax.set_ylabel("D$\ell$ [$\mu$K$^2$]")
     ax.loglog(req.fiducial_ell, req.fiducial_BB, "k", label="CMB")
     ax.loglog(req.ells, nlee, label="requirement")
-    ax.loglog(ell, ellnorm * cl_in[2] * bl * scale, label=f"DC1 input")
-    ax.loglog(ell, ellnorm * cl[2] * bl * scale, label=f"DC1 output")
+    ax.loglog(ell[2:], (ellnorm * cl_in[2] * bl * scale)[2:], label=f"DC1 input")
+    ax.loglog(ell[2:], (ellnorm * cl[2] * bl * scale)[2:], label=f"DC1 output")
 
     fname_out = f"cl_comparison_cmb_{band:03}.png"
     fig.savefig(fname_out)
