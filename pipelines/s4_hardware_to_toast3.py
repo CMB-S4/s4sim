@@ -15,6 +15,7 @@ import astropy.units as u
 import numpy as np
 import toast.qarray as qa
 from toast.instrument import Focalplane
+import toast.io
 
 import s4sim.hardware as hardware
 
@@ -207,7 +208,8 @@ def main():
 
         fp = Focalplane(detector_data=det_table, sample_rate=fsample * u.Hz)
         fname = f"{args.out}_{args.telescope}_{band_name}.h5"
-        fp.save_hdf5(fname)
+        with toast.io.H5File(fname, "w", comm=None, force_serial=True) as f:
+            fp.save_hdf5(f.handle)
         print(f"Wrote {fname}")
 
     return
