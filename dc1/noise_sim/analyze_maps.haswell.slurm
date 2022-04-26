@@ -33,13 +33,13 @@ indir3=${indir_root}/outputs
 
 for telescope in LAT0_CHLAT; do
     outdir=outputs/coadd/${telescope}
-    for band in f090; do
+    for band in f220; do
         echo ${telescope} ${band}GHz
         logfile=analyze_${telescope}_${band}.log
-        input_maps=""
         let ntotal=0
         let nfail=0
         let nfound=0
+        fname_maps="maps_${band}.txt"
         for schedule in split_schedules_1_upto2mm/chlat/*txt; do
             obs=`basename --suffix=.txt $schedule`
             fname1="${indir1}/$telescope/${band}/${obs}/mapmaker_${obs}_noiseweighted_map.h5"
@@ -52,7 +52,7 @@ for telescope in LAT0_CHLAT; do
                 echo "No input map for $band $obs" >> $logfile
                 let nfail++
             else
-                input_maps+=" $fname"
+                echo $fname >> $fname_maps
                 let nfound++
             fi
             let ntotal++
@@ -65,9 +65,8 @@ for telescope in LAT0_CHLAT; do
         date >> $logfile
         srun -n $ntask -c $ncore --cpu_bind=cores \
              python3 mapstats.py \
-             $input_maps \
+             $fname_maps \
              >> $logfile 2>&1
-        mv mapstats.txt mapstats_${band}.txt
         date >> $logfile
     done
 done

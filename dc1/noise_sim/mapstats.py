@@ -11,9 +11,10 @@ ntask = comm.size
 
 entries = []
 
-fname_out = "mapstats.txt"
-fnames = sys.argv[1:]
-#fnames = ["/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim/outputs/LAT0_CHLAT/f090/RISING_SCAN_40-105-4/mapmaker_RISING_SCAN_40-105-4_noiseweighted_map.h5"]
+fname_in = sys.argv[1]
+fname_out = f"{fname_in}.stats"
+
+fnames = open(fname_in, "r").read().splitlines()
 
 my_fnames = fnames[rank::ntask]
 for i, fname in enumerate(my_fnames):

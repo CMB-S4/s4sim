@@ -41,6 +41,7 @@ for telescope in LAT0_CHLAT; do
         let ntotal=0
         let nfail=0
         let nfound=0
+        fname_maps="coadd_maps_${band}.txt"
         for schedule in split_schedules_1_upto2mm/chlat/*txt; do
             obs=`basename --suffix=.txt $schedule`
             fname1="${indir1}/$telescope/${band}/${obs}/mapmaker_${obs}_noiseweighted_map.h5"
@@ -53,7 +54,7 @@ for telescope in LAT0_CHLAT; do
                 echo "No input map for $band $obs" >> $logfile
                 let nfail++
             else
-                input_maps+=" $fname"
+                echo $fname >> $fname_maps
                 let nfound++
             fi
             let ntotal++
@@ -70,7 +71,7 @@ for telescope in LAT0_CHLAT; do
             --rcond_limit 1e-3 \
             --invcov ${outroot}_invcov.fits \
             --cov ${outroot}_cov.fits \
-            $input_maps \
+            $fname_maps \
             >> $logfile 2>&1
         date >> $logfile
     done
