@@ -9,3 +9,6 @@ s4_hardware_to_toast3.py --telescope SAT2
 s4_hardware_to_toast3.py --telescope SAT3
 s4_hardware_to_toast3.py --telescope SAT4
 s4_hardware_to_toast3.py --telescope SAT5
+
+mkdir -p focalplanes
+mv focalplane*h5 focalplanes/
