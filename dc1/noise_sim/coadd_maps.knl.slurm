@@ -1,10 +1,11 @@
 #!/bin/bash
 #SBATCH --partition=debug
 #SBATCH --time=00:30:00
-#SBATCH --nodes=32
-#SBATCH --job-name=analyze_maps
+#SBATCH --nodes=128
+#SBATCH --job-name=coadd_maps
 #SBATCH --licenses=SCRATCH
-#SBATCH --constraint=haswell
+#SBATCH --constraint=knl
+#SBATCH --core-spec=4
 #SBATCH --account=mp107
 
 ulimit -c unlimited
@@ -12,13 +13,13 @@ export MALLOC_MMAP_THRESHOLD_=131072
 export PYTHONSTARTUP=""
 export PYTHONNOUSERSITE=1
 export HOME=$SCRATCH
-export OMP_NUM_THREADS=4
+export OMP_NUM_THREADS=32
 export HDF5_USE_FILE_LOCKING=FALSE
 
 let nnode=$SLURM_JOB_NUM_NODES
-let ntask_node=32/$OMP_NUM_THREADS
+let ntask_node=64/$OMP_NUM_THREADS
 let ntask=$nnode*$ntask_node
-let ncore=2*$OMP_NUM_THREADS
+let ncore=4*$OMP_NUM_THREADS
 
 echo "Running with"
 echo "            nnode = ${nnode}"
@@ -33,13 +34,16 @@ indir3=${indir_root}/outputs
 
 for telescope in LAT0_CHLAT; do
     outdir=outputs/coadd/${telescope}
-    for band in f030 f040; do
+    #for band in f090; do
+    for band in f040; do
         echo ${telescope} ${band}GHz
-        logfile=analyze_${telescope}_${band}.log
+        logfile=coadd_${telescope}_${band}.log
+        input_maps=""
         let ntotal=0
         let nfail=0
         let nfound=0
-        fname_maps="maps_${band}.txt"
+        fname_maps="coadd_maps_${band}.txt"
+        rm -f $fname_maps
         for schedule in split_schedules_1_upto2mm/chlat/*txt; do
             obs=`basename --suffix=.txt $schedule`
             fname1="${indir1}/$telescope/${band}/${obs}/mapmaker_${obs}_noiseweighted_map.h5"
@@ -63,10 +67,14 @@ for telescope in LAT0_CHLAT; do
         outroot=$outdir/coadd_${telescope}_${band}
         echo "Writing $logfile"
         date >> $logfile
-        srun -n $ntask -c $ncore --cpu_bind=cores \
-             python3 mapstats.py \
-             $fname_maps \
-             >> $logfile 2>&1
+        srun -n $ntask -c $ncore --cpu_bind=cores toast_healpix_coadd \
+            --outmap ${outroot}_map.fits \
+            --rcond ${outroot}_rcond.fits \
+            --rcond_limit 1e-3 \
+            --invcov ${outroot}_invcov.fits \
+            --cov ${outroot}_cov.fits \
+            $fname_maps \
+            >> $logfile 2>&1
         date >> $logfile
     done
 done

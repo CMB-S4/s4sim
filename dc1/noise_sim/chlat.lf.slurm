@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --partition=regular
 ##SBATCH --qos=premium
-#SBATCH --time=00:20:00
+#SBATCH --time=01:00:00
 #SBATCH --nodes=1024
 #SBATCH --job-name=DC1_noise
 #SBATCH --licenses=SCRATCH

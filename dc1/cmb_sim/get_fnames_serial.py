@@ -11,17 +11,19 @@ log_dir = sys.argv[2]
 TELESCOPE = sys.argv[3]
 bands = sys.argv[4:]
 
-pattern = f"{schedule_dir}/split_schedule_????.txt"
+pattern = f"{schedule_dir}/*.txt"
 all_schedules = sorted(glob.glob(pattern))
+nschedule = len(all_schedules)
 
 schedules = set()
 for band in bands:
     for schedule in all_schedules:
-        rootname = TELESCOPE + "_" + os.path.basename(schedule).replace(".txt", "")
-        logfile = f"{log_dir}/{band}/{rootname}_{band}.log"
-        if not os.path.isfile(logfile):
+        obs = os.path.basename(schedule).replace(".txt", "")
+        logfile1 = f"{log_dir}/{band}/{obs}.log"
+        logfile2 = f"cleared_{log_dir}/{band}/{obs}.log"
+        if not os.path.isfile(logfile1) and not os.path.isfile(logfile2):
             schedules.add(schedule)
 
-schedules = sorted(list(schedules))
+schedules = list(schedules)
 
 print(" ".join(schedules))

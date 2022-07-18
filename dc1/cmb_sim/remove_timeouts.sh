@@ -1,10 +1,23 @@
 #!/bin/bash
 
-mkdir -p failed_logs
+fnames=(`grep -lR --include '*.log' -e '^TOAST INFO: Workflow completed in' logs/LAT0_CHLAT`)
+echo "Moving ${#fnames[@]} successful logs"
+for fname in ${fnames[*]}; do
+    echo "Moving $fname"
+    indir=`dirname $fname`
+    outdir=${indir/logs/cleared_logs}
+    echo "Moving $fname to $outdir" 
+    mkdir -p $outdir
+    mv $fname $outdir
+done
 
-fnames=(`grep -lR --include '*.log' -e ModuleNotFoundError -e CANCELLED -e Terminated -e myquota -e client_io_handler_start logs/spsat`)
-echo "Removing ${#fnames[@]} cancelled logs"
+fnames=(`grep -LR --include '*.log' -e '^TOAST INFO: Workflow completed in' logs/LAT0_CHLAT`)
+echo "Removing ${#fnames[@]} failed logs"
 for fname in ${fnames[*]}; do
     echo "Removing $fname"
-    mv $fname failed_logs/
+    indir=`dirname $fname`
+    outdir=${indir/logs/failed_logs}
+    echo "Moving $fname to $outdir" 
+    mkdir -p $outdir
+    mv $fname $outdir
 done
