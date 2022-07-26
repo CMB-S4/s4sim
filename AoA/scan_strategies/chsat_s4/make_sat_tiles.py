@@ -4,6 +4,8 @@ import sys
 import matplotlib.pyplot as plt
 
 import healpy as hp
+
+sys.path.append("..")
 from plug_holes import plug_holes
 
 dec_min = -70
@@ -128,11 +130,10 @@ tertiary_north = [210, 20, 110, 0]
 nside = 512
 npix = 12 * nside ** 2
 
-hfi_pipe = "/media/reijo/backup8tb/sampo/data/hfi_pipe"
-# fn_sync = "/Users/reijo/data/dx12/dx12_030_map.fits"
-# fn_dust = "/Users/reijo/data/dx12/dx12_353_map.fits"
-fn_sync = f"{hfi_pipe}/commander_2018/sky_model_070GHz_nside1024_quickpol_cfreq_zodi.fits"
-fn_dust = f"{hfi_pipe}/commander_2018/sky_model_143GHz_nside2048_quickpol_cfreq_zodi.fits"
+hfi_pipe = "/global/cfs/cdirs/cmb/data/planck2020/npipe/aux"
+sky_model_cache = "/global/cfs/cdirs/cmb/data/planck2020/npipe/npipe6v20_sim/skymodel_cache"
+fn_sync = f"{sky_model_cache}/sky_model_070GHz_nside1024_quickpol_cfreq_zodi.fits"
+fn_dust = f"{sky_model_cache}/sky_model_143GHz_nside2048_quickpol_cfreq_zodi.fits"
 fn_mask = f"{hfi_pipe}/psmask_030_nest.fits"
 fn_cmb = f"{hfi_pipe}/COM_CMB_IQU-commander_1024_R2.02_full.fits"
 mask = hp.read_map(fn_mask, nest=True)

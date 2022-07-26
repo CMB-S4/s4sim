@@ -21,15 +21,14 @@ lon, lat = hp.pix2ang(nside, np.arange(npix), lonlat=True)
 
 lat_patches = {
     #'NAME' : [lonmin, latmax, lonmax, latmin, priority]
-    #'south': [-60, -30, 75, -60],
-    'south1': [-50, -30,  90, -50, 0.001],  # The south patch is the primary patch
-    'south2': [-55, -25,  95, -55, 0.001],  # The south patch is the primary patch
-    'south3': [-60, -20, 100, -60, 0.001],  # The south patch is the primary patch
-    #'north': [150, 15, 195, -15]
-    #'north': [120, 10, 195, -10]
-    'north1': [120,  0, 195, -20, 1000],  # The Northern patch is secondary
-    'north2': [115,  5, 200, -25, 1000],  # The Northern patch is secondary
-    'north3': [110, 10, 205, -30, 1000],  # The Northern patch is secondary
+    #'south': [-50, -30, 90, -50],
+    'south1': [-60, -20, 100, -40, 0.001],  # The south patch is the primary patch
+    'south2': [-70, -30, 110, -50, 0.001],  # The south patch is the primary patch
+    'south3': [-60, -40, 100, -60, 0.001],  # The south patch is the primary patch
+    #'north': [120,  0, 195, -20]
+    'north1': [120, 10, 195, -10, 1000],  # The Northern patch is secondary
+    'north2': [110,  0, 205, -20, 1000],  # The Northern patch is secondary
+    'north3': [120,-10, 195, -30, 1000],  # The Northern patch is secondary
 }
 
 def unwind(alpha, beta):
