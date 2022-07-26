@@ -1,0 +1,70 @@
+--out
+schedules/schedule_lat.txt
+--pole-mode
+--site-lat
+ -89:59.464
+--site-lon
+ -44:39
+--site-alt
+2843
+--site-name
+SOUTH_POLE
+--telescope
+polescope
+--patch
+POLE1, 1, 88, -47.5, -8, -60
+--patch
+POLE2, 1, 83, -45.0,  -3, -62.5
+--patch
+POLE3, 1, 75, -42.0,   5, -66
+--patch-coord
+C
+--el-min
+0
+--el-max
+90
+--sun-el-max
+90
+--sun-avoidance-angle
+0
+--moon-avoidance-angle
+0
+--start
+2027-01-01 00:00:00
+--stop
+2027-12-01 00:00:00
+--gap-s
+1200
+--gap-small
+0
+--pole-ces-time
+86400
+--ces-max-time
+86400
+--fp-radius
+0
+--boresight-angle-step
+22.5
+--boresight-angle-min
+-22.5
+--boresight-angle-max
+22.5
+--boresight-angle-time
+1440
+--pole-el-step-deg
+8.0
+--pole-raster-scan
+--pole-raster-el-step-deg
+0.1666666666
+--az-rate-sky-deg
+1.0
+--az-accel-mount-deg
+1.0
+--el-rate-deg
+1.0
+--el-accel-deg
+1.0
+--dec-amplitude-deg
+0.1
+--dec-period
+10
