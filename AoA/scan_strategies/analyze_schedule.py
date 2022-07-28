@@ -21,6 +21,16 @@ fnames = sorted(glob(indir + "/*txt"))
 
 for fname, color in zip(fnames, colors):
     print("\n{}".format(fname))
+
+    with open(fname, "r") as fin:
+        fin.readline()
+        header = fin.readline()
+    site, telescope, lat, lon, alt = header.split()
+    if np.abs(float(lat)) > 85:
+        pole_site = True
+    else:
+        pole_site = False
+
     schedule = np.genfromtxt(fname, skip_header=3).T
 
     arr = np.genfromtxt(
@@ -34,9 +44,16 @@ for fname, color in zip(fnames, colors):
     throws = arr["az_maxs"] - arr["az_mins"]
 
     last_el = None
+    line = 3
     for start, stop, az_min, az_max, el, name in zip(
         arr["starts"], arr["stops"], arr["az_mins"], arr["az_maxs"], arr["elevations"], arr["names"],
     ):
+        line += 1
+        if not pole_site and az_min < 180 and az_max > 180:
+            print(
+                f"WARNING: Found a mixed Rising/Setting scan: {az_min} - {az_max}. line = {line}",
+                flush=True,
+            )
         if last_el is None:
             label = os.path.basename(fname).replace(".txt", "")
         else:

@@ -22,9 +22,9 @@ lon, lat = hp.pix2ang(nside, np.arange(npix), lonlat=True)
 lat_patches = {
     #'NAME' : [lonmin, latmax, lonmax, latmin, priority]
     #'south': [-50, -30, 90, -50],
-    'south1': [-60, -20, 100, -40, 0.001],  # The south patch is the primary patch
-    'south2': [-70, -30, 110, -50, 0.001],  # The south patch is the primary patch
-    'south3': [-60, -40, 100, -60, 0.001],  # The south patch is the primary patch
+    'south1': [-55, -20,  90, -40, 0.001],  # The south patch is the primary patch
+    'south2': [-65, -30, 100, -50, 0.001],  # The south patch is the primary patch
+    'south3': [-55, -40,  90, -60, 0.001],  # The south patch is the primary patch
     #'north': [120,  0, 195, -20]
     'north1': [120, 10, 195, -10, 1000],  # The Northern patch is secondary
     'north2': [110,  0, 205, -20, 1000],  # The Northern patch is secondary
