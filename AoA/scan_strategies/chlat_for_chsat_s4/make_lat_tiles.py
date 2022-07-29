@@ -25,8 +25,10 @@ lmax = 512
 wpatch = 10
 hpatch = 20
 
-south_tier_ranges = [(60, 30), (75, 0), (100, -65)]  # Tier 1, 2, 3
-north_tier_ranges = [(165, 135), (175, 125), (230, 110)]  # Tier 1, 2, 3
+# south_tier_ranges = [(60, 30), (75, 0), (100, -65)]  # Tier 1, 2, 3
+south_tier_ranges = [(70, 20), (85, -10), (100, -65)]  # Tier 1, 2, 3
+# north_tier_ranges = [(165, 135), (175, 125), (230, 110)]  # Tier 1, 2, 3
+north_tier_ranges = [(175, 125), (185, 115), (230, 110)]  # Tier 1, 2, 3
 
 
 def get_tier(left, right):

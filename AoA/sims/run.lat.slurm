@@ -2,7 +2,7 @@
 #SBATCH --partition=regular
 #SBATCH --qos=premium
 #SBATCH --time=02:00:00
-#SBATCH --nodes=8
+#SBATCH --nodes=16
 #SBATCH --job-name=AoAsims
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=knl
@@ -46,7 +46,8 @@ echo "            ntask = ${ntask}"
 #for flavor in splat chlat_so chlat_s4 splat_from_chile splat_flat; do
 #for flavor in splat_for_spsat splat_for_spsat chlat_for_chsat_so chlat_for_chsat_s4 chlat_for_spsat chlat_wide chlat_for_spsat_wo_wide; do
 #for flavor in splat_for_spsat chlat_for_chsat_so chlat_for_chsat_s4 chlat_for_spsat chlat_wide; do
-for flavor in chlat_for_chsat_s4 chlat_for_chsat_so chlat_for_spsat chlat_for_spsat_w_wide chlat_wide splat_for_spsat; do
+#for flavor in chlat_for_chsat_s4 chlat_for_chsat_so chlat_for_spsat chlat_for_spsat_w_wide chlat_wide splat_for_spsat; do
+for flavor in chlat_for_spsat_w_wide; do
     case $flavor in
 	splat_for_spsat)
 	    bands=( f020 f030 f040 f090 f150 f220 f280 )
@@ -59,7 +60,6 @@ for flavor in chlat_for_chsat_s4 chlat_for_chsat_so chlat_for_spsat chlat_for_sp
 	    params=params.chlat.toml
 	    ;;
     esac
-    bands=( f150 )
     for band in ${bands[*]}; do
 	fpfile=${fproot}_${band}.h5
 	case $band in

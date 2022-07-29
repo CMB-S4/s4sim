@@ -30,7 +30,7 @@ C
 --gap-small
 0
 --ces-max-time
-900
+3600
 --fp-radius
 0
 --out
@@ -66,6 +66,6 @@ intermediate4,   1,  20, -45,  -3, -65
 --patch
 deep,            4,  52, -52,  30, -60
 --patch
-RISING_SCAN_40,HORIZONTAL,1,30.00,150.00,40.00,60
+RISING_SCAN_40,HORIZONTAL,1000000,30.00,150.00,40.00,1440
 --patch
-SETTING_SCAN_40,HORIZONTAL,1,210.00,330.00,40.00,60
+SETTING_SCAN_40,HORIZONTAL,1000000,210.00,330.00,40.00,1440

@@ -39,9 +39,9 @@
     rightleft_mask = 16 # Bit mask to raise right-to-left flags with
     scan_accel_az = "1.00000000000000e+00 deg / s2" # Mount scanning rate acceleration for turnarounds
     scan_accel_el = "1.00000000000000e+00 deg / s2" # Mount elevation rate acceleration.
-    scan_cosecant_modulation = false # Modulate the scan rate according to 1/sin(az) for uniform depth
+    scan_cosecant_modulation = true # Modulate the scan rate according to 1/sin(az) for uniform depth
     scan_leftright_interval = "scan_leftright" # Interval name for left to right scans
-    scan_rate_az = "1.0 deg / s" # The sky or mount azimuth scanning rate.  See `fix_rate_on_sky`
+    scan_rate_az = "0.5 deg / s" # The sky or mount azimuth scanning rate.  See `fix_rate_on_sky`
     scan_rate_el = "1.00000000000000e+00 deg / s" # The sky elevation scanning rate
     scan_rightleft_interval = "scan_rightleft" # Interval name for right to left scans
     scanning_interval = "scanning" # Interval name for scanning
