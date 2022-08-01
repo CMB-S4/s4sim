@@ -387,6 +387,36 @@ def get_example():
     bnd["NET_corr"] = 1.01
     bnd["pwv_poly"] = 0.993708, 0.019467, 0.000420
     bands["SAT_f040"] = bnd
+    
+    bnd = OrderedDict()
+    bnd["center"] = 25.75
+    bnd["low"] = 21.5
+    bnd["high"] = 30.0
+    bnd["bandpass"] = ""
+    bnd["NET"] = 176.0
+    bnd["fknee"] = 50.0
+    bnd["fmin"] = 0.01
+    bnd["alpha"] = 3.5
+    bnd["A"] = 0.17752
+    bnd["C"] = 0.76850
+    bnd["NET_corr"] = 1.04
+    bnd["pwv_poly"] = 0.973260, 0.082784, 0.001613
+    bands["CHSAT_f030"] = bnd
+
+    bnd = OrderedDict()
+    bnd["center"] = 38.75
+    bnd["low"] = 30.0
+    bnd["high"] = 47.5
+    bnd["bandpass"] = ""
+    bnd["NET"] = 217.6
+    bnd["fknee"] = 50.0
+    bnd["fmin"] = 0.01
+    bnd["alpha"] = 3.5
+    bnd["A"] = 0.41275
+    bnd["C"] = 0.46189
+    bnd["NET_corr"] = 1.01
+    bnd["pwv_poly"] = 0.993708, 0.019467, 0.000420
+    bands["CHSAT_f040"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 91.5
@@ -507,6 +537,66 @@ def get_example():
     bnd["NET_corr"] = 1.00
     bnd["pwv_poly"] = 0.896329, 0.319420, 0.011034
     bands["SAT_f155"] = bnd
+    
+    bnd = OrderedDict()
+    bnd["center"] = 85.0
+    bnd["low"] = 74.8
+    bnd["high"] = 95.2
+    bnd["bandpass"] = ""
+    bnd["NET"] = 313.7
+    bnd["fknee"] = 50.0
+    bnd["fmin"] = 0.01
+    bnd["alpha"] = 3.5
+    bnd["A"] = 0.37419
+    bnd["C"] = 0.51222
+    bnd["NET_corr"] = 1.03
+    bnd["pwv_poly"] = 0.980092, 0.061447, 0.001782
+    bands["CHSAT_f085"] = bnd
+
+    bnd = OrderedDict()
+    bnd["center"] = 145.0
+    bnd["low"] = 129.1
+    bnd["high"] = 161.0
+    bnd["bandpass"] = ""
+    bnd["NET"] = 335.3
+    bnd["fknee"] = 50.0
+    bnd["fmin"] = 0.01
+    bnd["alpha"] = 3.5
+    bnd["A"] = 0.19900
+    bnd["C"] = 0.74041
+    bnd["NET_corr"] = 1.00
+    bnd["pwv_poly"] = 0.926762, 0.225619, 0.007903
+    bands["CHSAT_f145"] = bnd
+
+    bnd = OrderedDict()
+    bnd["center"] = 95.0
+    bnd["low"] = 83.6
+    bnd["high"] = 106.4
+    bnd["bandpass"] = ""
+    bnd["NET"] = 274.9
+    bnd["fknee"] = 50.0
+    bnd["fmin"] = 0.01
+    bnd["alpha"] = 3.5
+    bnd["A"] = 0.29310
+    bnd["C"] = 0.61778
+    bnd["NET_corr"] = 1.02
+    bnd["pwv_poly"] = 0.972330, 0.085416, 0.002437
+    bands["CHSAT_f095"] = bnd
+
+    bnd = OrderedDict()
+    bnd["center"] = 155.0
+    bnd["low"] = 138.0
+    bnd["high"] = 172.1
+    bnd["bandpass"] = ""
+    bnd["NET"] = 359.7
+    bnd["fknee"] = 50.0
+    bnd["fmin"] = 0.01
+    bnd["alpha"] = 3.5
+    bnd["A"] = 0.18843
+    bnd["C"] = 0.75417
+    bnd["NET_corr"] = 1.00
+    bnd["pwv_poly"] = 0.896329, 0.319420, 0.011034
+    bands["CHSAT_f155"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 227.0
@@ -597,90 +687,144 @@ def get_example():
     bnd["NET_corr"] = 1.00
     bnd["pwv_poly"] = 0.830191, 0.512951, 0.050000
     bands["SAT_f280"] = bnd
+    
+    bnd = OrderedDict()
+    bnd["center"] = 227.0
+    bnd["low"] = 197.9
+    bnd["high"] = 256.1
+    bnd["bandpass"] = ""
+    bnd["NET"] = 726.9
+    bnd["fknee"] = 50.0
+    bnd["fmin"] = 0.01
+    bnd["alpha"] = 3.5
+    bnd["A"] = 0.22747
+    bnd["C"] = 0.70328
+    bnd["NET_corr"] = 1.00
+    bnd["pwv_poly"] = 0.867567, 0.403839, 0.027177
+    bands["CHSAT_f220"] = bnd
+
+    bnd = OrderedDict()
+    bnd["center"] = 285.5
+    bnd["low"] = 256.0
+    bnd["high"] = 315.0
+    bnd["bandpass"] = ""
+    bnd["NET"] = 1747.2
+    bnd["fknee"] = 50.0
+    bnd["fmin"] = 0.01
+    bnd["alpha"] = 3.5
+    bnd["A"] = 0.26587
+    bnd["C"] = 0.65327
+    bnd["NET_corr"] = 1.00
+    bnd["pwv_poly"] = 0.830191, 0.512951, 0.050000
+    bands["CHSAT_f280"] = bnd
 
     cnf["bands"] = bands
 
     wafers = OrderedDict()
 
-    wtypes = ["SPLAT_ULF", "CHLAT_LF", "SPLAT_LF", "SAT_LF", "CHLAT_MF", "SPLAT_MF", "SAT_MFL", "SAT_MFH", "CHLAT_HF", "SPLAT_HF", "SAT_HF"]
+    wtypes = ["SPLAT_ULF", "CHLAT_LF", "SPLAT_LF", "SAT_LF", "CHSAT_LF", "CHLAT_MF", "SPLAT_MF", "SAT_MFL", "SAT_MFH", "CHSAT_MFL", "CHSAT_MFH", "CHLAT_HF", "SPLAT_HF", "SAT_HF", "CHSAT_HF"]
     # partial wafers will be counted as individual wafers since we make a full wafer then kill pixels
     wcnt = {
         "SPLAT_ULF": 4,
         "CHLAT_LF": 8*2,
         "SPLAT_LF": 9,
         "SAT_LF": (12) * 2,
+        "CHSAT_LF": (12) * 2,
         "CHLAT_MF": 54*2,
         "SPLAT_MF": 54,
         "SAT_MFL": (12) * 6,
         "SAT_MFH": (12) * 6,
+        "CHSAT_MFL": (12) * 6,
+        "CHSAT_MFH": (12) * 6,
         "CHLAT_HF": 23*2,
         "SPLAT_HF": 18,
         "SAT_HF": (6 + 6) * 4,
+        "CHSAT_HF": (6 + 6) * 4,
     }
     wpac = {
         "SPLAT_ULF": "RP",
         "CHLAT_LF": "RP",
         "SPLAT_LF": "RP",
         "SAT_LF": "RP",
+        "CHSAT_LF": "RP",
         "CHLAT_MF": "RP",
         "SPLAT_MF": "RP",
         "SAT_MFL": "RP",
         "SAT_MFH": "HP",
+        "CHSAT_MFL": "RP",
+        "CHSAT_MFH": "HP",
         "CHLAT_HF": "HP",
         "SPLAT_HF": "HP",
         "SAT_HF": "HP",
+        "CHSAT_HF": "HP",
     }
     wnp = {
         "SPLAT_ULF": 27,
         "CHLAT_LF": 48,
         "SPLAT_LF": 48,
         "SAT_LF": 12,
+        "CHSAT_LF": 12,
         "CHLAT_MF": 432,
         "SPLAT_MF": 432,
         "SAT_MFL": 147,
         "SAT_MFH": 169,
+        "CHSAT_MFL": 147,
+        "CHSAT_MFH": 169,
         "CHLAT_HF": 469,
         "SPLAT_HF": 469,
         "SAT_HF": 469,
+        "CHSAT_HF": 469,
     }
     wpixmm = {
         "SPLAT_ULF": 21.1,
         "CHLAT_LF": 16.1,
         "SPLAT_LF": 16.1,
         "SAT_LF": 31.1,
+        "CHSAT_LF": 31.1,
         "CHLAT_MF": 5.3,
         "SPLAT_MF": 5.3,
         "SAT_MFL": 9.5,
         "SAT_MFH": 8.94,
+        "CHSAT_MFL": 9.5,
+        "CHSAT_MFH": 8.94,
         "CHLAT_HF": 5.2,
         "SPLAT_HF": 5.2,
         "SAT_HF": 5.2,
+        "CHSAT_HF": 5.2,
     }
     wrhombgap = {
         "SPLAT_ULF": 2.827,
         "CHLAT_LF": 2.157,
         "SPLAT_LF": 2.157,
         "SAT_LF": 4.167,
+        "CHSAT_LF": 4.167,
         "CHLAT_MF": 0.71,
         "SPLAT_MF": 0.71,
         "SAT_MFL": 1.273,
         "SAT_MFH": 0.71,
+        "CHSAT_MFL": 1.273,
+        "CHSAT_MFH": 0.71,
         "CHLAT_HF": 0.71,
         "SPLAT_HF": 0.71,
         "SAT_HF": 0.71,
+        "CHSAT_HF": 0.71,
     }
     wbd = {
         "SPLAT_ULF": ["SPLAT_f020"],
         "CHLAT_LF": ["CHLAT_f030", "CHLAT_f040"],
         "SPLAT_LF": ["SPLAT_f030", "SPLAT_f040"],
         "SAT_LF": ["SAT_f030", "SAT_f040"],
+        "CHSAT_LF": ["CHSAT_f030", "CHSAT_f040"],
         "CHLAT_MF": ["CHLAT_f090", "CHLAT_f150"],
         "SPLAT_MF": ["SPLAT_f090", "SPLAT_f150"],
         "SAT_MFL": ["SAT_f085", "SAT_f145"],
         "SAT_MFH": ["SAT_f095", "SAT_f155"],
+        "CHSAT_MFL": ["CHSAT_f085", "CHSAT_f145"],
+        "CHSAT_MFH": ["CHSAT_f095", "CHSAT_f155"],
         "CHLAT_HF": ["CHLAT_f220", "CHLAT_f280"],
         "SPLAT_HF": ["SPLAT_f220", "SPLAT_f280"],
         "SAT_HF": ["SAT_f220", "SAT_f280"],
+        "CHSAT_HF": ["CHSAT_f220", "CHSAT_f280"],
     }
     windx = 0
     cardindx = 0
@@ -708,13 +852,17 @@ def get_example():
         "CHLAT_LF": 0,
         "SPLAT_LF": 0,
         "SAT_LF": 0,
+        "CHSAT_LF": 0,
         "CHLAT_MF": 0,
         "SPLAT_MF": 0,
         "SAT_MFL": 0,
         "SAT_MFH": 0,
+        "CHSAT_MFL": 0,
+        "CHSAT_MFH": 0,
         "CHLAT_HF": 0,
         "SPLAT_HF": 0,
         "SAT_HF": 0,
+        "CHSAT_HF": 0,
     }
 
     # added in tube platescale because SAT HF has a different platescale
@@ -1342,6 +1490,94 @@ def get_example():
         tb["location"] = stubepos[tindx]
         tubes[nm] = tb
 
+    #cnf["tubes"] = tubes
+    
+    chstubes = [
+        "CHSAT_MFL",
+        "CHSAT_MFH",
+        "CHSAT_HF",
+        "CHSAT_MFL",
+        "CHSAT_MFH",
+        "CHSAT_HF",
+        "CHSAT_MFL",
+        "CHSAT_MFH",
+        "CHSAT_HF",
+        "CHSAT_MFL",
+        "CHSAT_MFH",
+        "CHSAT_HF",
+        "CHSAT_MFL",
+        "CHSAT_MFH",
+        "CHSAT_LF",
+        "CHSAT_MFL",
+        "CHSAT_MFH",
+        "CHSAT_LF",
+    ]
+    chstubepos = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    for tindx in range(18):
+        nm = "CHST{:d}".format(tindx)
+        ttyp = chstubes[tindx]
+        tb = OrderedDict()
+        tb["type"] = ttyp
+        tb["waferspace"] = 124.
+        tb["wafers"] = list()
+        # HF tubes have 8 full wafers + 2 partial, all others 11+2
+        if ttyp == "CHSAT_HF":
+            for tw in range(12):
+                off = 0
+                for w, props in cnf["wafers"].items():
+                    if props["type"] == ttyp:
+                        if off == woff[ttyp]:
+                            tb["wafers"].append(w)
+                            woff[ttyp] += 1
+                            break
+                        off += 1
+            # 29.0 deg/(422mm)
+            tb["platescale"] = 0.0687
+            tb["FOV_cut"] = 40.0
+        elif ttyp == "CHSAT_MFL":
+            for tw in range(12):
+                off = 0
+                for w, props in cnf["wafers"].items():
+                    if props["type"] == ttyp:
+                        if off == woff[ttyp]:
+                            tb["wafers"].append(w)
+                            woff[ttyp] += 1
+                            break
+                        off += 1
+            # 29.4/(420mm)
+            tb["platescale"] = 0.070
+            tb["FOV_cut"] = 29.4
+            tb["waferspace"] = 122.16
+        elif ttyp == "CHSAT_MFH":
+            for tw in range(12):
+                off = 0
+                for w, props in cnf["wafers"].items():
+                    if props["type"] == ttyp:
+                        if off == woff[ttyp]:
+                            tb["wafers"].append(w)
+                            woff[ttyp] += 1
+                            break
+                        off += 1
+            # 29.4/(420mm)
+            tb["platescale"] = 0.0701
+            tb["FOV_cut"] = 29.4
+            tb["waferspace"] = 121.85
+        else:
+            for tw in range(12):
+                off = 0
+                for w, props in cnf["wafers"].items():
+                    if props["type"] == ttyp:
+                        if off == woff[ttyp]:
+                            tb["wafers"].append(w)
+                            woff[ttyp] += 1
+                            break
+                        off += 1
+            # 29.0/(490mm)
+            tb["platescale"] = 0.0592
+            tb["FOV_cut"] = 40.0
+        tb["location"] = chstubepos[tindx]
+        tubes[nm] = tb
+
     cnf["tubes"] = tubes
 
     telescopes = OrderedDict()
@@ -1701,6 +1937,59 @@ def get_example():
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT5"] = tele
+    
+    #from the DSR
+    chsfwhm = OrderedDict()
+    chsfwhm["CHSAT_f030"] = 72.8
+    chsfwhm["CHSAT_f040"] = 72.8
+    chsfwhm["CHSAT_f085"] = 25.5
+    chsfwhm["CHSAT_f145"] = 25.5
+    chsfwhm["CHSAT_f095"] = 22.7
+    chsfwhm["CHSAT_f155"] = 22.7
+    chsfwhm["CHSAT_f220"] = 13.0
+    chsfwhm["CHSAT_f280"] = 13.0
+
+    tele = OrderedDict()
+    tele["tubes"] = ["CHST0", "CHST1", "CHST2"]
+    tele["platescale"] = 0.056689
+    tele["tubespace"] = 700.0
+    tele["fwhm"] = chsfwhm
+    telescopes["CHSAT0"] = tele
+
+    tele = OrderedDict()
+    tele["tubes"] = ["CHST3", "CHST4", "CHST5"]
+    tele["platescale"] = 0.056689
+    tele["tubespace"] = 700.0
+    tele["fwhm"] = chsfwhm
+    telescopes["CHSAT1"] = tele
+
+    tele = OrderedDict()
+    tele["tubes"] = ["CHST6", "CHST7", "CHST8"]
+    tele["platescale"] = 0.056689
+    tele["tubespace"] = 700.0
+    tele["fwhm"] = chsfwhm
+    telescopes["CHSAT2"] = tele
+
+    tele = OrderedDict()
+    tele["tubes"] = ["CHST9", "CHST10", "CHST11"]
+    tele["platescale"] = 0.056689
+    tele["tubespace"] = 700.0
+    tele["fwhm"] = chsfwhm
+    telescopes["CHSAT3"] = tele
+
+    tele = OrderedDict()
+    tele["tubes"] = ["CHST12", "CHST13", "CHST14"]
+    tele["platescale"] = 0.056689
+    tele["tubespace"] = 700.0
+    tele["fwhm"] = chsfwhm
+    telescopes["CHSAT4"] = tele
+
+    tele = OrderedDict()
+    tele["tubes"] = ["CHST15", "CHST16", "CHST17"]
+    tele["platescale"] = 0.056689
+    tele["tubespace"] = 700.0
+    tele["fwhm"] = chsfwhm
+    telescopes["CHSAT5"] = tele
 
     cnf["telescopes"] = telescopes
 
