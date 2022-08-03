@@ -47,7 +47,7 @@ echo "            ntask = ${ntask}"
 #for flavor in splat_for_spsat splat_for_spsat chlat_for_chsat_so chlat_for_chsat_s4 chlat_for_spsat chlat_wide chlat_for_spsat_wo_wide; do
 #for flavor in splat_for_spsat chlat_for_chsat_so chlat_for_chsat_s4 chlat_for_spsat chlat_wide; do
 #for flavor in chlat_for_chsat_s4 chlat_for_chsat_so chlat_for_spsat chlat_for_spsat_w_wide chlat_wide splat_for_spsat; do
-for flavor in chlat_for_spsat_w_wide; do
+for flavor in splat_for_spsat; do
     case $flavor in
 	splat_for_spsat)
 	    bands=( f020 f030 f040 f090 f150 f220 f280 )
