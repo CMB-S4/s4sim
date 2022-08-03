@@ -39,7 +39,7 @@ def main():
     parser.add_argument(
         "--telescope",
         required=True,
-        help="Input telescope (LAT0,...,LAT2, or SAT0,...,SAT5).  "
+        help="Input telescope (LAT0,...,LAT2, or SAT0,...,SAT5, or CHSAT0,...,CHSAT5 ).  "
         "Not used if --hardware is provided.",
     )
 
@@ -101,7 +101,7 @@ def main():
             fsample = args.fsample
         else:
             # Hard-coded sampling rates
-            if args.telescope.startswith("SAT"):
+            if args.telescope.startswith("SAT") or args.telescope.startswith("CHSAT"):
                 fsample = 20
             elif band_name.endswith("f220") or band_name.endswith("f280"):
                 fsample = 440
