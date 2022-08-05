@@ -42,8 +42,8 @@ echo "            ntask = ${ntask}"
 #echo "        groupsize = ${groupsize}"
 #echo "           ngroup = ${ngroup}"
 
-for flavor in spsat chsat_s4 chsat_so; do
-#for flavor in spsat; do
+#for flavor in spsat chsat_s4 chsat_so; do
+for flavor in chsat_so; do
     case $flavor in
 	spsat)
 	    params=params.spsat.toml
@@ -52,8 +52,8 @@ for flavor in spsat chsat_s4 chsat_so; do
 	    params=params.chsat.toml
 	    ;;
     esac
-    #for band in f030 f040 f085 f095 f145 f155 f220 f280; do
-    for band in f155; do
+    for band in f030 f040 f085 f095 f145 f155 f220 f280; do
+    #for band in f155; do
 	case $band in
 	    f030|f040)
 		fpfile=../focalplanes/focalplane_SAT5_SAT_${band}.h5
@@ -71,6 +71,10 @@ for flavor in spsat chsat_s4 chsat_so; do
                 thinfp=16
 		;;
 	esac
+
+        if [[ $flavor == chsat* ]]; then
+            $fpfile=${fpfile/SAT/CHSAT}
+        fi
 
 	outdir=outputs/sat/$flavor/$band
 	mkdir -p $outdir

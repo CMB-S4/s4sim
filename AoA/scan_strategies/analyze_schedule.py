@@ -43,6 +43,14 @@ for fname, color in zip(fnames, colors):
     lengths = arr["stops"] - arr["starts"]
     throws = arr["az_maxs"] - arr["az_mins"]
 
+    if lengths.size == 0:
+        print(f"No scans found in {fname}")
+        continue
+
+    if lengths.size == 1:
+        print(f"Only one scan in {fname}")
+        continue
+
     last_el = None
     line = 3
     for start, stop, az_min, az_max, el, name in zip(
