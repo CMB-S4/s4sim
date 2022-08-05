@@ -257,18 +257,31 @@ def plot_patch(patch, tier):
     xfull = np.linspace(0, 1, 100 * n)
     lonfull = np.interp(xfull, x, lon)
     latfull = np.interp(xfull, x, lat)
-    hp.projplot(
-        lonfull,
-        latfull,
-        "-",
-        threshold=1,
-        lonlat=True,
-        color=color,
-        lw=lw,
-        alpha=0.8,
-        coord="C",
-        zorder=(4 - tier) * 100,
-    )
+    for c, w in (["white", 4], [color, 2]):
+        hp.projplot(
+            lonfull,
+            latfull,
+            "-",
+            threshold=1,
+            lonlat=True,
+            color=c,
+            lw=w,
+            alpha=0.8,
+            coord="C",
+            zorder=(4 - tier) * 100,
+        )
+        hp.projplot(
+            lonfull,
+            latfull + 5,
+            "-",
+            threshold=1,
+            lonlat=True,
+            color=c,
+            lw=w,
+            alpha=0.8,
+            coord="C",
+            zorder=(4 - tier) * 100,
+        )
 
 
 def add_patch(fout, patch, tier, mult=1):
@@ -320,3 +333,44 @@ with open("patches_lat.txt", "w") as fout:
         left -= 5
 
 plt.savefig("priority_by_pixel_fwhm{:02}_nbin{:02}.full.png".format(fwhm, nbin))
+
+
+# Plots targets and foregrounds
+
+fig = plt.figure(figsize=[18, 6])
+#plt.suptitle("fwhm = {} deg, nbin = {}".format(fwhm, nbin))
+
+def plot_p(fgmap, sub, title=None, nbin=10, coord="C", gr=15):
+    """
+    Plot the given map using only `nbin` distinct colors
+    If `maps` contains several maps, the plotting color is
+    chosen based on the most intense map: if any of the given
+    """
+    sorted_fgmap = np.sort(fgmap)
+    lims = np.arange(nbin) / nbin
+    p = np.zeros(npix)
+    for ilim, lim in enumerate(lims):
+        val = sorted_fgmap[int(npix * lim)]
+        p[fgmap > val] = lim
+    hp.mollview(p, xsize=2400, sub=sub, title=title, coord=coord, cmap="inferno")
+    hp.graticule(gr)
+    return p
+
+plot_p(hp.read_map("../fg_map_gal.fits"), sub=[1, 2, 1], coord="G")
+plot_p(hp.read_map("../fg_map_equ.fits"), sub=[1, 2, 2], coord="C")
+
+left = south_left
+for top in south_top:
+    tier = get_tier(left, left - wpatch)
+    patch = [left, top, left - wpatch, top - hpatch]
+    plot_patch(patch, tier)
+    left -= 5
+
+left = north_left
+for top in north_top:
+    tier = get_tier(left, left - wpatch)
+    patch = [left, top, left - wpatch, top - hpatch]
+    plot_patch(patch, tier)
+    left -= 5
+
+fig.savefig("fields_and_foregrounds.png")
