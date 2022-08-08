@@ -62,6 +62,15 @@ scalings = {
         220 :  377.81,
         280 :  258.25,
     },
+    "chlat_ulf_for_spsat" : {
+        20 :  (104.31, 1.500660534),
+        30 :   352.22,
+        40 :   352.22,
+        90 :  1247.19,
+        150 : 1162.92,
+        220 :  892.91,
+        280 :  617.16,
+    },
 }
 
 for flavor in scalings:
@@ -69,15 +78,29 @@ for flavor in scalings:
     os.makedirs(outdir, exist_ok=True)
 
     for freq, scale in scalings[flavor].items():
+        try:
+            # When net_factor is present, it will not be applied to the
+            # hit maps.
+            scale, net_factor = scale
+        except TypeError as e:
+            net_factor = 1
         if scale == 0:
             continue
-        indir = f"outputs/lat/{flavor}/f{freq:03}"
-        
+
+        base_flavor = flavor.replace("_ulf", "")
+        indir = f"outputs/lat/{base_flavor}/f{freq:03}"
         inmap = f"{indir}/mapmaker_hits.fits"
         outmap = f"{outdir}/hits_{freq:03}.fits"
+        if freq == 20 and not os.path.isfile(inmap) and net_factor != 1:
+            indir = f"outputs/lat/{base_flavor}/f030"
+            inmap = f"{indir}/mapmaker_hits.fits"
+            print(
+                f"WARNING: Using the 25GHz map as input for 20GHz output: "
+                f"{inmap} -> {outmap}"
+            )
         print(f"Reading {inmap}")
         hits = hp.read_map(inmap, None)
-        hits = (hits * scale).astype(int)
+        hits = (hits * scale * net_factor).astype(int)
         hp.write_map(outmap, hits, overwrite=True)
         print(f"Wrote {outmap}")
 
