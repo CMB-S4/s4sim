@@ -4,116 +4,167 @@ import sys
 import healpy as hp
 import numpy as np
 
-# Scalings as of 08/08/2022
+# Scalings as of 08/11/2022
 
-scalings = {
-    "spsat" : {
-        30 :    4.29,
-        40 :    4.29,
-        85 :  238.69,
-        95 :  239.60,
-        145 : 235.37,
-        155 : 236.27,
-        220 :  96.78,
-        280 :  67.75,
+# Which configurations go with which alternatives
+
+alternatives = {
+    "alternative_1" : ["spsat", "spsat_aggressive"],
+    "alternative_2" : ["spsat", "spsat_aggressive"],
+    "alternative_3" : [
+        "chsat_so", "chsat_so_hwp", "chsat_so_hwp_aggressive",
+        "chsat_s4", "chsat_s4_hwp", "chsat_s4_hwp_aggressive",
+    ],
+}
+
+# Number of optics tubes in each alternative
+
+tube_counts = {
+    "alternative_1" : {
+        30 :    1,
+        40 :    1,
+        85 :    3,
+        95 :    3,
+        145 :   3,
+        155 :   3,
+        220 :   2,
+        280 :   2,
     },
-    "spsat_aggressive" : {
-        30 :    (7.96, 2.138464718),
-        40 :   (14.40, 1.181565162),
-        85 :  (485.41, 1.521086954),
-        95 :  (432.06, 1.561227106),
-        145 : (595.48, 1.222707841),
-        155 : (556.80, 1.194642016),
-        220 : (101.27, 0.954939689),
-        280 :  (69.86, 0.9689532216),
+    "alternative_2" : {
+        30 :    1,
+        40 :    1,
+        85 :    4,
+        95 :    4,
+        145 :   4,
+        155 :   4,
+        220 :   3,
+        280 :   3,
     },
-    "chsat_so" : {
-        30 :    4.14,
-        40 :    4.14,
-        85 :  230.41,
-        95 :  231.29,
-        145 : 227.21,
-        155 : 228.08,
-        220 :  98.38,
-        280 :  68.86,
-    },
-    "chsat_so_hwp" : {
-        30 :    (3.15, 1.027741433),
-        40 :    (3.15, 1.02767165),
-        85 :  (175.74, 1.043875238),
-        95 :  (173.07, 1.072304098),
-        145 : (169.86, 1.064990291),
-        155 : (172.17, 1.062919846),
-        220 :  (76.60, 1.020298481),
-        280 :  (53.00, 1.03233061),
-    },
-    "chsat_so_hwp_aggressive" : {
-        30 :    (5.31, 2.109276308),
-        40 :    (8.96, 1.251117391),
-        85 :  (373.96, 1.897951595),
-        95 :  (330.91, 1.869397564),
-        145 : (537.52, 1.302099193),
-        155 : (473.58, 1.28807286),
-        220 : (116.18, 1.030524203),
-        280 :  (79.20, 1.058123266),
-    },
-    "chsat_s4" : {
-        30 :    3.99,
-        40 :    3.99,
-        85 :  222.24,
-        95 :  223.09,
-        145 : 219.15,
-        155 : 219.99,
-        220 :  93.96,
-        280 :  65.77,
-    },
-    "chsat_s4_hwp" : {
-        30 :    (3.12, 1.027741433),
-        40 :    (3.12, 1.02767165),
-        85 :  (173.96, 1.043875238),
-        95 :  (171.32, 1.072304098),
-        145 : (168.14, 1.064990291),
-        155 : (170.43, 1.062919846),
-        220 :  (75.08, 1.020298481),
-        280 :  (51.95, 1.03233061),
-    },
-    "chsat_s4_hwp_aggressive" : {
-        30 :    (5.26, 2.109276308),
-        40 :    (8.87, 1.251117391),
-        85 :  (370.19, 1.897951595),
-        95 :  (327.57, 1.869397564),
-        145 : (532.09, 1.302099193),
-        155 : (468.80, 1.28807286),
-        220 : (113.88, 1.030524203),
-        280 :  (77.63, 1.058123266),
+    "alternative_3" : {
+        30 :    3,
+        40 :    3,
+        85 :    9,
+        95 :    9,
+        145 :   9,
+        155 :   9,
+        220 :   6,
+        280 :   6,
     },
 }
 
-for flavor in scalings:
-    outdir = f"scaled_outputs/sat/{flavor}"
-    os.makedirs(outdir, exist_ok=True)
+# Volume and NET scalings for a single optics tube
 
-    for freq, scale in scalings[flavor].items():
-        try:
-            # The NET factor is included in `scale` but should not apply to hits
-            scale, net_factor = scale
-        except TypeError as e:
-            net_factor = 1
-        base_flavor = flavor.replace("_hwp", "").replace("_aggressive", "")
-        indir = f"outputs/sat/{base_flavor}/f{freq:03}"
+scalings = {
+    "spsat" : {
+        30 :    2.14,
+        40 :    2.14,
+        85 :   39.78,
+        95 :   39.93,
+        145 :  39.23,
+        155 :  39.38,
+        220 :  24.20,
+        280 :  16.94,
+    },
+    "spsat_aggressive" : {
+        30 :    (3.98, 2.138464718),
+        40 :    (7.20, 1.181565162),
+        85 :   (80.90, 1.521086954),
+        95 :   (72.01, 1.561227106),
+        145 :  (99.25, 1.222707841),
+        155 :  (92.80, 1.194642016),
+        220 :  (25.32, 0.954939689),
+        280 :  (17.47, 0.9689532216),
+    },
+    "chsat_so" : {
+        30 :    2.07,
+        40 :    2.07,
+        85 :   38.40,
+        95 :   38.55,
+        145 :  37.87,
+        155 :  38.01,
+        220 :  24.59,
+        280 :  17.22,
+    },
+    "chsat_so_hwp" : {
+        30 :    (1.58, 1.027741433),
+        40 :    (1.58, 1.02767165),
+        85 :   (29.29, 1.043875238),
+        95 :   (28.84, 1.072304098),
+        145 :  (28.31, 1.064990291),
+        155 :  (28.69, 1.062919846),
+        220 :  (19.15, 1.020298481),
+        280 :  (13.25, 1.03233061),
+    },
+    "chsat_so_hwp_aggressive" : {
+        30 :    (2.66, 2.109276308),
+        40 :    (4.48, 1.251117391),
+        85 :   (62.33, 1.897951595),
+        95 :   (55.15, 1.869397564),
+        145 :  (89.59, 1.302099193),
+        155 :  (78.93, 1.28807286),
+        220 :  (29.04, 1.030524203),
+        280 :  (19.80, 1.058123266),
+    },
+    "chsat_s4" : {
+        30 :    2.00,
+        40 :    2.00,
+        85 :   37.04,
+        95 :   37.18,
+        145 :  36.53,
+        155 :  36.66,
+        220 :  23.49,
+        280 :  16.44,
+    },
+    "chsat_s4_hwp" : {
+        30 :    (1.56, 1.027741433),
+        40 :    (1.56, 1.02767165),
+        85 :   (28.99, 1.043875238),
+        95 :   (28.55, 1.072304098),
+        145 :  (28.02, 1.064990291),
+        155 :  (28.41, 1.062919846),
+        220 :  (18.77, 1.020298481),
+        280 :  (12.99, 1.03233061),
+    },
+    "chsat_s4_hwp_aggressive" : {
+        30 :    (2.63, 2.109276308),
+        40 :    (4.43, 1.251117391),
+        85 :   (61.70, 1.897951595),
+        95 :   (54.59, 1.869397564),
+        145 :  (88.68, 1.302099193),
+        155 :  (78.13, 1.28807286),
+        220 :  (28.47, 1.030524203),
+        280 :  (19.41, 1.058123266),
+    },
+}
 
-        inmap = f"{indir}/mapmaker_hits.fits"
-        outmap = f"{outdir}/hits_{freq:03}.fits"
-        print(f"Reading {inmap}")
-        hits = hp.read_map(inmap, None)
-        hits = (hits * scale * net_factor).astype(int)
-        hp.write_map(outmap, hits, overwrite=True)
-        print(f"Wrote {outmap}")
+for alternative, flavors in alternatives.items():
+    n_optics_tube = tube_counts[alternative]
+    for flavor in flavors:
+        outdir = f"scaled_outputs/{alternative}/{flavor}"
+        os.makedirs(outdir, exist_ok=True)
 
-        inmap = f"{indir}/mapmaker_cov.fits"
-        outmap = f"{outdir}/cov_{freq:03}.fits"
-        print(f"Reading {inmap}")
-        cov = hp.read_map(inmap, None)
-        cov /= scale
-        hp.write_map(outmap, cov, overwrite=True)
-        print(f"Wrote {outmap}")
+        for freq, scale in scalings[flavor].items():
+            try:
+                # The NET factor is included in `scale` but should not apply to hits
+                scale, net_factor = scale
+            except TypeError as e:
+                net_factor = 1
+            scale *= n_optics_tube[freq]
+            base_flavor = flavor.replace("_hwp", "").replace("_aggressive", "")
+            indir = f"outputs/sat/{base_flavor}/f{freq:03}"
+
+            inmap = f"{indir}/mapmaker_hits.fits"
+            outmap = f"{outdir}/hits_{freq:03}.fits"
+            print(f"Reading {inmap}")
+            hits = hp.read_map(inmap, None)
+            hits = (hits * scale * net_factor).astype(int)
+            hp.write_map(outmap, hits, overwrite=True)
+            print(f"Wrote {outmap}")
+
+            inmap = f"{indir}/mapmaker_cov.fits"
+            outmap = f"{outdir}/cov_{freq:03}.fits"
+            print(f"Reading {inmap}")
+            cov = hp.read_map(inmap, None)
+            cov /= scale
+            hp.write_map(outmap, cov, overwrite=True)
+            print(f"Wrote {outmap}")

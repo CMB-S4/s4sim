@@ -5,7 +5,16 @@ import healpy as hp
 import numpy as np
 
 # Scalings as of 08/05/2022
-# Still missing the CHLAT 20GHz scalings
+
+alternatives = {
+    "alternative_1" : ["splat_for_spsat"],
+    "alternative_2" : [
+        "chlat_wide", "chlat_for_spsat", "chlat_for_spsat_w_wide", "chlat_ulf_for_spsat"
+    ],
+    "alternative_3" : [
+        "chlat_for_chsat_so", "chlat_for_chsat_s4"
+    ],
+}
 
 scalings = {
     "splat_for_spsat" : {
@@ -73,41 +82,42 @@ scalings = {
     },
 }
 
-for flavor in scalings:
-    outdir = f"scaled_outputs/lat/{flavor}"
-    os.makedirs(outdir, exist_ok=True)
+for alternative, flavors in alternatives.items():
+    for flavor in flavors:
+        outdir = f"scaled_outputs/{alternative}/{flavor}"
+        os.makedirs(outdir, exist_ok=True)
 
-    for freq, scale in scalings[flavor].items():
-        try:
-            # When net_factor is present, it will not be applied to the
-            # hit maps.
-            scale, net_factor = scale
-        except TypeError as e:
-            net_factor = 1
-        if scale == 0:
-            continue
+        for freq, scale in scalings[flavor].items():
+            try:
+                # When net_factor is present, it will not be applied to the
+                # hit maps.
+                scale, net_factor = scale
+            except TypeError as e:
+                net_factor = 1
+            if scale == 0:
+                continue
 
-        base_flavor = flavor.replace("_ulf", "")
-        indir = f"outputs/lat/{base_flavor}/f{freq:03}"
-        inmap = f"{indir}/mapmaker_hits.fits"
-        outmap = f"{outdir}/hits_{freq:03}.fits"
-        if freq == 20 and not os.path.isfile(inmap) and net_factor != 1:
-            indir = f"outputs/lat/{base_flavor}/f030"
+            base_flavor = flavor.replace("_ulf", "")
+            indir = f"outputs/lat/{base_flavor}/f{freq:03}"
             inmap = f"{indir}/mapmaker_hits.fits"
-            print(
-                f"WARNING: Using the 25GHz map as input for 20GHz output: "
-                f"{inmap} -> {outmap}"
-            )
-        print(f"Reading {inmap}")
-        hits = hp.read_map(inmap, None)
-        hits = (hits * scale * net_factor).astype(int)
-        hp.write_map(outmap, hits, overwrite=True)
-        print(f"Wrote {outmap}")
+            outmap = f"{outdir}/hits_{freq:03}.fits"
+            if freq == 20 and not os.path.isfile(inmap) and net_factor != 1:
+                indir = f"outputs/lat/{base_flavor}/f030"
+                inmap = f"{indir}/mapmaker_hits.fits"
+                print(
+                    f"WARNING: Using the 25GHz map as input for 20GHz output: "
+                    f"{inmap} -> {outmap}"
+                )
+            print(f"Reading {inmap}")
+            hits = hp.read_map(inmap, None)
+            hits = (hits * scale * net_factor).astype(int)
+            hp.write_map(outmap, hits, overwrite=True)
+            print(f"Wrote {outmap}")
 
-        inmap = f"{indir}/mapmaker_cov.fits"
-        outmap = f"{outdir}/cov_{freq:03}.fits"
-        print(f"Reading {inmap}")
-        cov = hp.read_map(inmap, None)
-        cov /= scale
-        hp.write_map(outmap, cov, overwrite=True)
-        print(f"Wrote {outmap}")
+            inmap = f"{indir}/mapmaker_cov.fits"
+            outmap = f"{outdir}/cov_{freq:03}.fits"
+            print(f"Reading {inmap}")
+            cov = hp.read_map(inmap, None)
+            cov /= scale
+            hp.write_map(outmap, cov, overwrite=True)
+            print(f"Wrote {outmap}")

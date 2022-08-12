@@ -6,20 +6,25 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-nrow, ncol = 4, 4
-fig = plt.figure(figsize=[4 * ncol, 4 * nrow])
-fig.suptitle("Simulated depth at 150/155GHz")
+for alternative in os.listdir("scaled_outputs"):
+    print(alternative)
 
-iplot = 0
-for tele in "sat", "lat":
-    print(tele)
-    band = {"sat" : "155", "lat" : "150"}[tele]
-    flavors = os.listdir(f"scaled_outputs/{tele}")
+    flavors = os.listdir(f"scaled_outputs/{alternative}")
+    ncol = 3
+    nrow = int(np.ceil(len(flavors) / ncol))
+    fig = plt.figure(figsize=[4 * ncol, 4 * nrow])
+    fig.suptitle(f"{alternative} : Simulated depth at 150/155GHz")
+    iplot = 0
+
     for flavor in sorted(flavors):
-        print(flavor)
+        print(alternative, flavor)
+        if "LAT" in flavor.upper():
+            band = "150"
+        else:
+            band = "155"
         iplot += 1
         try:
-            cov = hp.read_map(f"scaled_outputs/{tele}/{flavor}/cov_{band}.fits")  # K^2
+            cov = hp.read_map(f"scaled_outputs/{alternative}/{flavor}/cov_{band}.fits")  # K^2
         except Exception as e:
             print(e)
             continue
@@ -34,4 +39,4 @@ for tele in "sat", "lat":
         vmax = sorted_depth[int(0.75 * ngood)]
         hp.mollview(depth, min=vmin, max=vmax, title=f"{flavor}", sub=[nrow, ncol, iplot], unit="$\mu$K.arcmin")
 
-fig.savefig("depth.png")
+    fig.savefig(f"depth_{alternative}.png")
