@@ -97,7 +97,6 @@ for flavor in splat_for_spsat; do
 	     --sample_rate 1.00 \
 	     --pixels_radec.nside 128 \
 	     --thinfp $thinfp \
-             --fknee 1e-6 \
 	     --out $outdir \
 	     --job_group_size 1 \
 	     >& $logfile

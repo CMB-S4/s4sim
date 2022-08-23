@@ -58,6 +58,21 @@ def main():
         help="Sampling rate for the focalplane",
     )
 
+    parser.add_argument(
+        "--fknee",
+        required=False,
+        default=None,
+        type=float,
+        help="Override knee frequency [Hz]",
+    )
+    parser.add_argument(
+        "--fmin",
+        required=False,
+        default=None,
+        type=float,
+        help="Override minimum frequency [Hz]",
+    )
+
     args = parser.parse_args()
 
     if args.hardware is None:
@@ -163,8 +178,14 @@ def main():
             net_corr = band_data["NET_corr"]
             print(f"Scaling single detector NETs with the correlation factor: {net_corr}")
             net *= net_corr
-        fknee = band_data["fknee"] * 1e-3  # to Hz
-        fmin = band_data["fmin"] * 1e-3  # to Hz
+        if args.fknee is None:
+            fknee = band_data["fknee"] * 1e-3  # to Hz
+        else:
+            fknee = args.fknee  # in Hz
+        if args.fmin is None:
+            fmin = band_data["fmin"] * 1e-3  # to Hz
+        else:
+            fmin = args.fknee  # in Hz
         # The `alpha` in the hardware map includes atmosphere and
         # is much too large for instrumental noise
         # alpha = band_data["alpha"]

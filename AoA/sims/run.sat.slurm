@@ -43,7 +43,7 @@ echo "            ntask = ${ntask}"
 #echo "           ngroup = ${ngroup}"
 
 #for flavor in spsat chsat_s4 chsat_so; do
-for flavor in chsat_so; do
+for flavor in spsat; do
     case $flavor in
 	spsat)
 	    params=params.spsat.toml
@@ -94,7 +94,6 @@ for flavor in chsat_so; do
 	     --telescope SAT \
 	     --schedule ../scan_strategies/${flavor}/schedules/schedule_sat.txt \
 	     --sample_rate 0.1 \
-             --fknee 1e-6 \
 	     --pixels_radec.nside 128 \
 	     --thinfp $thinfp \
 	     --out $outdir \
