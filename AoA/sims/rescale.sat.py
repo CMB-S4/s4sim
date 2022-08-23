@@ -9,11 +9,21 @@ import numpy as np
 # Which configurations go with which alternatives
 
 alternatives = {
-    "alternative_1" : ["spsat", "spsat_aggressive"],
-    "alternative_2" : ["spsat", "spsat_aggressive"],
+    "alternative_1" : [
+        ("spsat", "spsat_baseline_deep"),
+        ("spsat_aggressive", "spsat_aggressive_deep"),
+    ],
+    "alternative_2" : [
+        ("spsat", "spsat_baseline_deep"),
+        ("spsat_aggressive", "spsat_aggressive_deep"),
+    ],
     "alternative_3" : [
-        "chsat_so", "chsat_so_hwp", "chsat_so_hwp_aggressive",
-        "chsat_s4", "chsat_s4_hwp", "chsat_s4_hwp_aggressive",
+        ("chsat_so", "chsat_baseline_so"),
+        ("chsat_so_hwp", "chsat_baselinehwp_so"),
+        ("chsat_so_hwp_aggressive", "chsat_aggressivehwp_so"),
+        ("chsat_s4", "chsat_baseline_s4"),
+        ("chsat_s4_hwp", "chsat_baselinehwp_s4"),
+        ("chsat_s4_hwp_aggressive", "chsat_aggressivehwp_s4"),
     ],
 }
 
@@ -31,12 +41,12 @@ tube_counts = {
         280 :   2,
     },
     "alternative_2" : {
-        30 :    1,
-        40 :    1,
+        30 :    2,
+        40 :    2,
         85 :    4,
-        95 :    4,
+        95 :    3,
         145 :   4,
-        155 :   4,
+        155 :   3,
         220 :   3,
         280 :   3,
     },
@@ -139,18 +149,18 @@ scalings = {
 
 for alternative, flavors in alternatives.items():
     n_optics_tube = tube_counts[alternative]
-    for flavor in flavors:
-        outdir = f"scaled_outputs/{alternative}/{flavor}"
+    for flavor_in, flavor_out in flavors:
+        outdir = f"scaled_outputs/{alternative}/{flavor_out}"
         os.makedirs(outdir, exist_ok=True)
 
-        for freq, scale in scalings[flavor].items():
+        for freq, scale in scalings[flavor_in].items():
             try:
                 # The NET factor is included in `scale` but should not apply to hits
                 scale, net_factor = scale
             except TypeError as e:
                 net_factor = 1
             scale *= n_optics_tube[freq]
-            base_flavor = flavor.replace("_hwp", "").replace("_aggressive", "")
+            base_flavor = flavor_in.replace("_hwp", "").replace("_aggressive", "")
             indir = f"outputs/sat/{base_flavor}/f{freq:03}"
 
             inmap = f"{indir}/mapmaker_hits.fits"

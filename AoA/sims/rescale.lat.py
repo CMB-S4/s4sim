@@ -7,12 +7,20 @@ import numpy as np
 # Scalings as of 08/05/2022
 
 alternatives = {
-    "alternative_1" : ["splat_for_spsat"],
+    "alternative_1" : [
+        ("chlat_wide", "chlat_cd_wide"),
+        ("splat_for_spsat", "splat_tma_deep"),
+    ],
     "alternative_2" : [
-        "chlat_wide", "chlat_for_spsat", "chlat_for_spsat_w_wide", "chlat_ulf_for_spsat"
+        ("chlat_wide", "chlat_cd_wide"),
+        ("chlat_for_spsat", "chlat_cd_sp"),
+        ("chlat_for_spsat_w_wide", "chlat_cd_hybrid"),
+        # ("chlat_ulf_for_spsat", "chlat_cdulf_sp"),
     ],
     "alternative_3" : [
-        "chlat_for_chsat_so", "chlat_for_chsat_s4"
+        ("chlat_wide", "chlat_cd_wide"),
+        ("chlat_for_chsat_so", "chlat_cd_so"),
+        ("chlat_for_chsat_s4", "chlat_cd_s4"),
     ],
 }
 
@@ -83,11 +91,11 @@ scalings = {
 }
 
 for alternative, flavors in alternatives.items():
-    for flavor in flavors:
-        outdir = f"scaled_outputs/{alternative}/{flavor}"
+    for flavor_in, flavor_out in flavors:
+        outdir = f"scaled_outputs/{alternative}/{flavor_out}"
         os.makedirs(outdir, exist_ok=True)
 
-        for freq, scale in scalings[flavor].items():
+        for freq, scale in scalings[flavor_in].items():
             try:
                 # When net_factor is present, it will not be applied to the
                 # hit maps.
@@ -97,7 +105,7 @@ for alternative, flavors in alternatives.items():
             if scale == 0:
                 continue
 
-            base_flavor = flavor.replace("_ulf", "")
+            base_flavor = flavor_in.replace("_ulf", "")
             indir = f"outputs/lat/{base_flavor}/f{freq:03}"
             inmap = f"{indir}/mapmaker_hits.fits"
             outmap = f"{outdir}/hits_{freq:03}.fits"
