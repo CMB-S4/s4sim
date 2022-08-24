@@ -185,7 +185,7 @@ def main():
         if args.fmin is None:
             fmin = band_data["fmin"] * 1e-3  # to Hz
         else:
-            fmin = args.fknee  # in Hz
+            fmin = args.fmin  # in Hz
         # The `alpha` in the hardware map includes atmosphere and
         # is much too large for instrumental noise
         # alpha = band_data["alpha"]
