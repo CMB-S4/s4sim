@@ -789,7 +789,7 @@ def sim_telescope_detectors(hw, tele, tubes=None):
             platescale = tubeprops["platescale"]
             location = tubeprops["location"]
             type = tubeprops["type"]
-            if type == "HFS":
+            if type == "old_SAT_HF":
                 tuberot = 90.0 * np.ones(7, dtype=np.float64)
                 tcenters = hex_layout(7, 2 * (tubespace * tele_platescale), rotate=tuberot)
                 srad = waferspace * platescale * np.pi / 180.0
