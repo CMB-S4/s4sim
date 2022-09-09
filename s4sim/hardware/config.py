@@ -288,357 +288,399 @@ def get_example():
     bnd["low"] = 17.5
     bnd["high"] = 22.5
     bnd["bandpass"] = ""
-    bnd["NET"] = 332.2
+    bnd["NET"] = 332.7
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.08517
-    bnd["C"] = 0.88885
-    bands["ULFPL1"] = bnd
+    bnd["A"] = 0.08386
+    bnd["C"] = 0.89063
+    bnd["NET_corr"] = 1.22
+    bnd["pwv_poly"] = 0.971399, 0.088721, 0.001181
+    bands["SPLAT_f020"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 25.75
     bnd["low"] = 21.5
     bnd["high"] = 30.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 275.0
+    bnd["NET"] = 307.7
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.09185
-    bnd["C"] = 0.88031
-    bands["LFL1"] = bnd
+    bnd["A"] = 0.08426
+    bnd["C"] = 0.89010
+    bnd["NET_corr"] = 1.28
+    bnd["pwv_poly"] = 0.934479, 0.064763, 0.001228
+    bands["CHLAT_f030"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 38.75
     bnd["low"] = 30.0
     bnd["high"] = 47.5
     bnd["bandpass"] = ""
-    bnd["NET"] = 215.0
+    bnd["NET"] = 240.7
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.28098
-    bnd["C"] = 0.63360
-    bands["LFL2"] = bnd
+    bnd["A"] = 0.24749
+    bnd["C"] = 0.67744
+    bnd["NET_corr"] = 1.04
+    bnd["pwv_poly"] = 0.982523, 0.017230, 0.000373
+    bands["CHLAT_f040"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 25.75
     bnd["low"] = 21.5
     bnd["high"] = 30.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 278.6
+    bnd["NET"] = 286.7
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.11010
-    bnd["C"] = 0.85631
-    bands["LFPL1"] = bnd
+    bnd["A"] = 0.10372
+    bnd["C"] = 0.86476
+    bnd["NET_corr"] = 1.24
+    bnd["pwv_poly"] = 0.981351, 0.057846, 0.000779
+    bands["SPLAT_f030"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 38.75
     bnd["low"] = 30.0
     bnd["high"] = 47.5
     bnd["bandpass"] = ""
-    bnd["NET"] = 268.6
+    bnd["NET"] = 269.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.39135
-    bnd["C"] = 0.48954
-    bands["LFPL2"] = bnd
+    bnd["A"] = 0.38043
+    bnd["C"] = 0.50426
+    bnd["NET_corr"] = 1.04
+    bnd["pwv_poly"] = 0.994233, 0.017840, 0.000388
+    bands["SPLAT_f040"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 25.75
     bnd["low"] = 21.5
     bnd["high"] = 30.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 169.2
+    bnd["NET"] = 176.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.18693
-    bnd["C"] = 0.75616
-    bands["LFS1"] = bnd
+    bnd["A"] = 0.17752
+    bnd["C"] = 0.76850
+    bnd["NET_corr"] = 1.04
+    bnd["pwv_poly"] = 0.973260, 0.082784, 0.001613
+    bands["SAT_f030"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 38.75
     bnd["low"] = 30.0
     bnd["high"] = 47.5
     bnd["bandpass"] = ""
-    bnd["NET"] = 204.3
+    bnd["NET"] = 217.6
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.44737
-    bnd["C"] = 0.41660
-    bands["LFS2"] = bnd
+    bnd["A"] = 0.41275
+    bnd["C"] = 0.46189
+    bnd["NET_corr"] = 1.01
+    bnd["pwv_poly"] = 0.993708, 0.019467, 0.000420
+    bands["SAT_f040"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 91.5
     bnd["low"] = 77.0
     bnd["high"] = 106.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 251.0
+    bnd["NET"] = 278.1
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.21316
-    bnd["C"] = 0.72197
-    bands["MFL1"] = bnd
+    bnd["A"] = 0.19264
+    bnd["C"] = 0.74873
+    bnd["NET_corr"] = 1.15
+    bnd["pwv_poly"] = 0.930223, 0.068510, 0.001771
+    bands["CHLAT_f090"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 148.5
     bnd["low"] = 128.0
     bnd["high"] = 169.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 280.0
+    bnd["NET"] = 309.6
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.25419
-    bnd["C"] = 0.66817
-    bands["MFL2"] = bnd
+    bnd["A"] = 0.23072
+    bnd["C"] = 0.69900
+    bnd["NET_corr"] = 1.01
+    bnd["pwv_poly"] = 0.763643, 0.231453, 0.006616
+    bands["CHLAT_f150"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 91.5
     bnd["low"] = 77.0
     bnd["high"] = 106.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 285.2
+    bnd["NET"] = 287.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.28598
-    bnd["C"] = 0.62687
-    bands["MFPL1"] = bnd
+    bnd["A"] = 0.27837
+    bnd["C"] = 0.63703
+    bnd["NET_corr"] = 1.15
+    bnd["pwv_poly"] = 0.974286, 0.079438, 0.002080
+    bands["SPLAT_f090"] = bnd
     
     bnd = OrderedDict()
     bnd["center"] = 148.5
     bnd["low"] = 128.0
     bnd["high"] = 169.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 264.6
+    bnd["NET"] = 268.8
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.23723
-    bnd["C"] = 0.69026
-    bands["MFPL2"] = bnd
+    bnd["A"] = 0.22972
+    bnd["C"] = 0.70032
+    bnd["NET_corr"] = 1.01
+    bnd["pwv_poly"] = 0.892955, 0.330207, 0.010174
+    bands["SPLAT_f150"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 85.0
     bnd["low"] = 74.8
     bnd["high"] = 95.2
     bnd["bandpass"] = ""
-    bnd["NET"] = 290.0
+    bnd["NET"] = 313.7
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.39787
-    bnd["C"] = 0.48099
-    bands["MFLS1"] = bnd
+    bnd["A"] = 0.37419
+    bnd["C"] = 0.51222
+    bnd["NET_corr"] = 1.03
+    bnd["pwv_poly"] = 0.980092, 0.061447, 0.001782
+    bands["SAT_f085"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 145.0
     bnd["low"] = 129.1
     bnd["high"] = 161.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 280.4
+    bnd["NET"] = 335.3
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.23642
-    bnd["C"] = 0.69144
-    bands["MFLS2"] = bnd
+    bnd["A"] = 0.19900
+    bnd["C"] = 0.74041
+    bnd["NET_corr"] = 1.00
+    bnd["pwv_poly"] = 0.926762, 0.225619, 0.007903
+    bands["SAT_f145"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 95.0
     bnd["low"] = 83.6
     bnd["high"] = 106.4
     bnd["bandpass"] = ""
-    bnd["NET"] = 248.2
+    bnd["NET"] = 274.9
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.32643
-    bnd["C"] = 0.57410
-    bands["MFHS1"] = bnd
+    bnd["A"] = 0.29310
+    bnd["C"] = 0.61778
+    bnd["NET_corr"] = 1.02
+    bnd["pwv_poly"] = 0.972330, 0.085416, 0.002437
+    bands["SAT_f095"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 155.1
+    bnd["center"] = 155.0
     bnd["low"] = 138.0
     bnd["high"] = 172.1
     bnd["bandpass"] = ""
-    bnd["NET"] = 297.4
+    bnd["NET"] = 359.7
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.22547
-    bnd["C"] = 0.70578
-    bands["MFHS2"] = bnd
+    bnd["A"] = 0.18843
+    bnd["C"] = 0.75417
+    bnd["NET_corr"] = 1.00
+    bnd["pwv_poly"] = 0.896329, 0.319420, 0.011034
+    bands["SAT_f155"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 227.0
-    bnd["low"] = 198.0
-    bnd["high"] = 256.0
+    bnd["low"] = 197.9
+    bnd["high"] = 256.1
     bnd["bandpass"] = ""
-    bnd["NET"] = 625.0
+    bnd["NET"] = 683.2
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.36575
-    bnd["C"] = 0.52282
-    bands["HFL1"] = bnd
+    bnd["A"] = 0.33523
+    bnd["C"] = 0.56279
+    bnd["NET_corr"] = 1.01
+    bnd["pwv_poly"] = 0.639310, 0.344960, 0.018401
+    bands["CHLAT_f220"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 285.5
     bnd["low"] = 256.0
     bnd["high"] = 315.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 1528.0
+    bnd["NET"] = 1679.7
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.44808
-    bnd["C"] = 0.41546
-    bands["HFL2"] = bnd
+    bnd["A"] = 0.40706
+    bnd["C"] = 0.46930
+    bnd["NET_corr"] = 1.01
+    bnd["pwv_poly"] = 0.553007, 0.419329, 0.031032
+    bands["CHLAT_f280"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 227.0
-    bnd["low"] = 198.0
-    bnd["high"] = 256.0
+    bnd["low"] = 197.9
+    bnd["high"] = 256.1
     bnd["bandpass"] = ""
-    bnd["NET"] = 534.9
+    bnd["NET"] = 549.3
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.30291
-    bnd["C"] = 0.60477
-    bands["HFPL1"] = bnd
+    bnd["A"] = 0.29109
+    bnd["C"] = 0.62028
+    bnd["NET_corr"] = 1.01
+    bnd["pwv_poly"] = 0.825060, 0.534043, 0.034081
+    bands["SPLAT_f220"] = bnd
     
     bnd = OrderedDict()
     bnd["center"] = 285.5
     bnd["low"] = 256.0
     bnd["high"] = 315.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 1228.3
+    bnd["NET"] = 1295.9
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.36240
-    bnd["C"] = 0.52713
-    bands["HFPL2"] = bnd
+    bnd["A"] = 0.33985
+    bnd["C"] = 0.55678
+    bnd["NET_corr"] = 1.01
+    bnd["pwv_poly"] = 0.776403, 0.676221, 0.063374
+    bands["SPLAT_f280"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 227.0
-    bnd["low"] = 198.0
-    bnd["high"] = 256.0
+    bnd["low"] = 197.9
+    bnd["high"] = 256.1
     bnd["bandpass"] = ""
-    bnd["NET"] = 609.10
+    bnd["NET"] = 726.9
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.26844
-    bnd["C"] = 0.64976
-    bands["HFS1"] = bnd
+    bnd["A"] = 0.22747
+    bnd["C"] = 0.70328
+    bnd["NET_corr"] = 1.00
+    bnd["pwv_poly"] = 0.867567, 0.403839, 0.027177
+    bands["SAT_f220"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 285.5
     bnd["low"] = 256.0
     bnd["high"] = 315.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 1434.9
+    bnd["NET"] = 1747.2
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 3.5
-    bnd["A"] = 0.31749
-    bnd["C"] = 0.58575
-    bands["HFS2"] = bnd
+    bnd["A"] = 0.26587
+    bnd["C"] = 0.65327
+    bnd["NET_corr"] = 1.00
+    bnd["pwv_poly"] = 0.830191, 0.512951, 0.050000
+    bands["SAT_f280"] = bnd
 
     cnf["bands"] = bands
 
     wafers = OrderedDict()
 
-    wtypes = ["ULFPL", "LFL", "LFPL", "LFS", "MFL", "MFPL", "MFLS", "MFHS", "HFL", "HFPL", "HFS"]
+    wtypes = ["SPLAT_ULF", "CHLAT_LF", "SPLAT_LF", "SAT_LF", "CHLAT_MF", "SPLAT_MF", "SAT_MFL", "SAT_MFH", "CHLAT_HF", "SPLAT_HF", "SAT_HF"]
     # partial wafers will be counted as individual wafers since we make a full wafer then kill pixels
     wcnt = {
-        "ULFPL": 4,
-        "LFL": 8*2,
-        "LFPL": 9,
-        "LFS": (12) * 2,
-        "MFL": 54*2,
-        "MFPL": 54,
-        "MFLS": (12) * 6,
-        "MFHS": (12) * 6,
-        "HFL": 23*2,
-        "HFPL": 18,
-        "HFS": (6 + 6) * 4,
+        "SPLAT_ULF": 4,
+        "CHLAT_LF": 8*2,
+        "SPLAT_LF": 9,
+        "SAT_LF": (12) * 2,
+        "CHLAT_MF": 54*2,
+        "SPLAT_MF": 54,
+        "SAT_MFL": (12) * 6,
+        "SAT_MFH": (12) * 6,
+        "CHLAT_HF": 23*2,
+        "SPLAT_HF": 18,
+        "SAT_HF": (6 + 6) * 4,
     }
     wpac = {
-        "ULFPL": "RP",
-        "LFL": "RP",
-        "LFPL": "RP",
-        "LFS": "RP",
-        "MFL": "RP",
-        "MFPL": "RP",
-        "MFLS": "RP",
-        "MFHS": "RP",
-        "HFL": "RP",
-        "HFPL": "RP",
-        "HFS": "HP",
+        "SPLAT_ULF": "RP",
+        "CHLAT_LF": "RP",
+        "SPLAT_LF": "RP",
+        "SAT_LF": "RP",
+        "CHLAT_MF": "RP",
+        "SPLAT_MF": "RP",
+        "SAT_MFL": "RP",
+        "SAT_MFH": "HP",
+        "CHLAT_HF": "HP",
+        "SPLAT_HF": "HP",
+        "SAT_HF": "HP",
     }
     wnp = {
-        "ULFPL": 27,
-        "LFL": 48,
-        "LFPL": 48,
-        "LFS": 12,
-        "MFL": 432,
-        "MFPL": 432,
-        "MFLS": 147,
-        "MFHS": 147,
-        "HFL": 432,
-        "HFPL": 432,
-        "HFS": 469,
+        "SPLAT_ULF": 27,
+        "CHLAT_LF": 48,
+        "SPLAT_LF": 48,
+        "SAT_LF": 12,
+        "CHLAT_MF": 432,
+        "SPLAT_MF": 432,
+        "SAT_MFL": 147,
+        "SAT_MFH": 169,
+        "CHLAT_HF": 469,
+        "SPLAT_HF": 469,
+        "SAT_HF": 469,
     }
     wpixmm = {
-        "ULFPL": 21.1,
-        "LFL": 16.1,
-        "LFPL": 16.1,
-        "LFS": 31.1,
-        "MFL": 5.3,
-        "MFPL": 5.3,
-        "MFLS": 9.4,
-        "MFHS": 9.4,
-        "HFL": 5.3,
-        "HFPL": 5.3,
-        "HFS": 5.2,
+        "SPLAT_ULF": 21.1,
+        "CHLAT_LF": 16.1,
+        "SPLAT_LF": 16.1,
+        "SAT_LF": 31.1,
+        "CHLAT_MF": 5.3,
+        "SPLAT_MF": 5.3,
+        "SAT_MFL": 9.5,
+        "SAT_MFH": 8.94,
+        "CHLAT_HF": 5.2,
+        "SPLAT_HF": 5.2,
+        "SAT_HF": 5.2,
     }
     wrhombgap = {
-        "ULFPL": 0.71,
-        "LFL": 0.71,
-        "LFPL": 0.71,
-        "LFS": 0.71,
-        "MFL": 0.71,
-        "MFPL": 0.71,
-        "MFLS": 0.71,
-        "MFHS": 0.71,
-        "HFL": 0.71,
-        "HFPL": 0.71,
-        "HFS": 0.71,
+        "SPLAT_ULF": 2.827,
+        "CHLAT_LF": 2.157,
+        "SPLAT_LF": 2.157,
+        "SAT_LF": 4.167,
+        "CHLAT_MF": 0.71,
+        "SPLAT_MF": 0.71,
+        "SAT_MFL": 1.273,
+        "SAT_MFH": 0.71,
+        "CHLAT_HF": 0.71,
+        "SPLAT_HF": 0.71,
+        "SAT_HF": 0.71,
     }
     wbd = {
-        "ULFPL": ["ULFPL1"],
-        "LFL": ["LFL1", "LFL2"],
-        "LFPL": ["LFPL1", "LFPL2"],
-        "LFS": ["LFS1", "LFS2"],
-        "MFL": ["MFL1", "MFL2"],
-        "MFPL": ["MFPL1", "MFPL2"],
-        "MFLS": ["MFLS1", "MFLS2"],
-        "MFHS": ["MFHS1", "MFHS2"],
-        "HFL": ["HFL1", "HFL2"],
-        "HFPL": ["HFPL1", "HFPL2"],
-        "HFS": ["HFS1", "HFS2"],
+        "SPLAT_ULF": ["SPLAT_f020"],
+        "CHLAT_LF": ["CHLAT_f030", "CHLAT_f040"],
+        "SPLAT_LF": ["SPLAT_f030", "SPLAT_f040"],
+        "SAT_LF": ["SAT_f030", "SAT_f040"],
+        "CHLAT_MF": ["CHLAT_f090", "CHLAT_f150"],
+        "SPLAT_MF": ["SPLAT_f090", "SPLAT_f150"],
+        "SAT_MFL": ["SAT_f085", "SAT_f145"],
+        "SAT_MFH": ["SAT_f095", "SAT_f155"],
+        "CHLAT_HF": ["CHLAT_f220", "CHLAT_f280"],
+        "SPLAT_HF": ["SPLAT_f220", "SPLAT_f280"],
+        "SAT_HF": ["SAT_f220", "SAT_f280"],
     }
     windx = 0
     cardindx = 0
@@ -662,278 +704,278 @@ def get_example():
     tubes = OrderedDict()
 
     woff = {
-        "ULFPL": 0,
-        "LFL": 0,
-        "LFPL": 0,
-        "LFS": 0,
-        "MFL": 0,
-        "MFPL": 0,
-        "MFLS": 0,
-        "MFHS": 0,
-        "HFL": 0,
-        "HFPL": 0,
-        "HFS": 0,
+        "SPLAT_ULF": 0,
+        "CHLAT_LF": 0,
+        "SPLAT_LF": 0,
+        "SAT_LF": 0,
+        "CHLAT_MF": 0,
+        "SPLAT_MF": 0,
+        "SAT_MFL": 0,
+        "SAT_MFH": 0,
+        "CHLAT_HF": 0,
+        "SPLAT_HF": 0,
+        "SAT_HF": 0,
     }
 
     # added in tube platescale because SAT HF has a different platescale
     # Wafers are arranges in the tube with the tube platescale
     # Telescope platescale is used for spacing tubes
     ltubes = [
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "HFL",
-        "HFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "HFL",
-        "HFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "LFL",
-        "MFL",
-        "MFL",
-        "LFL",
-        "LFL",
-        "MFL",
-        "MFL",
-        "LFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "LFL",
-        "MFL",
-        "MFL",
-        "LFL",
-        "LFL",
-        "MFL",
-        "MFL",
-        "LFL",
-        "MFL",
-        "MFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "HFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "HFL",
-        "HFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "HFL",
-        "HFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "LFL",
-        "MFL",
-        "MFL",
-        "LFL",
-        "LFL",
-        "MFL",
-        "MFL",
-        "LFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "MFL",
-        "LFL",
-        "MFL",
-        "MFL",
-        "LFL",
-        "LFL",
-        "MFL",
-        "MFL",
-        "LFL",
-        "MFL",
-        "MFL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "HFPL",
-        "ULFPL",
-        "HFPL",
-        "MFPL",
-        "HFPL",
-        "ULFPL",
-        "HFPL",
-        "ULFPL",
-        "HFPL",
-        "MFPL",
-        "HFPL",
-        "ULFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "MFPL",
-        "HFPL",
-        "MFPL",
-        "HFPL",
-        "MFPL",
-        "HFPL",
-        "MFPL",
-        "HFPL",
-        "MFPL",
-        "HFPL",
-        "MFPL",
-        "HFPL",
-        "MFPL",
-        "HFPL",
-        "MFPL",
-        "HFPL",
-        "MFPL",
-        "HFPL",
-        "MFPL",
-        "HFPL",
-        "MFPL",
-        "HFPL",
-        "MFPL",
-        "HFPL",
-        "MFPL",
-        "MFPL",
-        "LFPL",
-        "MFPL",
-        "LFPL",
-        "MFPL",
-        "LFPL",
-        "MFPL",
-        "MFPL",
-        "LFPL",
-        "MFPL",
-        "MFPL",
-        "LFPL",
-        "MFPL",
-        "MFPL",
-        "LFPL",
-        "MFPL",
-        "MFPL",
-        "LFPL",
-        "MFPL",
-        "MFPL",
-        "LFPL",
-        "MFPL",
-        "MFPL",
-        "LFPL",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_LF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_LF",
+        "CHLAT_LF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_LF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_LF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_LF",
+        "CHLAT_LF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_LF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_LF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_LF",
+        "CHLAT_LF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_LF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_LF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_LF",
+        "CHLAT_LF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_LF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_HF",
+        "SPLAT_ULF",
+        "SPLAT_HF",
+        "SPLAT_MF",
+        "SPLAT_HF",
+        "SPLAT_ULF",
+        "SPLAT_HF",
+        "SPLAT_ULF",
+        "SPLAT_HF",
+        "SPLAT_MF",
+        "SPLAT_HF",
+        "SPLAT_ULF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_HF",
+        "SPLAT_MF",
+        "SPLAT_HF",
+        "SPLAT_MF",
+        "SPLAT_HF",
+        "SPLAT_MF",
+        "SPLAT_HF",
+        "SPLAT_MF",
+        "SPLAT_HF",
+        "SPLAT_MF",
+        "SPLAT_HF",
+        "SPLAT_MF",
+        "SPLAT_HF",
+        "SPLAT_MF",
+        "SPLAT_HF",
+        "SPLAT_MF",
+        "SPLAT_HF",
+        "SPLAT_MF",
+        "SPLAT_HF",
+        "SPLAT_MF",
+        "SPLAT_HF",
+        "SPLAT_MF",
+        "SPLAT_HF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_LF",
+        "SPLAT_MF",
+        "SPLAT_LF",
+        "SPLAT_MF",
+        "SPLAT_LF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_LF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_LF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_LF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_LF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_LF",
+        "SPLAT_MF",
+        "SPLAT_MF",
+        "SPLAT_LF",
     ]
     ltubepos = [
         0,
@@ -1215,24 +1257,24 @@ def get_example():
         tubes[nm] = tb
 
     stubes = [
-        "MFLS",
-        "MFHS",
-        "HFS",
-        "MFLS",
-        "MFHS",
-        "HFS",
-        "MFLS",
-        "MFHS",
-        "HFS",
-        "MFLS",
-        "MFHS",
-        "HFS",
-        "MFLS",
-        "MFHS",
-        "LFS",
-        "MFLS",
-        "MFHS",
-        "LFS",
+        "SAT_MFL",
+        "SAT_MFH",
+        "SAT_HF",
+        "SAT_MFL",
+        "SAT_MFH",
+        "SAT_HF",
+        "SAT_MFL",
+        "SAT_MFH",
+        "SAT_HF",
+        "SAT_MFL",
+        "SAT_MFH",
+        "SAT_HF",
+        "SAT_MFL",
+        "SAT_MFH",
+        "SAT_LF",
+        "SAT_MFL",
+        "SAT_MFH",
+        "SAT_LF",
     ]
     stubepos = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     for tindx in range(18):
@@ -1243,7 +1285,7 @@ def get_example():
         tb["waferspace"] = 124.
         tb["wafers"] = list()
         # HF tubes have 8 full wafers + 2 partial, all others 11+2
-        if ttyp == "HFS":
+        if ttyp == "SAT_HF":
             for tw in range(12):
                 off = 0
                 for w, props in cnf["wafers"].items():
@@ -1255,6 +1297,35 @@ def get_example():
                         off += 1
             # 29.0 deg/(422mm)
             tb["platescale"] = 0.0687
+            tb["FOV_cut"] = 40.0
+        elif ttyp == "SAT_MFL":
+            for tw in range(12):
+                off = 0
+                for w, props in cnf["wafers"].items():
+                    if props["type"] == ttyp:
+                        if off == woff[ttyp]:
+                            tb["wafers"].append(w)
+                            woff[ttyp] += 1
+                            break
+                        off += 1
+            # 29.4/(420mm)
+            tb["platescale"] = 0.070
+            tb["FOV_cut"] = 29.4
+            tb["waferspace"] = 122.16
+        elif ttyp == "SAT_MFH":
+            for tw in range(12):
+                off = 0
+                for w, props in cnf["wafers"].items():
+                    if props["type"] == ttyp:
+                        if off == woff[ttyp]:
+                            tb["wafers"].append(w)
+                            woff[ttyp] += 1
+                            break
+                        off += 1
+            # 29.4/(420mm)
+            tb["platescale"] = 0.0701
+            tb["FOV_cut"] = 29.4
+            tb["waferspace"] = 121.85
         else:
             for tw in range(12):
                 off = 0
@@ -1267,6 +1338,7 @@ def get_example():
                         off += 1
             # 29.0/(490mm)
             tb["platescale"] = 0.0592
+            tb["FOV_cut"] = 40.0
         tb["location"] = stubepos[tindx]
         tubes[nm] = tb
 
@@ -1275,19 +1347,19 @@ def get_example():
     telescopes = OrderedDict()
 
     lfwhm = OrderedDict()
-    lfwhm["ULFPL1"] = 11.4
-    lfwhm["LFL1"] = 7.4
-    lfwhm["LFPL1"] = 8.4
-    lfwhm["LFL2"] = 5.1
-    lfwhm["LFPL2"] = 5.8
-    lfwhm["MFL1"] = 2.2
-    lfwhm["MFPL1"] = 2.5
-    lfwhm["MFL2"] = 1.4
-    lfwhm["MFPL2"] = 1.6
-    lfwhm["HFL1"] = 1.0
-    lfwhm["HFPL1"] = 1.1
-    lfwhm["HFL2"] = 0.9
-    lfwhm["HFPL2"] = 1.0
+    lfwhm["SPLAT_f020"] = 11.4
+    lfwhm["CHLAT_f030"] = 7.4
+    lfwhm["SPLAT_f030"] = 8.4
+    lfwhm["CHLAT_f040"] = 5.1
+    lfwhm["SPLAT_f040"] = 5.8
+    lfwhm["CHLAT_f090"] = 2.2
+    lfwhm["SPLAT_f090"] = 2.5
+    lfwhm["CHLAT_f150"] = 1.4
+    lfwhm["SPLAT_f150"] = 1.6
+    lfwhm["CHLAT_f220"] = 1.0
+    lfwhm["SPLAT_f220"] = 1.1
+    lfwhm["CHLAT_f280"] = 0.9
+    lfwhm["SPLAT_f280"] = 1.0
 
     tele = OrderedDict()
     tele["tubes"] = [
@@ -1579,14 +1651,14 @@ def get_example():
 
     #from the DSR
     sfwhm = OrderedDict()
-    sfwhm["LFS1"] = 72.8
-    sfwhm["LFS2"] = 72.8
-    sfwhm["MFLS1"] = 25.5
-    sfwhm["MFLS2"] = 25.5
-    sfwhm["MFHS1"] = 22.7
-    sfwhm["MFHS2"] = 22.7
-    sfwhm["HFS1"] = 13.0
-    sfwhm["HFS2"] = 13.0
+    sfwhm["SAT_f030"] = 72.8
+    sfwhm["SAT_f040"] = 72.8
+    sfwhm["SAT_f085"] = 25.5
+    sfwhm["SAT_f145"] = 25.5
+    sfwhm["SAT_f095"] = 22.7
+    sfwhm["SAT_f155"] = 22.7
+    sfwhm["SAT_f220"] = 13.0
+    sfwhm["SAT_f280"] = 13.0
 
     tele = OrderedDict()
     tele["tubes"] = ["ST0", "ST1", "ST2"]
@@ -1677,6 +1749,7 @@ def get_example():
 
     pl = ["A", "B"]
     hand = ["L", "R"]
+    bandarr=["CHLAT_f030","CHLAT_f040"]
 
     dets = OrderedDict()
     for d in range(4):
@@ -1685,7 +1758,7 @@ def get_example():
         dprops["ID"] = d
         dprops["pixel"] = "000"
         bindx = d % 2
-        dprops["band"] = "LFL{}".format(bindx)
+        dprops["band"] = bandarr[bindx]
         dprops["fwhm"] = 1.0
         dprops["pol"] = pl[bindx]
         dprops["handed"] = None
