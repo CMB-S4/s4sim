@@ -3,7 +3,7 @@
 rm -rf scaled_outputs
 
 python3 rescale.lat.py &
-python3 rescale.sat.py &
+python3 rescale.sat.full.py &
 
 wait
 
