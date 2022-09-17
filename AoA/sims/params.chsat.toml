@@ -483,15 +483,15 @@
     save_cleaned = false # If True, save the template-subtracted detector timestreams
     solve_rcond_threshold = 1e-08 # When solving, minimum value for inverse pixel condition number cut.
     template_matrix = "None" # This must be an instance of a template matrix operator
-    write_binmap = true # If True, write the projected map *before* template subtraction
+    write_binmap = false # If True, write the projected map *before* template subtraction
     write_cov = true # If True, write the white noise covariance matrices.
     write_hdf5 = false # If True, outputs are in HDF5 rather than FITS format.
     write_hdf5_serial = false # If True, force serial HDF5 write of output maps.
     write_hits = true # If True, write the hits map
     write_invcov = false # If True, write the inverse white noise covariance matrices.
-    write_map = true # If True, write the projected map
+    write_map = false # If True, write the projected map
     write_noiseweighted_map = false # If True, write the noise-weighted map
-    write_rcond = true # If True, write the reciprocal condition numbers.
+    write_rcond = false # If True, write the reciprocal condition numbers.
 
 [operators.pixels_radec_final]
     class = "toast.ops.pixels_healpix.PixelsHealpix"

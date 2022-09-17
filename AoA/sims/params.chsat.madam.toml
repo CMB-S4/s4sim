@@ -15,7 +15,7 @@
     el_mod_amplitude = "1.00000000000000e+00 deg" # Range of elevation modulation
     el_mod_rate = "0.00000000000000e+00 Hz" # Modulate elevation continuously at this rate
     el_mod_sine = false # Modulate elevation with a sine wave instead of a triangle wave
-    el_mod_step = "0.25 deg" # Amount to step elevation after each left-right scan pair
+    el_mod_step = "0.00000000000000e+00 deg" # Amount to step elevation after each left-right scan pair
     elevation = "elevation" # Observation shared key for Elevation
     elnod_end = false # Perform an el-nod after the scan
     elnod_every_scan = false # Perform el nods every scan
@@ -25,8 +25,8 @@
     elnods = [] # List of relative el_nods
     enabled = true # If True, this class instance is marked as enabled
     fix_rate_on_sky = true # If True, `scan_rate_az` is given in sky coordinates and azimuthal rate on mount will be adjusted to meet it.  If False, `scan_rate_az` is used as the mount azimuthal rate.
-    hwp_angle = "None" # Observation shared key for HWP angle
-    hwp_rpm = "None" # The rate (in RPM) of the HWP rotation
+    hwp_angle = "hwp_angle" # Observation shared key for HWP angle
+    hwp_rpm = 120 # The rate (in RPM) of the HWP rotation
     hwp_step = "None" # For stepped HWP, the angle of each step
     hwp_step_time = "None" # For stepped HWP, the time between steps
     invalid_mask = 1 # Bit mask to raise invalid flags with
@@ -64,7 +64,7 @@
     turnaround_interval = "turnaround" # Interval name for turnarounds
     turnaround_mask = 3 # Bit mask to raise turnaround flags with
     velocity = "velocity" # Observation shared key for velocity
-    weather = "south_pole" # Name of built-in weather site (e.g. 'atacama', 'south_pole') or path to HDF5 file
+    weather = "atacama" # Name of built-in weather site (e.g. 'atacama', 'south_pole') or path to HDF5 file
 
 [operators.default_model]
     class = "toast.ops.noise_model.DefaultNoiseModel"
@@ -465,7 +465,7 @@
     binning = "None" # Binning operator used for solving template amplitudes
     convergence = 1e-12 # Relative convergence limit
     det_data = "signal" # Observation detdata key for the timestream data
-    enabled = true # If True, this class instance is marked as enabled
+    enabled = false # If True, this class instance is marked as enabled
     iter_max = 100 # Maximum number of iterations
     iter_min = 3 # Minimum number of iterations
     keep_final_products = false # If True, keep the map domain products in data after write
@@ -492,6 +492,33 @@
     write_map = false # If True, write the projected map
     write_noiseweighted_map = false # If True, write the noise-weighted map
     write_rcond = false # If True, write the reciprocal condition numbers.
+
+[operators.madam]
+    class = "toast.ops.madam.Madam"
+    API = 0 # Internal interface version for this operator
+    copy_groups = 8 # The processes on each node are split into this number of groups to copy data in turns
+    det_data = "signal" # Observation detdata key for the timestream data
+    det_flag_mask = 1 # Bit mask value for optional detector flagging
+    det_flags = "flags" # Observation detdata key for flags to use
+    det_out = "None" # Observation detdata key for output destriped timestreams
+    enabled = true # If True, this class instance is marked as enabled
+    mcmode = false # If true, Madam will store auxiliary information such as pixel matrices and noise filter.
+    mem_report = false # Print system memory use while staging / unstaging data.
+    name = "madam" # The 'name' of this class instance
+    noise_model = "noise_model" # Observation key containing the noise model
+    noise_scale = "noise_scale" # Observation key with optional scaling factor for noise PSDs
+    paramfile = "None" # Read madam parameters from this file
+    pixel_pointing = "None" # This must be an instance of a pixel pointing operator
+    purge_det_data = true # If True, clear all observation detector data after copying to madam buffers
+    restore_det_data = false # If True, restore detector data to observations on completion
+    shared_flag_mask = 1 # Bit mask value for optional shared flagging
+    shared_flags = "flags" # Observation shared key for telescope flags to use
+    stokes_weights = "None" # This must be an instance of a Stokes weights operator
+    times = "times" # Observation shared key for timestamps
+    translate_timestamps = false # Translate timestamps to enforce monotonity.
+    view = "None" # Use this view of the data in all observations
+
+    [operators.madam.params] # Parameters to pass to madam
 
 [operators.pixels_radec_final]
     class = "toast.ops.pixels_healpix.PixelsHealpix"

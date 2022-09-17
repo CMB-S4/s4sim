@@ -1,58 +1,63 @@
 #!/bin/bash
-#SBATCH --partition=regular
-#SBATCH --qos=premium
+#SBATCH --qos=regular
 #SBATCH --time=02:00:00
-#SBATCH --nodes=64
-#SBATCH --job-name=AoAsims
-#SBATCH --licenses=SCRATCH
-#SBATCH --constraint=knl
-#SBATCH --core-spec=4
+#SBATCH --nodes=1
+#SBATCH --job-name=AoA
+##SBATCH --licenses=SCRATCH
+#SBATCH --constraint=cpu
 #SBATCH --account=mp107
 
 ulimit -c unlimited
+
+# This script is for the Perlmutter CPU nodes
+
+# Perlmutter-specific fixes
+export FI_CXI_OPTIMIZED_MRS="false"
+export MPI4PY_RC_RECV_MPROBE="False"
+
+# Python environment
 export MALLOC_MMAP_THRESHOLD_=131072
 export PYTHONSTARTUP=""
 export PYTHONNOUSERSITE=1
-export HOME=$SCRATCH
-export OMP_NUM_THREADS=2
+#export HOME=$SCRATCH
+
+# TOAST variables
+export TOAST_FUNCTIME=1
+
+# Parallelization
+export OMP_NUM_THREADS=1
 export OMP_PLACES=threads
 export OMP_PROC_BIND=spread
-export TOAST_FUNCTIME=1
-export HDF5_USE_FILE_LOCKING=FALSE
-export MKL_FAST_MEMORY_LIMIT=0
 
 let nnode=$SLURM_JOB_NUM_NODES
-let ntask_node=64/$OMP_NUM_THREADS
+# 128 cores, 258 hardware threads
+let ntask_node=256/$OMP_NUM_THREADS
 let ntask=$nnode*$ntask_node
-let ncore=4*$OMP_NUM_THREADS
-# Make sure nnode is divisible by nnode_group
-let nnode_group=1
-let ntask_group=$nnode_group*$ntask_node
-let groupsize=nnode_group*ntask_node
-let ngroup=$nnode/$nnode_group
+let ncore=$OMP_NUM_THREADS
+#let groupsize=1*$ntask_node
+let groupsize=1
 
-echo "Start: " `date`
 echo "Running with"
 echo "            nnode = ${nnode}"
 echo "  OMP_NUM_THREADS = ${OMP_NUM_THREADS}"
 echo "       ntask_node = ${ntask_node}"
 echo "            ntask = ${ntask}"
-echo "      nnode_group = ${nnode_group}"
-echo "      ntask_group = ${ntask_group}"
 echo "        groupsize = ${groupsize}"
-echo "           ngroup = ${ngroup}"
 
 for flavor in spsat chsat_s4 chsat_so; do
 #for flavor in chsat_so; do
     case $flavor in
 	spsat)
+	    #params=params.spsat.madam.toml
 	    params=params.spsat.toml
 	    ;;
 	*)
+	    #params=params.chsat.madam.toml
 	    params=params.chsat.toml
 	    ;;
     esac
     for band in f030 f040 f085 f095 f145 f155 f220 f280; do
+    #for band in f030 f040 f085 f095 f145 f155; do
     #for band in f280; do
 	case $band in
 	    f030|f040)
@@ -70,13 +75,14 @@ for flavor in spsat chsat_s4 chsat_so; do
 	esac
 
         if [[ $flavor == chsat* ]]; then
-            $fpfile=${fpfile/SAT/CHSAT}
+            fpfile=${fpfile/_SAT_/_CHSAT_}
+            fpfile=${fpfile/_SAT/_CHSAT}
         fi
 
 	outdir=outputs_full/sat/$flavor/$band
 	mkdir -p $outdir
 
-	if [[ -e $outdir/mapmaker_cov.fits ]]; then
+	if [[ -e $outdir/mapmaker_cov.fits || -e $outdir/madam_wcov.fits ]]; then
 	    echo "$flavor $band already complete! Skipping..."
 	    continue
 	fi
@@ -95,9 +101,9 @@ for flavor in spsat chsat_s4 chsat_so; do
 	     --out $outdir \
 	     --job_group_size $groupsize \
 	     >& $logfile
-        # remove the useless CFITSIO warnings
-        grep -v CFITSIO $logfile | egrep -v '$^' > temp.log
-        mv temp.log $logfile
         exit
+        # remove the useless CFITSIO warnings
+        # grep -v CFITSIO $logfile | egrep -v '$^' > temp.log
+        # mv temp.log $logfile
     done
 done
