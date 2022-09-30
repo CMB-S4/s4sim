@@ -52,4 +52,5 @@ for band in "f030", "f040", "f085", "f095", "f145", "f155", "f220", "f280":
     ax2.plot(pwv, net_chile * pwv_factor_chile / net_pole / pwv_factor_pole, fmt, label=band)
 
 plt.legend(loc="best")
+plt.tight_layout()
 plt.savefig("net_comparison.png")
