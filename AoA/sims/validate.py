@@ -6,6 +6,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+# rootdir = "/global/cfs/cdirs/cmbs4/AoA/August2022"
+rootdir = "."
+
+
 year = 86400 * 365
 
 for tele in "sat", "splat", "chlat":
@@ -79,8 +83,8 @@ for tele in "sat", "splat", "chlat":
             "[GHz]", "years", "[%]", "[uKrts]", "raw", "noise", "signal", "[uKarcmin]", "[uKarcmin]")
         )
         for band, ndet in ndets[tele].items():
-            hit = hp.read_map(f"scaled_outputs/{flavor}/hits_{band}.fits")
-            cov = hp.read_map(f"scaled_outputs/{flavor}/cov_{band}.fits")
+            hit = hp.read_map(f"{rootdir}/scaled_outputs/{flavor}/hits_{band}.fits")
+            cov = hp.read_map(f"{rootdir}/scaled_outputs/{flavor}/cov_{band}.fits")
 
             npix = hit.size
             good = hit > 0

@@ -14,7 +14,7 @@ export MALLOC_MMAP_THRESHOLD_=131072
 export PYTHONSTARTUP=""
 export PYTHONNOUSERSITE=1
 export HOME=$SCRATCH
-export OMP_NUM_THREADS=2
+export OMP_NUM_THREADS=1
 export OMP_PLACES=threads
 export OMP_PROC_BIND=spread
 export TOAST_FUNCTIME=1
@@ -70,13 +70,14 @@ for flavor in spsat chsat_s4 chsat_so; do
 	esac
 
         if [[ $flavor == chsat* ]]; then
-            $fpfile=${fpfile/SAT/CHSAT}
+            fpfile=${fpfile/_SAT_/_CHSAT_}
+            fpfile=${fpfile/_SAT/_CHSAT}
         fi
 
 	outdir=outputs_full/sat/$flavor/$band
 	mkdir -p $outdir
 
-	if [[ -e $outdir/mapmaker_cov.fits ]]; then
+	if [[ -e $outdir/mapmaker_cov.fits || -e $outdir/madam_wcov.fits ]]; then
 	    echo "$flavor $band already complete! Skipping..."
 	    continue
 	fi

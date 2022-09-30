@@ -163,18 +163,29 @@ for alternative, flavors in alternatives.items():
             base_flavor = flavor_in.replace("_hwp", "").replace("_aggressive", "")
             indir = f"outputs_full/sat/{base_flavor}/f{freq:03}"
 
-            inmap = f"{indir}/mapmaker_hits.fits"
+            inmap1 = f"{indir}/madam_hmap.fits"
+            inmap2 = f"{indir}/mapmaker_hits.fits"
             outmap = f"{outdir}/hits_{freq:03}.fits"
+            if os.path.isfile(inmap1):
+                inmap = inmap1 
+            else:
+                inmap = inmap2
             print(f"Reading {inmap}")
             hits = hp.read_map(inmap, None)
             hits = (hits * scale * net_factor).astype(int)
             hp.write_map(outmap, hits, overwrite=True)
             print(f"Wrote {outmap}")
 
-            inmap = f"{indir}/mapmaker_cov.fits"
+            inmap1 = f"{indir}/madam_wcov.fits"
+            inmap2 = f"{indir}/mapmaker_cov.fits"
+            if os.path.isfile(inmap1):
+                inmap = inmap1
+            else:
+                inmap = inmap2
             outmap = f"{outdir}/cov_{freq:03}.fits"
             print(f"Reading {inmap}")
             cov = hp.read_map(inmap, None)
+            cov[cov == hp.UNSEEN] = 0
             cov /= scale
             hp.write_map(outmap, cov, overwrite=True)
             print(f"Wrote {outmap}")
