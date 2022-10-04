@@ -10,14 +10,20 @@ import numpy as np
 pwv = np.linspace(0, 3, 100)
 el = np.linspace(40, 60, 100)
 
-nrow, ncol = 2, 1
+nrow, ncol = 2, 2
 fig = plt.figure(figsize=[8 * ncol, 4 * nrow])
 ax1 = fig.add_subplot(nrow, ncol, 1)
 ax2 = fig.add_subplot(nrow, ncol, 2)
-ax1.set_title("NET ratio vs. elevation")
-ax2.set_title("NET ratio vs. PWV")
+ax3 = fig.add_subplot(nrow, ncol, 3)
+ax4 = fig.add_subplot(nrow, ncol, 4)
+ax1.set_title("NET factor vs. elevation")
+ax2.set_title("NET factor vs. PWV")
+ax3.set_title("NET ratio vs. elevation")
+ax4.set_title("NET ratio vs. PWV")
 ax1.set_xlabel("Elevation [deg]")
 ax2.set_xlabel("PWV [mm]")
+ax3.set_xlabel("Elevation [deg]")
+ax4.set_xlabel("PWV [mm]")
 
 fmt = "--"
 for band in "f030", "f040", "f085", "f095", "f145", "f155", "f220", "f280":
@@ -48,9 +54,14 @@ for band in "f030", "f040", "f085", "f095", "f145", "f155", "f220", "f280":
     pwv_factor_chile = pwv_a0_chile + pwv_a1_chile * pwv + pwv_a2_chile * pwv**2
     elevation_factor_chile = elevation_a_chile / np.sin(np.radians(el)) + elevation_c_chile
 
-    ax1.plot(el, net_chile * elevation_factor_chile / net_pole / elevation_factor_pole, fmt, label=band)
-    ax2.plot(pwv, net_chile * pwv_factor_chile / net_pole / pwv_factor_pole, fmt, label=band)
+    ax1.plot(el, elevation_factor_chile, fmt, label=f"Chile {band}")
+    ax1.plot(el, elevation_factor_pole, fmt, label=f"Pole {band}")
+    ax2.plot(pwv, pwv_factor_chile, fmt, label=f"Chile {band}")
+    ax2.plot(pwv, pwv_factor_pole, fmt, label=f"Pole {band}")
+    ax3.plot(pwv, net_chile * elevation_factor_chile / net_pole / elevation_factor_pole, fmt, label=band)
+    ax4.plot(pwv, net_chile * pwv_factor_chile / net_pole / pwv_factor_pole, fmt, label=band)
 
-plt.legend(loc="best")
+ax2.legend(loc="best")
+ax4.legend(loc="best")
 plt.tight_layout()
 plt.savefig("net_comparison.png")
