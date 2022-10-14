@@ -496,7 +496,7 @@
 [operators.madam]
     class = "toast.ops.madam.Madam"
     API = 0 # Internal interface version for this operator
-    copy_groups = 8 # The processes on each node are split into this number of groups to copy data in turns
+    copy_groups = 32 # The processes on each node are split into this number of groups to copy data in turns
     det_data = "signal" # Observation detdata key for the timestream data
     det_flag_mask = 1 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
@@ -509,7 +509,7 @@
     noise_scale = "noise_scale" # Observation key with optional scaling factor for noise PSDs
     paramfile = "None" # Read madam parameters from this file
     pixel_pointing = "None" # This must be an instance of a pixel pointing operator
-    purge_det_data = false # If True, clear all observation detector data after copying to madam buffers
+    purge_det_data = true # If True, clear all observation detector data after copying to madam buffers
     restore_det_data = false # If True, restore detector data to observations on completion
     shared_flag_mask = 1 # Bit mask value for optional shared flagging
     shared_flags = "flags" # Observation shared key for telescope flags to use
