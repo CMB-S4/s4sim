@@ -6,26 +6,39 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-fig = plt.figure(figsize=[18, 12])
-nrow, ncol = 2, 2
-ax1 = fig.add_subplot(nrow, ncol, 1)
-ax2 = fig.add_subplot(nrow, ncol, 2)
-ax3 = fig.add_subplot(nrow, ncol, 3)
+do_plot = False
 
-colors = ["tab:blue", "tab:orange", "tab:green", "tab:pink"]
+if do_plot:
+    fig = plt.figure(figsize=[18, 12])
+    nrow, ncol = 2, 2
+    ax1 = fig.add_subplot(nrow, ncol, 1)
+    ax2 = fig.add_subplot(nrow, ncol, 2)
+    ax3 = fig.add_subplot(nrow, ncol, 3)
+
+    colors = ["tab:blue", "tab:orange", "tab:green", "tab:pink"]
 
 if len(sys.argv) == 1:
-    print("Usage: {sys.argv[0]} <input directory>")
+    print("Usage: {sys.argv[0]} <input directory> [schedule time days]")
 indir = sys.argv[1]
+if len(sys.argv) == 3:
+    schedule_days = float(sys.argv[2])
+else:
+    schedule_days = None
 fnames = sorted(glob(indir + "/*txt"))
 
-for fname, color in zip(fnames, colors):
+for i, fname in enumerate(fnames):
+    if do_plot:
+        color = colors[i]
     print("\n{}".format(fname))
 
     with open(fname, "r") as fin:
         fin.readline()
         header = fin.readline()
-    site, telescope, lat, lon, alt = header.split()
+    try:
+        site, telescope, lat, lon, alt = header.split()
+    except:
+        print(f"ERROR: failed to parse {fname}", flush=True)
+        continue
     if np.abs(float(lat)) > 85:
         pole_site = True
     else:
@@ -66,10 +79,11 @@ for fname, color in zip(fnames, colors):
             label = os.path.basename(fname).replace(".txt", "")
         else:
             label = None
-        ax1.plot([start, stop], [el, el], color=color, label=label)
-        if last_el is not None:
-            ax2.plot([last_stop, start], [last_el, el], color=color, label=label)
-        ax3.plot([az_min, az_max], [el, el], color=color, label=label)
+        if do_plot:
+            ax1.plot([start, stop], [el, el], color=color, label=label)
+            if last_el is not None:
+                ax2.plot([last_stop, start], [last_el, el], color=color, label=label)
+            ax3.plot([az_min, az_max], [el, el], color=color, label=label)
         last_stop = stop
         last_el = el
 
@@ -101,6 +115,10 @@ for fname, color in zip(fnames, colors):
 
     average_rate = 1.0 / np.cos(np.radians(average_el))
 
+    if schedule_days is not None:
+        print(f"Overriding schedule_time = {schedule_time} with {schedule_days}")
+        schedule_time = schedule_days
+
     print("Schedule time:        {:.3f} days".format(schedule_time))
     print("Integration time:     {:.3f} days".format(integration_time))
     print("Observing efficiency: {:.3f} %".format(integration_time / schedule_time * 100))
@@ -111,8 +129,9 @@ for fname, color in zip(fnames, colors):
     print("Average Az-rate:      {:.3f} deg (for 1 deg/s on sky)".format(average_rate))
     print("Elevation travelled:  {:.3f} deg".format(total_el))
     print("Elevation travelled:  {:.3f} deg (during observation)".format(obs_el))
-    print("Elevation travelled:  {:.3f} deg (requiring stabilization)".format(obs_el_large))
+    print("Elevation travelled:  {:.3f} deg (requiring stabilization)".format(obs_el_large), flush=True)
 
-ax3.legend(loc="best")
-fig.savefig("schedules.png")
-plt.close()
+if do_plot:
+    ax3.legend(loc="best")
+    fig.savefig("schedules.png")
+    plt.close()
