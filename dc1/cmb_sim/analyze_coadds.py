@@ -23,8 +23,10 @@ TELE = "LAT0_CHLAT"
 #for band in 220, 280:
 for band in 30, 40, 90, 150, 220, 280:
     fname_input_map = f"input_maps/cmb.{tele}.f{band:03}.h5"
-    fname_map = f"outputs/coadd/{TELE}/coadd_{TELE}_f{band:03}_map.fits"
-    fname_cov = f"outputs/coadd/{TELE}/coadd_{TELE}_f{band:03}_cov.fits"
+    #fname_map = f"outputs/coadd/{TELE}/coadd_{TELE}_f{band:03}_map.fits"
+    fname_map = f"/global/cfs/cdirs/cmbs4/dc/dc1/staging/coadd_maps/cmb/{TELE}/coadd_{TELE}_f{band:03}_map.fits"
+    #fname_cov = f"outputs/coadd/{TELE}/coadd_{TELE}_f{band:03}_cov.fits"
+    fname_cov = f"/global/cfs/cdirs/cmbs4/dc/dc1/staging/coadd_maps/cmb/{TELE}/coadd_{TELE}_f{band:03}_cov.fits"
     fname_cl = f"outputs/coadd/{TELE}/coadd_{TELE}_f{band:03}_cl.fits"
     fname_input_cl = f"outputs/coadd/{TELE}/input_{TELE}_f{band:03}_cl.fits"
 
