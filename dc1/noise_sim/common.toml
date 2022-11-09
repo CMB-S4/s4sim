@@ -11,6 +11,7 @@
     API = 0 # Internal interface version for this operator
     detector_pointing = "None" # Operator that translates boresight Az / El pointing into detector frame
     enabled = true # If True, this class instance is marked as enabled
+    extra_factor = "None" # Extra multiplier to the NET scaling
     modulate_pwv = true # If True, modulate the NET based on PWV
     name = "elevation_model" # The 'name' of this class instance
     noise_a = "None" # Parameter 'a' in (a / sin(el) + c).  If not set, look for one in the Focalplane.
@@ -20,7 +21,8 @@
     pwv_a0 = "None" # Parameter 'a0' in (a0 + pwv * a1 + pwv ** 2 * a2).  If not set, look for one in the Focalplane.
     pwv_a1 = "None" # Parameter 'a1' in (a0 + pwv * a1 + pwv ** 2 * a2).  If not set, look for one in the Focalplane.
     pwv_a2 = "None" # Parameter 'a2' in (a0 + pwv * a1 + pwv ** 2 * a2).  If not set, look for one in the Focalplane.
-    view = "None" # Use this view of the data in all observations
+    times = "times" # Observation shared key for timestamps
+    view = "None" # Use this view of the data in all observations.  Use 'middle' if the middle 10 seconds of each observation is enough to determine the effective observing elevation
 
 [operators.det_pointing_azel]
     class = "toast.ops.pointing_detector.PointingDetectorSimple"
@@ -33,11 +35,13 @@
     quats = "quats_azel" # Observation detdata key for output quaternions
     shared_flag_mask = 0 # Bit mask value for optional flagging
     shared_flags = "None" # Observation shared key for telescope flags to use
+    use_python = false # If True, use python implementation
     view = "None" # Use this view of the data in all observations
 
 [operators.weights_azel]
     class = "toast.ops.stokes_weights.StokesWeights"
     API = 0 # Internal interface version for this operator
+    IAU = false # If True, use the IAU convention rather than COSMO
     cal = "None" # The observation key with a dictionary of pointing weight calibration for each det
     detector_pointing = "None" # Operator that translates boresight pointing into detector frame
     enabled = true # If True, this class instance is marked as enabled
@@ -46,6 +50,7 @@
     name = "weights_azel" # The 'name' of this class instance
     quats = "None" # Observation detdata key for output quaternions
     single_precision = false # If True, use 32bit float in output
+    use_python = false # If True, use python implementation
     view = "None" # Use this view of the data in all observations
     weights = "weights_azel" # Observation detdata key for output weights
 
@@ -58,14 +63,16 @@
     enabled = true # If True, this class instance is marked as enabled
     name = "det_pointing_radec" # The 'name' of this class instance
     quats = "quats_radec" # Observation detdata key for output quaternions
-    shared_flag_mask = 0 # Bit mask value for optional flagging
+    shared_flag_mask = 1 # Bit mask value for optional flagging
     shared_flags = "None" # Observation shared key for telescope flags to use
+    use_python = false # If True, use python implementation
     view = "None" # Use this view of the data in all observations
 
 [operators.scan_map]
     class = "toast.ops.scan_healpix.ScanHealpixMap"
     API = 0 # Internal interface version for this operator
     det_data = "signal" # Observation detdata key for accumulating output
+    det_data_units = "unit K" # Output units if creating detector data
     enabled = true # If True, this class instance is marked as enabled
     file = "cmb.h5" # Path to healpix FITS file
     name = "scan_map" # The 'name' of this class instance
@@ -82,6 +89,7 @@
     API = 0 # Internal interface version for this operator
     component = 663056 # The simulation component index
     det_data = "signal" # Observation detdata key for accumulating simulated timestreams
+    det_data_units = "unit K" # Output units if creating detector data
     detector_pointing = "None" # Operator that translates boresight Az/El pointing into detector frame
     enabled = false # If True, this class instance is marked as enabled
     fwhm = "1.00000000000000e+01 arcmin" # ground map smoothing scale
@@ -110,11 +118,12 @@
     API = 0 # Internal interface version for this operator
     component = 0 # The noise component index
     det_data = "signal" # Observation detdata key for accumulating noise timestreams
-    det_data_units = "None" # Desired output units of the timestream
+    det_data_units = "unit K" # Output units if creating detector data
     enabled = true # If True, this class instance is marked as enabled
     name = "sim_noise" # The 'name' of this class instance
     noise_model = "noise_model" # Observation key containing the noise model
     realization = 0 # The noise realization index
+    serial = true # Use legacy serial implementation instead of batched
     times = "times" # Observation shared key for timestamps
 
 [operators.pixels_radec]
@@ -130,11 +139,13 @@
     pixels = "pixels" # Observation detdata key for output pixel indices
     quats = "None" # Observation detdata key for output quaternions
     single_precision = false # If True, use 32bit int in output
+    use_python = false # If True, use python implementation
     view = "None" # Use this view of the data in all observations
 
 [operators.weights_radec]
     class = "toast.ops.stokes_weights.StokesWeights"
     API = 0 # Internal interface version for this operator
+    IAU = false # If True, use the IAU convention rather than COSMO
     cal = "None" # The observation key with a dictionary of pointing weight calibration for each det
     detector_pointing = "None" # Operator that translates boresight pointing into detector frame
     enabled = true # If True, this class instance is marked as enabled
@@ -143,6 +154,7 @@
     name = "weights_radec" # The 'name' of this class instance
     quats = "None" # Observation detdata key for output quaternions
     single_precision = false # If True, use 32bit float in output
+    use_python = false # If True, use python implementation
     view = "None" # Use this view of the data in all observations
     weights = "weights" # Observation detdata key for output weights
 
