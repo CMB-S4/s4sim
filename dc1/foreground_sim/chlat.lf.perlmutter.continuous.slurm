@@ -52,8 +52,8 @@ site=chile
 TELESCOPE=LAT0_CHLAT
 # cannot have more than 384 MPI tasks in a group to process 30 and 40GHz
 #bands=( f030 )
-#bands=(f030 f040)
-bands=(f090 f150)
+bands=(f030 f040)
+#bands=(f090 f150)
 #bands=(f090 f150 f220 f280)
 
 echo "Listing schedules at" `date`
