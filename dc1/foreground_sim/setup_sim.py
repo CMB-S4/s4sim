@@ -25,9 +25,9 @@ for band, freq in [
         continue
     print("WARNING: You MUST change the path to the correct foreground maps", flush=True)
     fname_in = (
-        f"/global/cfs/cdirs/cmbs4/dm/dstool_202102/input_pysm"
-        f"/4096/cmb_unlensed_solardipole/0000/"
-        f"cmbs4_cmb_unlensed_solardipole_uKCMB_LAT-{band}_nside4096_0000.fits"
+        f"/global/cfs/cdirs/cmbs4/dm/mbs/"
+        f"202211_LAT_fg_cmb/4096/combined_foregrounds_cmb_no_radio_fixdip/0000/"
+        f"cmbs4_combined_foregrounds_cmb_no_radio_fixdip_uKCMB_LAT-{band}_nside4096_0000.fits"
     )
     if not os.path.isfile(fname_in):
         raise RuntimeError(f"Input file does not exist: {fname_in}")

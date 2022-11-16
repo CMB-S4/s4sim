@@ -2,7 +2,7 @@
 #SBATCH --qos=regular
 #SBATCH --time=12:00:00
 #SBATCH --nodes=16
-#SBATCH --job-name=DC1_mf_foregrounds
+#SBATCH --job-name=DC1_mfhf_foregrounds
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -53,8 +53,8 @@ TELESCOPE=LAT0_CHLAT
 # cannot have more than 384 MPI tasks in a group to process 30 and 40GHz
 #bands=( f030 )
 #bands=(f030 f040)
-bands=(f090 f150)
-#bands=(f090 f150 f220 f280)
+#bands=(f090 f150)
+bands=(f090 f150 f220 f280)
 
 echo "Listing schedules at" `date`
 

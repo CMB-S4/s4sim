@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --qos=regular
 #SBATCH --time=12:00:00
-#SBATCH --nodes=16
-#SBATCH --job-name=DC1_mf_foregrounds
+#SBATCH --nodes=4
+#SBATCH --job-name=DC1_lf_foregrounds
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -31,7 +31,7 @@ let ntask_node=256/$OMP_NUM_THREADS
 let ntask=$nnode*$ntask_node
 let ncore=$OMP_NUM_THREADS
 # Make sure nnode is divisible by nnode_group
-let nnode_group=4
+let nnode_group=1
 let ntask_group=$nnode_group*$ntask_node
 let groupsize=nnode_group*ntask_node
 let ngroup=$nnode/$nnode_group
