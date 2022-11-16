@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --qos=regular
+#SBATCH --qos=debug
 #SBATCH --time=00:30:00
-#SBATCH --nodes=64
-#SBATCH --job-name=DC1_noise
+#SBATCH --nodes=8
+#SBATCH --job-name=DC1_foregrounds
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -31,7 +31,7 @@ let ntask_node=256/$OMP_NUM_THREADS
 let ntask=$nnode*$ntask_node
 let ncore=$OMP_NUM_THREADS
 # Make sure nnode is divisible by nnode_group
-let nnode_group=4
+let nnode_group=2
 let ntask_group=$nnode_group*$ntask_node
 let groupsize=nnode_group*ntask_node
 let ngroup=$nnode/$nnode_group
@@ -90,8 +90,6 @@ for schedule in ${fnames[*]}; do
             mkdir -p --mode=g+rXs-w $outdir
             chgrp -R cmbs4 $outdir
 
-            #stripe_medium $outdir
-
             srun -N $nnode_group -n $ntask_group -c $ncore --cpu_bind=cores toast_sim_ground.py \
                  --config common.toml scanning_${telescope}.toml \
                  atmosphere_${site}.toml reduce_${telescope}.toml \
@@ -102,22 +100,29 @@ for schedule in ${fnames[*]}; do
                  --job_group_size ${groupsize} \
                  --obsmaps \
                  --mem_count.enable \
-                 --scan_map.disable \
-                 --sim_atmosphere.cache_dir atm_cache_${TELESCOPE} \
+                 --scan_map.enable \
+                 --scan_map.file input_maps/foreground.${telescope}.${band}.h5 \
+                 --sim_noise.disable \
+                 --sim_atmosphere.disable \
+                 --raw_statistics.disable \
+                 --filtered_statistics.disable \
                  --mapmaker.report_memory \
-                 --save_hdf5.enable \
-                 --save_hdf5.volume $outdir \
-                 --save_hdf5.detdata_float32 \
+                 --save_hdf5.disable \
                  >> ${logfile} 2>&1 &
-            let running++
-            [[ $running -eq $ngroup ]] && break
-            #date >> ${logfile}
-            #echo "Done with $logfile at" `date`
+            sleep 1
+            let running=`ps | grep srun | wc -l`/2
+            echo "There are $running running processes at" `date`
+            while [[ $running -eq $ngroup ]]; do
+                echo "Waiting for 10 seconds."
+                sleep 10
+                let running=`ps | grep srun | wc -l`/2
+                echo "There are $running running processes at" `date`
+            done
+            echo "Finding more work at" `date`
         else
             echo "$logfile exists"
         fi
     done
-    [[ $running -eq $ngroup ]] && break
 done
 
 echo "Waiting for $running jobs to complete at" `date`

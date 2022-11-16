@@ -2,7 +2,7 @@
 #SBATCH --qos=regular
 #SBATCH --time=00:30:00
 #SBATCH --nodes=64
-#SBATCH --job-name=DC1_noise
+#SBATCH --job-name=DC1_foregrounds
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -53,8 +53,8 @@ TELESCOPE=LAT0_CHLAT
 # cannot have more than 384 MPI tasks in a group to process 30 and 40GHz
 #bands=( f030 )
 #bands=(f030 f040)
-bands=(f090 f150)
-#bands=(f090 f150 f220 f280)
+#bands=(f090 f150)
+bands=(f220 f280)
 
 echo "Listing schedules at" `date`
 
@@ -102,12 +102,14 @@ for schedule in ${fnames[*]}; do
                  --job_group_size ${groupsize} \
                  --obsmaps \
                  --mem_count.enable \
-                 --scan_map.disable \
-                 --sim_atmosphere.cache_dir atm_cache_${TELESCOPE} \
+                 --scan_map.enable \
+                 --scan_map.file input_maps/foreground.${telescope}.${band}.h5 \
+                 --sim_noise.disable \
+                 --sim_atmosphere.disable \
+                 --raw_statistics.disable \
+                 --filtered_statistics.disable \
                  --mapmaker.report_memory \
-                 --save_hdf5.enable \
-                 --save_hdf5.volume $outdir \
-                 --save_hdf5.detdata_float32 \
+                 --save_hdf5.disable \
                  >> ${logfile} 2>&1 &
             let running++
             [[ $running -eq $ngroup ]] && break

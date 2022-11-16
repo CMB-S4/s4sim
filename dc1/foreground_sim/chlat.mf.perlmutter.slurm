@@ -2,7 +2,7 @@
 #SBATCH --qos=regular
 #SBATCH --time=00:30:00
 #SBATCH --nodes=64
-#SBATCH --job-name=DC1_noise
+#SBATCH --job-name=DC1_foregrounds
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -102,12 +102,14 @@ for schedule in ${fnames[*]}; do
                  --job_group_size ${groupsize} \
                  --obsmaps \
                  --mem_count.enable \
-                 --scan_map.disable \
-                 --sim_atmosphere.cache_dir atm_cache_${TELESCOPE} \
+                 --scan_map.enable \
+                 --scan_map.file input_maps/foreground.${telescope}.${band}.h5 \
+                 --sim_noise.disable \
+                 --sim_atmosphere.disable \
+                 --raw_statistics.disable \
+                 --filtered_statistics.disable \
                  --mapmaker.report_memory \
-                 --save_hdf5.enable \
-                 --save_hdf5.volume $outdir \
-                 --save_hdf5.detdata_float32 \
+                 --save_hdf5.disable \
                  >> ${logfile} 2>&1 &
             let running++
             [[ $running -eq $ngroup ]] && break
