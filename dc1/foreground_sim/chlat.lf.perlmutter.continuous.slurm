@@ -47,6 +47,10 @@ echo "      ntask_group = ${ntask_group}"
 echo "        groupsize = ${groupsize}"
 echo "           ngroup = ${ngroup}"
 
+#suffix=""
+#suffix="_lowcomplexity"
+suffix="_highcomplexity":
+
 telescope=chlat
 site=chile
 TELESCOPE=LAT0_CHLAT
@@ -58,9 +62,8 @@ bands=(f030 f040)
 
 echo "Listing schedules at" `date`
 
-#fnames=split_schedules_1/${telescope}/split_schedule_????.txt
-#fnames=(`python3 get_fnames.py split_schedules_1_upto2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
-fnames=(`python3 get_fnames_serial.py split_schedules_1_upto2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+#fnames=(`python3 get_fnames_serial.py split_schedules_1_upto2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+fnames=(`python3 get_fnames_serial.py split_schedules_1_over2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
 echo "Found ${#fnames[@]} schedule files"
 
 # Random wait time to reduce clashes
@@ -70,15 +73,21 @@ echo "Looking for schedule at" `date`
 
 let running=0
 for band in ${bands[*]}; do
-    logdir=logs/${TELESCOPE}/${band}
+    logdir=logs${suffix}/${TELESCOPE}/${band}
     mkdir -p $logdir
 done
+
+if [[ x$suffix -eq "x" ]]; then
+    write_invcov="--mapmaker.write_invcov"
+else
+    write_invcov=""
+fi
 
 for schedule in ${fnames[*]}; do
     rootname=`basename $schedule .txt`
     #rootname=${TELESCOPE}_${rootname}
     for band in ${bands[*]}; do
-        logdir=logs/${TELESCOPE}/${band}
+        logdir=logs${suffix}/${TELESCOPE}/${band}
         #logfile=$logdir/${rootname}_${band}.log
         logfile=$logdir/${rootname}.log
         logfile2=cleared_$logdir/${rootname}.log
@@ -86,7 +95,7 @@ for schedule in ${fnames[*]}; do
             echo "Writing $logfile at" `date`
             date > ${logfile}
 
-            outdir=outputs/${TELESCOPE}/${band}/${rootname}
+            outdir=outputs${suffix}/${TELESCOPE}/${band}/${rootname}
             mkdir -p --mode=g+rXs-w $outdir
             chgrp -R cmbs4 $outdir
 
@@ -101,12 +110,13 @@ for schedule in ${fnames[*]}; do
                  --obsmaps \
                  --mem_count.enable \
                  --scan_map.enable \
-                 --scan_map.file input_maps/foreground.${telescope}.${band}.h5 \
+                 --scan_map.file input_maps/foreground${suffix}.${telescope}.${band}.h5 \
                  --sim_noise.disable \
                  --sim_atmosphere.disable \
                  --raw_statistics.disable \
                  --filtered_statistics.disable \
                  --mapmaker.report_memory \
+                 $write_invcov \
                  --save_hdf5.disable \
                  >> ${logfile} 2>&1 &
             sleep 1
