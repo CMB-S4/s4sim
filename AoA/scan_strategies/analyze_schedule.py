@@ -19,6 +19,8 @@ if do_plot:
 
 if len(sys.argv) == 1:
     print("Usage: {sys.argv[0]} <input directory> [schedule time days]")
+    sys.exit()
+
 indir = sys.argv[1]
 if len(sys.argv) == 3:
     schedule_days = float(sys.argv[2])
@@ -44,7 +46,7 @@ for i, fname in enumerate(fnames):
     else:
         pole_site = False
 
-    schedule = np.genfromtxt(fname, skip_header=3).T
+    # schedule = np.genfromtxt(fname, skip_header=3).T
 
     arr = np.genfromtxt(
         fname,
@@ -121,7 +123,7 @@ for i, fname in enumerate(fnames):
 
     print("Schedule time:        {:.3f} days".format(schedule_time))
     print("Integration time:     {:.3f} days".format(integration_time))
-    print("Observing efficiency: {:.3f} %".format(integration_time / schedule_time * 100))
+    print("Observing efficiency: {:.1f} %".format(integration_time / schedule_time * 100))
     print("Integration time (Horizontal):     {:.3f} days".format(integration_time_horizontal))
     print("Observing efficiency (Horizontal): {:.3f} %".format(integration_time_horizontal / schedule_time * 100))
     print("Average elevation:    {:.3f} deg".format(average_el))
