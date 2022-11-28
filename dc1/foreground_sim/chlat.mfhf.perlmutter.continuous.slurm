@@ -49,7 +49,7 @@ echo "           ngroup = ${ngroup}"
 
 #suffix=""
 #suffix="_lowcomplexity"
-suffix="_highcomplexity":
+suffix="_highcomplexity"
 
 telescope=chlat
 site=chile

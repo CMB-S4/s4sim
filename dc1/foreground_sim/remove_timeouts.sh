@@ -17,7 +17,7 @@ for suffix in "" "_lowcomplexity" "_highcomplexity"; do
     echo "Moved ${#fnames[@]} successful logs"
 
     #fnames=(`grep -lR --include '*.log' -e 'DUE TO TIME LIMIT' logs/LAT0_CHLAT`)
-    fnames=(`find logs${suffix} -mmin +60 -name '*.log'`)
+    fnames=(`find -L logs${suffix} -mmin +60 -name '*.log'`)
     echo "Removing ${#fnames[@]} stalled logs"
     for fname in ${fnames[*]}; do
         echo "Removing $fname"

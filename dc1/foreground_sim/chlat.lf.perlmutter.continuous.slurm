@@ -49,7 +49,7 @@ echo "           ngroup = ${ngroup}"
 
 #suffix=""
 #suffix="_lowcomplexity"
-suffix="_highcomplexity":
+suffix="_highcomplexity"
 
 telescope=chlat
 site=chile
@@ -62,8 +62,8 @@ bands=(f030 f040)
 
 echo "Listing schedules at" `date`
 
-#fnames=(`python3 get_fnames_serial.py split_schedules_1_upto2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
-fnames=(`python3 get_fnames_serial.py split_schedules_1_over2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+fnames=(`python3 get_fnames_serial.py split_schedules_1_upto2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+#fnames=(`python3 get_fnames_serial.py split_schedules_1_over2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
 echo "Found ${#fnames[@]} schedule files"
 
 # Random wait time to reduce clashes
