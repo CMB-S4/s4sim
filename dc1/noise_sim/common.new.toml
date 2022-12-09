@@ -1,0 +1,171 @@
+[operators]
+[operators.default_model]
+    class = "toast.ops.noise_model.DefaultNoiseModel"
+    API = 0 # Internal interface version for this operator
+    enabled = true # If True, this class instance is marked as enabled
+    name = "default_model" # The 'name' of this class instance
+    noise_model = "noise_model" # The observation key for storing the noise model
+
+[operators.elevation_model]
+    class = "toast.ops.elevation_noise.ElevationNoise"
+    API = 0 # Internal interface version for this operator
+    detector_pointing = "None" # Operator that translates boresight Az / El pointing into detector frame
+    enabled = true # If True, this class instance is marked as enabled
+    extra_factor = "None" # Extra multiplier to the NET scaling
+    modulate_pwv = true # If True, modulate the NET based on PWV
+    name = "elevation_model" # The 'name' of this class instance
+    noise_a = "None" # Parameter 'a' in (a / sin(el) + c).  If not set, look for one in the Focalplane.
+    noise_c = "None" # Parameter 'c' in (a / sin(el) + c).  If not set, look for one in the Focalplane.
+    noise_model = "noise_model" # The observation key containing the input noise model
+    out_model = "noise_model" # Create a new noise model with this name
+    pwv_a0 = "None" # Parameter 'a0' in (a0 + pwv * a1 + pwv ** 2 * a2).  If not set, look for one in the Focalplane.
+    pwv_a1 = "None" # Parameter 'a1' in (a0 + pwv * a1 + pwv ** 2 * a2).  If not set, look for one in the Focalplane.
+    pwv_a2 = "None" # Parameter 'a2' in (a0 + pwv * a1 + pwv ** 2 * a2).  If not set, look for one in the Focalplane.
+    times = "times" # Observation shared key for timestamps
+    view = "None" # Use this view of the data in all observations.  Use 'middle' if the middle 10 seconds of each observation is enough to determine the effective observing elevation
+
+[operators.det_pointing_azel]
+    class = "toast.ops.pointing_detector.PointingDetectorSimple"
+    API = 0 # Internal interface version for this operator
+    boresight = "boresight_radec" # Observation shared key for boresight
+    coord_in = "None" # The input boresight coordinate system ('C', 'E', 'G')
+    coord_out = "None" # The output coordinate system ('C', 'E', 'G')
+    enabled = true # If True, this class instance is marked as enabled
+    name = "det_pointing_azel" # The 'name' of this class instance
+    quats = "quats_azel" # Observation detdata key for output quaternions
+    shared_flag_mask = 0 # Bit mask value for optional flagging
+    shared_flags = "None" # Observation shared key for telescope flags to use
+    use_python = false # If True, use python implementation
+    view = "None" # Use this view of the data in all observations
+
+[operators.weights_azel]
+    class = "toast.ops.stokes_weights.StokesWeights"
+    API = 0 # Internal interface version for this operator
+    IAU = false # If True, use the IAU convention rather than COSMO
+    cal = "None" # The observation key with a dictionary of pointing weight calibration for each det
+    detector_pointing = "None" # Operator that translates boresight pointing into detector frame
+    enabled = true # If True, this class instance is marked as enabled
+    hwp_angle = "None" # Observation shared key for HWP angle
+    mode = "IQU" # The Stokes weights to generate (I or IQU)
+    name = "weights_azel" # The 'name' of this class instance
+    quats = "None" # Observation detdata key for output quaternions
+    single_precision = false # If True, use 32bit float in output
+    use_python = false # If True, use python implementation
+    view = "None" # Use this view of the data in all observations
+    weights = "weights_azel" # Observation detdata key for output weights
+
+[operators.det_pointing_radec]
+    class = "toast.ops.pointing_detector.PointingDetectorSimple"
+    API = 0 # Internal interface version for this operator
+    boresight = "boresight_radec" # Observation shared key for boresight
+    coord_in = "None" # The input boresight coordinate system ('C', 'E', 'G')
+    coord_out = "None" # The output coordinate system ('C', 'E', 'G')
+    enabled = true # If True, this class instance is marked as enabled
+    name = "det_pointing_radec" # The 'name' of this class instance
+    quats = "quats_radec" # Observation detdata key for output quaternions
+    shared_flag_mask = 1 # Bit mask value for optional flagging
+    shared_flags = "None" # Observation shared key for telescope flags to use
+    use_python = false # If True, use python implementation
+    view = "None" # Use this view of the data in all observations
+
+[operators.scan_map]
+    class = "toast.ops.scan_healpix.ScanHealpixMap"
+    API = 0 # Internal interface version for this operator
+    det_data = "signal" # Observation detdata key for accumulating output
+    det_data_units = "unit K" # Output units if creating detector data
+    enabled = true # If True, this class instance is marked as enabled
+    file = "cmb.h5" # Path to healpix FITS file
+    name = "scan_map" # The 'name' of this class instance
+    pixel_dist = "pixel_dist" # The Data key where the PixelDistribution object is located
+    pixel_pointing = "None" # This must be an instance of a pixel pointing operator
+    save_map = false # If True, do not delete map during finalize
+    save_pointing = false # If True, do not clear detector pointing matrices if we generate the pixel distribution
+    stokes_weights = "None" # This must be an instance of a Stokes weights operator
+    subtract = false # If True, subtract the map timestream instead of accumulating
+    zero = false # If True, zero the data before accumulating / subtracting
+
+[operators.sim_sss]
+    class = "toast.ops.sss.SimScanSynchronousSignal"
+    API = 0 # Internal interface version for this operator
+    component = 663056 # The simulation component index
+    det_data = "signal" # Observation detdata key for accumulating simulated timestreams
+    det_data_units = "unit K" # Output units if creating detector data
+    detector_pointing = "None" # Operator that translates boresight Az/El pointing into detector frame
+    enabled = false # If True, this class instance is marked as enabled
+    fwhm = "1.00000000000000e+01 arcmin" # ground map smoothing scale
+    lmax = 256 # ground map expansion order
+    name = "sim_sss" # The 'name' of this class instance
+    nside = 128 # ground map healpix resolution
+    path = "None" # path to a horizontal Healpix map to sample for the SSS *instead* of synthesizing Gaussian maps
+    power = -1.0 # exponential for suppressing ground pickup at higher observing elevation
+    realization = 0 # The simulation realization index
+    scale = "1.00000000000000e+00 mK" # RMS of the ground signal fluctuations at el=45deg
+
+[operators.convolve_time_constant]
+    class = "toast.ops.time_constant.TimeConstant"
+    API = 0 # Internal interface version for this operator
+    deconvolve = false # Deconvolve the time constant instead.
+    det_data = "signal" # Observation detdata key apply filtering to
+    enabled = false # If True, this class instance is marked as enabled
+    name = "convolve_time_constant" # The 'name' of this class instance
+    realization = 0 # Realization ID, only used if tau_sigma is nonzero
+    tau = "None" # Time constant to apply to all detectors.  Overrides `tau_name`
+    tau_name = "None" # Key to use to find time constants in the Focalplane.
+    tau_sigma = "None" # Randomized fractional error to add to each time constant.
+
+[operators.sim_noise]
+    class = "toast.ops.sim_tod_noise.SimNoise"
+    API = 0 # Internal interface version for this operator
+    component = 0 # The noise component index
+    det_data = "signal" # Observation detdata key for accumulating noise timestreams
+    det_data_units = "unit K" # Output units if creating detector data
+    enabled = true # If True, this class instance is marked as enabled
+    name = "sim_noise" # The 'name' of this class instance
+    noise_model = "noise_model" # Observation key containing the noise model
+    realization = 0 # The noise realization index
+    serial = true # Use legacy serial implementation instead of batched
+    times = "times" # Observation shared key for timestamps
+
+[operators.pixels_healpix_radec]
+    class = "toast.ops.pixels_healpix.PixelsHealpix"
+    API = 0 # Internal interface version for this operator
+    create_dist = "None" # Create the submap distribution for all detectors and store in the Data key specified
+    detector_pointing = "None" # Operator that translates boresight pointing into detector frame
+    enabled = true # If True, this class instance is marked as enabled
+    name = "pixels_healpix_radec" # The 'name' of this class instance
+    nest = true # If True, use NESTED ordering instead of RING
+    nside = 4096 # The NSIDE resolution
+    nside_submap = 16 # The NSIDE of the submap resolution
+    pixels = "pixels" # Observation detdata key for output pixel indices
+    quats = "None" # Observation detdata key for output quaternions
+    single_precision = false # If True, use 32bit int in output
+    use_python = false # If True, use python implementation
+    view = "None" # Use this view of the data in all observations
+
+[operators.weights_radec]
+    class = "toast.ops.stokes_weights.StokesWeights"
+    API = 0 # Internal interface version for this operator
+    IAU = false # If True, use the IAU convention rather than COSMO
+    cal = "None" # The observation key with a dictionary of pointing weight calibration for each det
+    detector_pointing = "None" # Operator that translates boresight pointing into detector frame
+    enabled = true # If True, this class instance is marked as enabled
+    hwp_angle = "None" # Observation shared key for HWP angle
+    mode = "IQU" # The Stokes weights to generate (I or IQU)
+    name = "weights_radec" # The 'name' of this class instance
+    quats = "None" # Observation detdata key for output quaternions
+    single_precision = false # If True, use 32bit float in output
+    use_python = false # If True, use python implementation
+    view = "None" # Use this view of the data in all observations
+    weights = "weights" # Observation detdata key for output weights
+
+[operators.yield_cut]
+    class = "toast.ops.yield_cut.YieldCut"
+    API = 0 # Internal interface version for this operator
+    det_flag_mask = 1 # Bit mask value for optional detector flagging
+    det_flags = "flags" # Observation detdata key for flags to use
+    enabled = true # If True, this class instance is marked as enabled
+    fixed = true # If True, detector cuts do not change between observations and realizations
+    focalplane_key = "pixel" # Which focalplane key to use for randomization.  Detectors that share the key value are flagged together
+    keep_frac = 0.8 # Fraction of detectors to keep
+    name = "yield_cut" # The 'name' of this class instance
+    realization = 0 # The realization index

@@ -1,17 +1,3 @@
-[operators.processing_mask]
-    class = "toast.ops.scan_healpix.ScanHealpixMask"
-    API = 0 # Internal interface version for this operator
-    det_flags = "flags" # Observation detdata key for flags to use
-    det_flags_value = 2 # The detector flag value to set where the mask result is non-zero
-    enabled = true # If True, this class instance is marked as enabled
-    file = "None" # Path to healpix FITS file
-    mask_bits = 255 # The number to bitwise-and with each mask value to form the result
-    name = "processing_mask" # The 'name' of this class instance
-    pixel_dist = "pixel_dist" # The Data key where the PixelDistribution object is located
-    pixel_pointing = "None" # This must be an instance of a pixel pointing operator
-    save_mask = false # If True, do not delete mask during finalize
-    save_pointing = false # If True, do not clear detector pointing matrices if we generate the pixel distribution
-
 [operators.flag_sso]
     class = "toast.ops.flag_sso.FlagSSO"
     API = 0 # Internal interface version for this operator
@@ -102,7 +88,7 @@
     azimuth = "azimuth" # Observation shared key for Azimuth
     boresight_azel = "boresight_azel" # Observation shared key for boresight Az/El
     det_data = "signal" # Observation detdata key for accumulating atmosphere timestreams
-    det_flag_mask = 3 # Bit mask value for optional detector flagging
+    det_flag_mask = 1 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     detrend = false # Subtract the fitted trend along with the ground template
     enabled = true # If True, this class instance is marked as enabled
@@ -121,7 +107,7 @@
     class = "toast.ops.polyfilter.PolyFilter"
     API = 0 # Internal interface version for this operator
     det_data = "signal" # Observation detdata key apply filtering to
-    det_flag_mask = 3 # Bit mask value for optional detector flagging
+    det_flag_mask = 1 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     enabled = true # If True, this class instance is marked as enabled
     name = "polyfilter1D" # The 'name' of this class instance
@@ -229,19 +215,19 @@
     write_hdf5 = true # If True, outputs are in HDF5 rather than FITS format.
     write_hdf5_serial = true # If True, force serial HDF5 write of output maps.
     write_hits = true # If True, write the hits map
-    write_invcov = false # If True, write the inverse white noise covariance matrices.
+    write_invcov = true # If True, write the inverse white noise covariance matrices.
     write_map = false # If True, write the projected map
     write_noiseweighted_map = true # If True, write the noise-weighted map
     write_rcond = false # If True, write the reciprocal condition numbers.
     write_solver_products = false # If True, write out equivalent solver products.
 
-[operators.pixels_radec_final]
+[operators.pixels_radec_radec_final]
     class = "toast.ops.pixels_healpix.PixelsHealpix"
     API = 0 # Internal interface version for this operator
     create_dist = "None" # Create the submap distribution for all detectors and store in the Data key specified
     detector_pointing = "None" # Operator that translates boresight pointing into detector frame
     enabled = false # If True, this class instance is marked as enabled
-    name = "pixels_radec_final" # The 'name' of this class instance
+    name = "pixels_healpix_radec_final" # The 'name' of this class instance
     nest = true # If True, use NESTED ordering instead of RING
     nside = 4096 # The NSIDE resolution
     nside_submap = 16 # The NSIDE of the submap resolution

@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --qos=regular
-#SBATCH --time=04:00:00
+#SBATCH --time=00:30:00
 #SBATCH --nodes=16
-#SBATCH --job-name=DC1_foregrounds
+#SBATCH --job-name=DC1_coadd
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -22,7 +22,7 @@ export HDF5_USE_FILE_LOCKING=FALSE
 export TOAST_FUNCTIME=1
 
 # Parallelization
-export OMP_NUM_THREADS=16
+export OMP_NUM_THREADS=32
 export OMP_PLACES=threads
 export OMP_PROC_BIND=spread
 let nnode=$SLURM_JOB_NUM_NODES
@@ -38,7 +38,8 @@ echo "       ntask_node = ${ntask_node}"
 echo "            ntask = ${ntask}"
 
 indir_root=/global/cfs/cdirs/cmbs4/dc/dc1/staging/foreground_sim
-indir1=${indir_root}/outputs_rk
+#indir1=${indir_root}/outputs_rk
+indir1=outputs
 indir2=${indir_root}/outputs_DUMMY1
 indir3=${indir_root}/outputs_DUMMY2
 let nsplit=2
@@ -55,6 +56,7 @@ for telescope in LAT0_CHLAT; do
                 splitroot=""
             fi
             logfile=coadd_${telescope}_${band}${splitroot}.log
+            date > $logfile
             input_maps=""
             let ntotal=0
             let nfail=0

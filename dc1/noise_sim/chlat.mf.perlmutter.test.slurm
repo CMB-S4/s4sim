@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --qos=regular
-#SBATCH --time=12:00:00
-#SBATCH --nodes=4
-#SBATCH --job-name=DC1_lf_foregrounds
+#SBATCH --qos=debug
+#SBATCH --time=00:30:00
+#SBATCH --nodes=8
+#SBATCH --job-name=DC1_noise
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -31,7 +31,7 @@ let ntask_node=256/$OMP_NUM_THREADS
 let ntask=$nnode*$ntask_node
 let ncore=$OMP_NUM_THREADS
 # Make sure nnode is divisible by nnode_group
-let nnode_group=1
+let nnode_group=4
 let ntask_group=$nnode_group*$ntask_node
 let groupsize=nnode_group*ntask_node
 let ngroup=$nnode/$nnode_group
@@ -47,23 +47,22 @@ echo "      ntask_group = ${ntask_group}"
 echo "        groupsize = ${groupsize}"
 echo "           ngroup = ${ngroup}"
 
-suffix=""
-#suffix="_lowcomplexity"
-#suffix="_highcomplexity"
-
 telescope=chlat
 site=chile
 TELESCOPE=LAT0_CHLAT
 # cannot have more than 384 MPI tasks in a group to process 30 and 40GHz
 #bands=( f030 )
-bands=(f030 f040)
+#bands=(f030 f040)
 #bands=(f090 f150)
+bands=(f090)
 #bands=(f090 f150 f220 f280)
 
 echo "Listing schedules at" `date`
 
-fnames=(`python3 get_fnames_serial.py split_schedules_1_upto2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
-#fnames=(`python3 get_fnames_serial.py split_schedules_1_over2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+#fnames=split_schedules_1/${telescope}/split_schedule_????.txt
+#fnames=(`python3 get_fnames.py split_schedules_1_upto2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+fnames=(`python3 get_fnames_serial.py split_schedules_1_upto2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+fnames=("split_schedules_1_upto2mm/chlat/RISING_SCAN_40-148-14.txt" "split_schedules_1_upto2mm/chlat/RISING_SCAN_40-242-1.txt")
 echo "Found ${#fnames[@]} schedule files"
 
 # Random wait time to reduce clashes
@@ -73,21 +72,21 @@ echo "Looking for schedule at" `date`
 
 let running=0
 for band in ${bands[*]}; do
-    logdir=logs${suffix}/${TELESCOPE}/${band}
+    logdir=logs/${TELESCOPE}/${band}
     mkdir -p $logdir
 done
 
-if [[ x$suffix -eq "x" ]]; then
-    write_invcov="--mapmaker.write_invcov"
-else
-    write_invcov=""
-fi
+#testroot="baseline"
+testroot="new_baseline"
+#testroot="no_split"
+#testroot="with_split"
 
 for schedule in ${fnames[*]}; do
     rootname=`basename $schedule .txt`
     #rootname=${TELESCOPE}_${rootname}
     for band in ${bands[*]}; do
-        logdir=logs${suffix}/${TELESCOPE}/${band}
+        logdir=logs_${testroot}/${TELESCOPE}/${band}
+        mkdir -p $logdir
         #logfile=$logdir/${rootname}_${band}.log
         logfile=$logdir/${rootname}.log
         logfile2=cleared_$logdir/${rootname}.log
@@ -95,45 +94,40 @@ for schedule in ${fnames[*]}; do
             echo "Writing $logfile at" `date`
             date > ${logfile}
 
-            outdir=outputs${suffix}/${TELESCOPE}/${band}/${rootname}
+            outdir=outputs_${testroot}/${TELESCOPE}/${band}/${rootname}
             mkdir -p --mode=g+rXs-w $outdir
             chgrp -R cmbs4 $outdir
 
+            #stripe_medium $outdir
+
             srun -N $nnode_group -n $ntask_group -c $ncore --cpu_bind=cores toast_sim_ground.py \
-                 --config common.toml scanning_${telescope}.toml \
-                 atmosphere_${site}.toml reduce_${telescope}.toml \
+                 --config common.new.toml scanning_${telescope}.toml \
+                 atmosphere_${site}.toml reduce_${telescope}.new.toml \
                  --focalplane ../focalplanes/focalplane_${TELESCOPE}_${band}.h5 \
                  --telescope $TELESCOPE \
                  --schedule $schedule \
                  --out $outdir \
                  --job_group_size ${groupsize} \
-                 --obsmaps \
                  --mem_count.enable \
-                 --scan_map.enable \
-                 --scan_map.file input_maps/foreground${suffix}.${telescope}.${band}.h5 \
-                 --sim_noise.disable \
-                 --sim_atmosphere.disable \
-                 --raw_statistics.disable \
-                 --filtered_statistics.disable \
+                 --scan_healpix_map.disable \
+                 --sim_atmosphere.cache_dir atm_cache_${testroot}_${TELESCOPE} \
                  --mapmaker.report_memory \
-                 --processing_mask.file input_maps/mask15${suffix}.${telescope}.${band}.h5 \
-                 $write_invcov \
-                 --save_hdf5.disable \
+                 --mapmaker.name mapmaker_${rootname} \
+                 --save_hdf5.enable \
+                 --save_hdf5.volume $outdir \
+                 --save_hdf5.detdata_float32 \
                  >> ${logfile} 2>&1 &
-            sleep 1
-            let running=`ps | grep srun | wc -l`/2
-            echo "There are $running running processes at" `date`
-            while [[ $running -ge $ngroup ]]; do
-                echo "Waiting for 10 seconds."
-                sleep 10
-                let running=`ps | grep srun | wc -l`/2
-                echo "There are $running running processes at" `date`
-            done
-            echo "Finding more work at" `date`
+            # --sim_ground.session_split_key tube
+            # --obsmaps
+            let running++
+            [[ $running -eq $ngroup ]] && break
+            #date >> ${logfile}
+            #echo "Done with $logfile at" `date`
         else
             echo "$logfile exists"
         fi
     done
+    [[ $running -eq $ngroup ]] && break
 done
 
 echo "Waiting for $running jobs to complete at" `date`
