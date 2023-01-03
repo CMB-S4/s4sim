@@ -68,14 +68,14 @@
     use_python = false # If True, use python implementation
     view = "None" # Use this view of the data in all observations
 
-[operators.scan_healpix_map]
+[operators.scan_map]
     class = "toast.ops.scan_healpix.ScanHealpixMap"
     API = 0 # Internal interface version for this operator
     det_data = "signal" # Observation detdata key for accumulating output
     det_data_units = "unit K" # Output units if creating detector data
     enabled = true # If True, this class instance is marked as enabled
     file = "cmb.h5" # Path to healpix FITS file
-    name = "scan_healpix_map" # The 'name' of this class instance
+    name = "scan_map" # The 'name' of this class instance
     pixel_dist = "pixel_dist" # The Data key where the PixelDistribution object is located
     pixel_pointing = "None" # This must be an instance of a pixel pointing operator
     save_map = false # If True, do not delete map during finalize
@@ -126,13 +126,13 @@
     serial = true # Use legacy serial implementation instead of batched
     times = "times" # Observation shared key for timestamps
 
-[operators.pixels_healpix_radec]
+[operators.pixels_radec]
     class = "toast.ops.pixels_healpix.PixelsHealpix"
     API = 0 # Internal interface version for this operator
     create_dist = "None" # Create the submap distribution for all detectors and store in the Data key specified
     detector_pointing = "None" # Operator that translates boresight pointing into detector frame
     enabled = true # If True, this class instance is marked as enabled
-    name = "pixels_healpix_radec" # The 'name' of this class instance
+    name = "pixels_radec" # The 'name' of this class instance
     nest = true # If True, use NESTED ordering instead of RING
     nside = 4096 # The NSIDE resolution
     nside_submap = 16 # The NSIDE of the submap resolution

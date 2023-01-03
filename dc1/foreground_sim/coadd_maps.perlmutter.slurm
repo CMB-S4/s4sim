@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --qos=regular
-#SBATCH --time=00:30:00
+#SBATCH --time=04:00:00
 #SBATCH --nodes=16
 #SBATCH --job-name=DC1_coadd
 #SBATCH --licenses=SCRATCH
@@ -46,8 +46,7 @@ let nsplit=2
 
 for telescope in LAT0_CHLAT; do
     outdir=outputs/coadd/${telescope}
-    for band in f030; do
-    #for band in f030 f040 f090 f150 f220 f280; do
+    for band in f030 f040 f090 f150 f220 f280; do
         for isplit in `seq 1 $nsplit`; do
             echo ${telescope} ${band}GHz $isplit
             if [[ $nsplit -gt 1 ]]; then

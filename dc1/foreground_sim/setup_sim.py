@@ -36,8 +36,8 @@ for suffix in "", "_lowcomplexity", "_highcomplexity":
         #    continue
         fname_in = (
             f"/global/cfs/cdirs/cmbs4/dm/mbs/"
-            f"202211_LAT_fg_cmb/4096/combined_foregrounds_cmb_no_radio_fixdip{suffix}/0000/"
-            f"cmbs4_combined_foregrounds_cmb_no_radio_fixdip{suffix}_uKCMB_LAT-{band}_nside4096_0000.fits"
+            f"202211_LAT_fg_cmb/4096/combined_foregrounds_cmb_fixdip{suffix}/0000/"
+            f"cmbs4_combined_foregrounds_cmb_fixdip{suffix}_uKCMB_LAT-{band}_nside4096_0000.fits"
         )
         if not os.path.isfile(fname_in):
             raise RuntimeError(f"Input file does not exist: {fname_in}")
@@ -54,6 +54,7 @@ for suffix in "", "_lowcomplexity", "_highcomplexity":
             print(f"Wrote {fname_out}")
 
         # Processing mask
+        # Subtract CMB
         fname_cmb = (
             f"/global/cfs/cdirs/cmbs4/dm/mbs/"
             f"202211_LAT_fg_cmb/4096/cmb/0000/"
@@ -66,8 +67,20 @@ for suffix in "", "_lowcomplexity", "_highcomplexity":
         lim = fg_sorted[int(npix * (1 - mask_frac))]
         mask = fg > lim
         mask = smoothing(mask, lmax=mask_lmax, fwhm=mask_fwhm, nest=True) > 0.25
+        # mask radio sources separately
+        fname_radio = (
+            f"/global/cfs/cdirs/cmbs4/dm/mbs/"
+            f"202211_LAT_fg_cmb/4096/radio/0000/"
+            f"cmbs4_radio_uKCMB_LAT-{band}_nside4096_0000.fits"
+        )
+        radio = read_map(fname_radio, nest=True)
+        radio_sorted = np.sort(radio)
+        lim = radio_sorted[int(npix * .99)]
+        mask[radio > lim] = True
+        # write out
         fname_out = os.path.join(outdir, f"mask{int(mask_frac * 100):02}{suffix}.chlat.f{freq:03}.h5")
-        write_healpix(fname_out, mask, dtype=np.int16, coord="C", nest=True)
+        write_healpix(fname_out, mask, dtype=np.int16, coord="C", nest=True, overwrite=True)
+        print(f"Wrote {fname_out}")
 
 sys.exit()
 

@@ -109,8 +109,8 @@ for schedule in ${fnames[*]}; do
                  --job_group_size ${groupsize} \
                  --obsmaps \
                  --mem_count.enable \
-                 --scan_map.enable \
-                 --scan_map.file input_maps/foreground${suffix}.${telescope}.${band}.h5 \
+                 --scan_healpix_map.enable \
+                 --scan_healpix_map.file input_maps/foreground${suffix}.${telescope}.${band}.h5 \
                  --sim_noise.disable \
                  --sim_atmosphere.disable \
                  --raw_statistics.disable \

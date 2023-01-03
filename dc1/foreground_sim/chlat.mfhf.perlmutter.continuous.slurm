@@ -47,9 +47,9 @@ echo "      ntask_group = ${ntask_group}"
 echo "        groupsize = ${groupsize}"
 echo "           ngroup = ${ngroup}"
 
-#suffix=""
+suffix=""
 #suffix="_lowcomplexity"
-suffix="_highcomplexity"
+#suffix="_highcomplexity"
 
 telescope=chlat
 site=chile
@@ -109,13 +109,14 @@ for schedule in ${fnames[*]}; do
                  --job_group_size ${groupsize} \
                  --obsmaps \
                  --mem_count.enable \
-                 --scan_map.enable \
-                 --scan_map.file input_maps/foreground${suffix}.${telescope}.${band}.h5 \
+                 --scan_healpix_map.enable \
+                 --scan_healpix_map.file input_maps/foreground${suffix}.${telescope}.${band}.h5 \
                  --sim_noise.disable \
                  --sim_atmosphere.disable \
                  --raw_statistics.disable \
                  --filtered_statistics.disable \
                  --mapmaker.report_memory \
+                 --processing_mask.file input_maps/mask15${suffix}.${telescope}.${band}.h5 \
                  $write_invcov \
                  --save_hdf5.disable \
                  >> ${logfile} 2>&1 &

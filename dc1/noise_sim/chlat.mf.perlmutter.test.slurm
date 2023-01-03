@@ -117,6 +117,7 @@ for schedule in ${fnames[*]}; do
                  --save_hdf5.volume $outdir \
                  --save_hdf5.detdata_float32 \
                  >> ${logfile} 2>&1 &
+            # --yield_cut.disable
             # --sim_ground.session_split_key tube
             # --obsmaps
             let running++
