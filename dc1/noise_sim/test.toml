@@ -113,32 +113,6 @@
     tau_name = "None" # Key to use to find time constants in the Focalplane.
     tau_sigma = "None" # Randomized fractional error to add to each time constant.
 
-[operators.gain_scrambler]
-    class = "toast.ops.gainscrambler.GainScrambler"
-    API = 0 # Internal interface version for this operator
-    center = 1.0 # Gain distribution center
-    component = 0 # Component index for this simulation
-    det_data = "signal" # Observation detdata key to apply the gain error to
-    enabled = true # If True, this class instance is marked as enabled
-    name = "gain_scrambler" # The 'name' of this class instance
-    pattern = ".*" # Regex pattern to match against detector names. Only detectors that match the pattern are scrambled.
-    realization = 0 # Realization index
-    sigma = 0.01 # Gain distribution width
-
-[operators.save_hdf5]
-    class = "toast.ops.save_hdf5.SaveHDF5"
-    API = 0 # Internal interface version for this operator
-    detdata = [] # Only save this list of detdata objects
-    detdata_float32 = true # If True, convert any float64 detector data to float32 on write.
-    enabled = false # If True, this class instance is marked as enabled
-    force_serial = false # Use serial HDF5 operations, even if parallel support available
-    intervals = [] # Only save this list of intervals objects
-    meta = [] # Only save this list of meta objects
-    name = "save_hdf5" # The 'name' of this class instance
-    shared = [] # Only save this list of shared objects
-    times = "times" # Observation shared key for timestamps
-    verify = false # If True, immediately load data back in and verify
-
 [operators.sim_noise]
     class = "toast.ops.sim_tod_noise.SimNoise"
     API = 0 # Internal interface version for this operator
@@ -152,13 +126,13 @@
     serial = true # Use legacy serial implementation instead of batched
     times = "times" # Observation shared key for timestamps
 
-[operators.pixels_healpix_radec]
+[operators.pixels_radec]
     class = "toast.ops.pixels_healpix.PixelsHealpix"
     API = 0 # Internal interface version for this operator
     create_dist = "None" # Create the submap distribution for all detectors and store in the Data key specified
     detector_pointing = "None" # Operator that translates boresight pointing into detector frame
     enabled = true # If True, this class instance is marked as enabled
-    name = "pixels_healpix_radec" # The 'name' of this class instance
+    name = "pixels_radec" # The 'name' of this class instance
     nest = true # If True, use NESTED ordering instead of RING
     nside = 4096 # The NSIDE resolution
     nside_submap = 16 # The NSIDE of the submap resolution

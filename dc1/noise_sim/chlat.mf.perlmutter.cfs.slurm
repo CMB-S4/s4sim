@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --qos=debug
-#SBATCH --time=00:30:00
-#SBATCH --nodes=8
-#SBATCH --job-name=DC1_noise
+#SBATCH --qos=regular
+#SBATCH --time=12:00:00
+#SBATCH --nodes=24
+#SBATCH --job-name=DC1_noise_MF_CFS
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -22,7 +22,7 @@ export HDF5_USE_FILE_LOCKING=FALSE
 export TOAST_FUNCTIME=1
 
 # Parallelization
-export OMP_NUM_THREADS=2
+export OMP_NUM_THREADS=4
 export OMP_PLACES=threads
 export OMP_PROC_BIND=spread
 let nnode=$SLURM_JOB_NUM_NODES
@@ -31,9 +31,10 @@ let ntask_node=256/$OMP_NUM_THREADS
 let ntask=$nnode*$ntask_node
 let ncore=$OMP_NUM_THREADS
 # Make sure nnode is divisible by nnode_group
-let nnode_group=4
+let nnode_group=8
 let ntask_group=$nnode_group*$ntask_node
-let groupsize=nnode_group*ntask_node
+#let groupsize=nnode_group*ntask_node
+let groupsize=ntask_node/4
 let ngroup=$nnode/$nnode_group
 
 echo "Start: " `date`
@@ -50,19 +51,18 @@ echo "           ngroup = ${ngroup}"
 telescope=chlat
 site=chile
 TELESCOPE=LAT0_CHLAT
-# cannot have more than 384 MPI tasks in a group to process 30 and 40GHz
 #bands=( f030 )
 #bands=(f030 f040)
 #bands=(f090 f150)
-bands=(f090)
+bands=(f090 f150)
 #bands=(f090 f150 f220 f280)
 
 echo "Listing schedules at" `date`
 
 #fnames=split_schedules_1/${telescope}/split_schedule_????.txt
 #fnames=(`python3 get_fnames.py split_schedules_1_upto2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
-fnames=(`python3 get_fnames_serial.py split_schedules_1_upto2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
-fnames=("split_schedules_1_upto2mm/chlat/RISING_SCAN_40-148-14.txt" "split_schedules_1_upto2mm/chlat/RISING_SCAN_40-242-1.txt")
+#fnames=(`python3 get_fnames_serial.py split_schedules_1_upto2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+fnames=(`python3 get_fnames_serial.py split_schedules_1_over2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
 echo "Found ${#fnames[@]} schedule files"
 
 # Random wait time to reduce clashes
@@ -70,37 +70,34 @@ sleep $((RANDOM % 15))
 
 echo "Looking for schedule at" `date`
 
-let running=0
 for band in ${bands[*]}; do
     logdir=logs/${TELESCOPE}/${band}
     mkdir -p $logdir
 done
 
-#testroot="baseline"
-testroot="new_baseline"
-#testroot="no_split"
-#testroot="with_split"
-
-for schedule in ${fnames[*]}; do
-    rootname=`basename $schedule .txt`
-    #rootname=${TELESCOPE}_${rootname}
-    for band in ${bands[*]}; do
-        logdir=logs_${testroot}/${TELESCOPE}/${band}
+for band in ${bands[*]}; do
+    for schedule in ${fnames[*]}; do
+        rootname=`basename $schedule .txt`
+        logdir=logs/${TELESCOPE}/${band}
         mkdir -p $logdir
-        #logfile=$logdir/${rootname}_${band}.log
         logfile=$logdir/${rootname}.log
         logfile2=cleared_$logdir/${rootname}.log
-        if [[ ! -e $logfile && ! -e $logfile2 ]]; then
+        logfile3=staged_$logdir/${rootname}.log
+        if [[ ! -e $logfile && ! -e $logfile2 && ! -e $logfile3 ]]; then
             echo "Writing $logfile at" `date`
             date > ${logfile}
 
-            outdir=outputs_${testroot}/${TELESCOPE}/${band}/${rootname}
+            # Generate this directory not to confure rsync.sh
+            outdir=outputs/${TELESCOPE}/${band}/${rootname}
+            mkdir -p --mode=g+rXs-w $outdir
+            chgrp -R cmbs4 $outdir
+            # But actual outputs go here
+            outdir=/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim/outputs_rk/${TELESCOPE}/${band}/${rootname}
             mkdir -p --mode=g+rXs-w $outdir
             chgrp -R cmbs4 $outdir
 
-            #stripe_medium $outdir
-
-            srun -N $nnode_group -n $ntask_group -c $ncore --cpu_bind=cores toast_sim_ground.py \
+            srun -N $nnode_group -n $ntask_group -c $ncore --cpu_bind=cores \
+                 toast_sim_ground.py \
                  --config common.new.toml scanning_${telescope}.toml \
                  atmosphere_${site}.toml reduce_${telescope}.new.toml \
                  --focalplane ../focalplanes/focalplane_${TELESCOPE}_${band}.h5 \
@@ -110,25 +107,40 @@ for schedule in ${fnames[*]}; do
                  --job_group_size ${groupsize} \
                  --mem_count.enable \
                  --scan_healpix_map.disable \
-                 --sim_atmosphere.cache_dir atm_cache_${testroot}_${TELESCOPE} \
+                 --sim_atmosphere.cache_dir atm_cache_${TELESCOPE} \
                  --mapmaker.report_memory \
                  --mapmaker.name mapmaker_${rootname} \
                  --save_hdf5.enable \
                  --save_hdf5.volume $outdir \
-                 --save_hdf5.detdata_float32 \
+                 --sim_ground.session_split_key tube \
                  >> ${logfile} 2>&1 &
-            # --yield_cut.disable
-            # --sim_ground.session_split_key tube
-            # --obsmaps
-            let running++
-            [[ $running -eq $ngroup ]] && break
-            #date >> ${logfile}
-            #echo "Done with $logfile at" `date`
+            sleep 1
+            # Wait until the srun process has time to spawn another one
+            # Running jobs always have two srun instances
+            let nsrun=`ps | grep srun | wc -l`
+            let running=${nsrun}/2
+            let nsrun_estimate=${running}*2
+            while [[ $nsrun -ne $nsrun_estimate ]]; do
+                echo "There are $running running processes and $nsrun srun instances at" `date`
+                echo "Waiting for 15 seconds."
+                sleep 15
+                let nsrun=`ps | grep srun | wc -l`
+                let running=${nsrun}/2
+                let nsrun_estimate=${running}*2
+            done
+            # Now see if we have all the slots taken
+            while [[ $running -ge $ngroup ]]; do
+                # We do. Wait for at least one slot to be freed
+                echo "There are $running running processes at" `date`
+                echo "Waiting for 15 seconds."
+                sleep 15
+                let running=`ps | grep srun | wc -l`/2
+            done
+            echo "Finding more work at" `date`
         else
             echo "$logfile exists"
         fi
     done
-    [[ $running -eq $ngroup ]] && break
 done
 
 echo "Waiting for $running jobs to complete at" `date`
