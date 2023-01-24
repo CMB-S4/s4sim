@@ -3,6 +3,8 @@
 outroot=/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim
 
 for cleared_logfile in `find cleared_logs -name '*.log'`; do
+    # Use the following test to rsync a particular frequency
+    [[ ! $cleared_logfile == *f150*log ]] && continue
     indir=${cleared_logfile/cleared_logs/outputs}
     indir=${indir/.log/}
     inroot=`dirname ${indir}`

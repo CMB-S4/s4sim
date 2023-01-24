@@ -2,7 +2,6 @@
 [operators.sim_atmosphere]
     class = "toast.ops.sim_tod_atm.SimAtmosphere"
     API = 0 # Internal interface version for this operator
-    add_loading = true # Add elevation-dependent loading.
     cache_dir = "atm_cache" # Directory to use for loading / saving atmosphere realizations
     cache_only = false # If True, only cache the atmosphere, do not observe it.
     component = 123456 # The component index to use for this atmosphere simulation
@@ -11,13 +10,11 @@
     debug_spectrum = false # If True, dump out Kolmogorov debug files
     debug_tod = false # If True, dump TOD to pickle files
     det_data = "signal" # Observation detdata key for accumulating atmosphere timestreams
-    det_data_units = "unit K" # Output units if creating detector data
     det_flag_mask = 1 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     detector_pointing = "None" # Operator that translates boresight Az/El pointing into detector frame
     detector_weights = "None" # Operator that translates boresight Az/El pointing into detector weights
     enabled = true # If True, this class instance is marked as enabled
-    fade_time = "6.00000000000000e+01 s" # Fade in/out time to avoid a step at wind break.
     field_of_view = "9 deg" # Override the focalplane field of view
     gain = 6e-5 # Scaling applied to the simulated TOD
     lmax_center = "1.0 m" # Kolmogorov turbulence injection scale center
@@ -31,8 +28,8 @@
     polarization_fraction = 0.0 # Polarization fraction (only Q polarization).
     realization = 0 # If simulating multiple realizations, the realization index
     sample_rate = "55 Hz" # Rate at which to sample atmospheric TOD before interpolation.  Default is no interpolation.
-    shared_flag_mask = 1 # Bit mask value for optional shared flagging
-    shared_flags = "flags" # Observation shared key for telescope flags to use
+    shared_flag_mask = 0 # Bit mask value for optional shared flagging
+    shared_flags = "None" # Observation shared key for telescope flags to use
     times = "times" # Observation shared key for timestamps
     turnaround_interval = "turnaround" # Interval name for turnarounds
     view = "None" # Use this view of the data in all observations

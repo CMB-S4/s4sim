@@ -3,7 +3,7 @@ import sys
 
 import numpy as np
 from healpy import read_map
-from toast.pixels_io import write_healpix
+from toast.pixels_io_healpix import write_healpix
 
 
 outdir = "input_maps"
@@ -39,6 +39,8 @@ for band, freq in [
     )
     write_healpix(fname_out, m * 1e-6, coord="C", nest=True)
     print(f"Wrote {fname_out}")
+
+sys.exit()
 
 # SPLAT
 

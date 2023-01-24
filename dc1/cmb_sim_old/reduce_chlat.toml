@@ -74,8 +74,8 @@
     det_flag_mask = 1 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     detrend = false # Subtract the fitted trend along with the ground template
-    enabled = false # If True, this class instance is marked as enabled
-    filter_order = 100 # Order of a Legendre polynomial to fit as a function of azimuth.
+    enabled = true # If True, this class instance is marked as enabled
+    filter_order = 5 # Order of a Legendre polynomial to fit as a function of azimuth.
     ground_flag_mask = 1 # Bit mask to use when adding flags based on ground filter failures.
     leftright_mask = 8 # Bit mask value for left-to-right scans
     name = "groundfilter" # The 'name' of this class instance
@@ -92,9 +92,9 @@
     det_data = "signal" # Observation detdata key apply filtering to
     det_flag_mask = 1 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
-    enabled = false # If True, this class instance is marked as enabled
+    enabled = true # If True, this class instance is marked as enabled
     name = "polyfilter1D" # The 'name' of this class instance
-    order = 3 # Polynomial order
+    order = 1 # Polynomial order
     pattern = ".*" # Regex pattern to match against detector names. Only detectors that match the pattern are filtered.
     poly_flag_mask = 1 # Bit mask value for intervals that fail to filter
     shared_flag_mask = 1 # Bit mask value for optional shared flagging
@@ -110,7 +110,7 @@
     enabled = false # If True, this class instance is marked as enabled
     focalplane_key = "None" # Which focalplane key to match
     name = "polyfilter2D" # The 'name' of this class instance
-    order = 5 # Polynomial order
+    order = 1 # Polynomial order
     pattern = ".*" # Regex pattern to match against detector names. Only detectors that match the pattern are filtered.
     poly_flag_mask = 1 # Bit mask value for intervals that fail to filter
     shared_flag_mask = 1 # Bit mask value for optional shared flagging
@@ -125,7 +125,7 @@
     det_data = "signal" # Observation detdata key apply filtering to
     det_flag_mask = 1 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
-    enabled = false # If True, this class instance is marked as enabled
+    enabled = true # If True, this class instance is marked as enabled
     focalplane_key = "tube" # Which focalplane key to match
     name = "common_mode_filter" # The 'name' of this class instance
     pattern = ".*" # Regex pattern to match against detector names. Only detectors that match the pattern are filtered.
@@ -174,7 +174,7 @@
     binning = "None" # Binning operator used for solving template amplitudes
     convergence = 1e-12 # Relative convergence limit
     det_data = "signal" # Observation detdata key for the timestream data
-    enabled = false # If True, this class instance is marked as enabled
+    enabled = true # If True, this class instance is marked as enabled
     iter_max = 100 # Maximum number of iterations
     keep_final_products = false # If True, keep the map domain products in data after write
     keep_solver_products = false # If True, keep the map domain solver products in data
@@ -200,6 +200,21 @@
     write_noiseweighted_map = true # If True, write the noise-weighted map
     write_rcond = false # If True, write the reciprocal condition numbers.
 
+[operators.pixels_radec]
+    class = "toast.ops.pixels_healpix.PixelsHealpix"
+    API = 0 # Internal interface version for this operator
+    create_dist = "None" # Create the submap distribution for all detectors and store in the Data key specified
+    detector_pointing = "None" # Operator that translates boresight pointing into detector frame
+    enabled = true # If True, this class instance is marked as enabled
+    name = "pixels_radec" # The 'name' of this class instance
+    nest = true # If True, use NESTED ordering instead of RING
+    nside = 4096 # The NSIDE resolution
+    nside_submap = 16 # The NSIDE of the submap resolution
+    pixels = "pixels" # Observation detdata key for output pixel indices
+    quats = "None" # Observation detdata key for output quaternions
+    single_precision = false # If True, use 32bit int in output
+    view = "None" # Use this view of the data in all observations
+
 [operators.pixels_radec_final]
     class = "toast.ops.pixels_healpix.PixelsHealpix"
     API = 0 # Internal interface version for this operator
@@ -208,7 +223,7 @@
     enabled = false # If True, this class instance is marked as enabled
     name = "pixels_radec_final" # The 'name' of this class instance
     nest = true # If True, use NESTED ordering instead of RING
-    nside = 512 # The NSIDE resolution
+    nside = 4096 # The NSIDE resolution
     nside_submap = 16 # The NSIDE of the submap resolution
     pixels = "pixels" # Observation detdata key for output pixel indices
     quats = "None" # Observation detdata key for output quaternions
@@ -248,7 +263,7 @@
     det_data = "signal" # Observation detdata key for the timestream data
     det_flag_mask = 1 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
-    enabled = true # If True, this class instance is marked as enabled
+    enabled = false # If True, this class instance is marked as enabled
     ground_filter_order = 10 # Order of a Legendre polynomial to fit as a function of azimuth.
     leftright_mask = 8 # Bit mask value for left-to-right scans
     maskfile = "None" # Optional processing mask
