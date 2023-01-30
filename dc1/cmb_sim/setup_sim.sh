@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for suffix in .upto2mm .over2mm; do
+for suffix in .upto2mm .over2mm .upto2mm_with_break .upto3mm_with_break; do
     for nline in 1; do
         for telescope in chlat splat spsat; do
             case $telescope in
@@ -14,11 +14,16 @@ for suffix in .upto2mm .over2mm; do
                     schedule_in=../scan_strategy/pole_sat/schedules/pole_schedule_sat.pruned${suffix}.txt
                     ;;
             esac
-            
+
+            if [[ ! -e $schedule_in ]]; then
+                echo "No such schedule: $schedule_in"
+                continue
+            fi
+
             outdir=split_schedules_${nline}${suffix/./_}/${telescope}
             mkdir -p ${outdir}
             rm -rf ${outdir}/*
-            
+
             schedule_out="${outdir}/split_schedule_"
             let nces=`wc -l ${schedule_in} | awk '{print $1 - 3}'`
             echo "NCES = ${nces}"
@@ -39,4 +44,3 @@ for suffix in .upto2mm .over2mm; do
         done
     done
 done
-

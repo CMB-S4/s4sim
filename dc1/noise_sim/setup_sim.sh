@@ -50,7 +50,7 @@ done
 
 exit
 
-for suffix in .upto2mm .over2mm; do
+for suffix in .upto2mm .over2mm .upto2mm_with_break .upto3mm_with_break; do
     #for nline in 1 32 128; do
     for nline in 1; do
         for telescope in chlat splat spsat; do

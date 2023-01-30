@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --qos=regular
-#SBATCH --time=12:00:00
+#SBATCH --qos=preempt
+#SBATCH --time=02:00:00
 #SBATCH --nodes=16
-#SBATCH --job-name=DC1_mfhf_cmb
+#SBATCH --job-name=CMBS4_DC1_mfhf_cmb
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -62,7 +62,8 @@ bands=(f090 f150 f220 f280)
 
 echo "Listing schedules at" `date`
 
-fnames=(`python3 get_fnames_serial.py split_schedules_1_upto2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+fnames=(`python3 get_fnames_serial.py split_schedules_1_upto3mm_with_break/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+#fnames=(`python3 get_fnames_serial.py split_schedules_1_upto2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
 #fnames=(`python3 get_fnames_serial.py split_schedules_1_over2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
 echo "Found ${#fnames[@]} schedule files"
 
