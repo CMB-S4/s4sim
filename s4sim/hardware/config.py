@@ -608,14 +608,14 @@ def get_example():
         "SPLAT_ULF": 4,
         "CHLAT_LF": 8*2,
         "SPLAT_LF": 9,
-        "SAT_LF": (12) * 2,
+        "SAT_LF": (12) * 1,
         "CHLAT_MF": 54*2,
         "SPLAT_MF": 54,
-        "SAT_MFL": (12) * 6,
-        "SAT_MFH": (12) * 6,
+        "SAT_MFL": (12) * 3,
+        "SAT_MFH": (12) * 3,
         "CHLAT_HF": 23*2,
         "SPLAT_HF": 18,
-        "SAT_HF": (6 + 6) * 4,
+        "SAT_HF": (6 + 6) * 2,
     }
     wpac = {
         "SPLAT_ULF": "RP",
@@ -1265,19 +1265,10 @@ def get_example():
         "SAT_HF",
         "SAT_MFL",
         "SAT_MFH",
-        "SAT_HF",
-        "SAT_MFL",
-        "SAT_MFH",
-        "SAT_HF",
-        "SAT_MFL",
-        "SAT_MFH",
-        "SAT_LF",
-        "SAT_MFL",
-        "SAT_MFH",
         "SAT_LF",
     ]
-    stubepos = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    for tindx in range(18):
+    stubepos = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+    for tindx in range(9):
         nm = "ST{:d}".format(tindx)
         ttyp = stubes[tindx]
         tb = OrderedDict()
@@ -1680,27 +1671,6 @@ def get_example():
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
     telescopes["SAT2"] = tele
-
-    tele = OrderedDict()
-    tele["tubes"] = ["ST9", "ST10", "ST11"]
-    tele["platescale"] = 0.056689
-    tele["tubespace"] = 700.0
-    tele["fwhm"] = sfwhm
-    telescopes["SAT3"] = tele
-
-    tele = OrderedDict()
-    tele["tubes"] = ["ST12", "ST13", "ST14"]
-    tele["platescale"] = 0.056689
-    tele["tubespace"] = 700.0
-    tele["fwhm"] = sfwhm
-    telescopes["SAT4"] = tele
-
-    tele = OrderedDict()
-    tele["tubes"] = ["ST15", "ST16", "ST17"]
-    tele["platescale"] = 0.056689
-    tele["tubespace"] = 700.0
-    tele["fwhm"] = sfwhm
-    telescopes["SAT5"] = tele
 
     cnf["telescopes"] = telescopes
 
