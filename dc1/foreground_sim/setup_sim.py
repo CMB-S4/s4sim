@@ -82,7 +82,7 @@ for suffix in "", "_lowcomplexity", "_highcomplexity":
         write_healpix(fname_out, mask, dtype=np.int16, coord="C", nest=True, overwrite=True)
         print(f"Wrote {fname_out}")
 
-sys.exit()
+    sys.exit()
 
 # SPLAT
 

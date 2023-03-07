@@ -8,35 +8,44 @@ import numpy as np
 
 import requirements as req
 
-multipanel = False
+
+multipanel = True
 
 nside = 4096
 lmax = 2 * nside
 ell = np.arange(lmax + 1)
 
-ntele = 2
-nseason = 7
+# These factors are now already included in the coadded maps
+ntele = 1
+nseason = 1
+
+rootdir = "/global/cfs/cdirs/cmbs4/dc/dc1/staging"
 
 #for band in 90, 150:
-for band in 30, 40:
+for band in 30, 40, 90, 150, 220, 280,:
     tele = "chlat"
     TELE = "LAT0_CHLAT"
 
-    fname_map = f"outputs/coadd/{TELE}/coadd_{TELE}_f{band:03}_map.fits"
-    fname_cov = f"outputs/coadd/{TELE}/coadd_{TELE}_f{band:03}_cov.fits"
-    fname_cl = f"outputs/coadd/{TELE}/coadd_{TELE}_f{band:03}_cl.fits"
+    fname_map = f"{rootdir}/noise_sim/outputs_rk/coadd/{TELE}/coadd_{TELE}_f{band:03}_001of001_map.fits"
+    fname_cov = f"{rootdir}/noise_sim/outputs_rk/coadd/{TELE}/coadd_{TELE}_f{band:03}_001of001_cov.fits"
+    fname_cl = f"outputs/cl/coadd_{TELE}_f{band:03}_001of001_cl.fits"
 
-    fname_cl_cmb_in = f"../cmb_sim/outputs/coadd/{TELE}/input_{TELE}_f{band:03}_cl.fits"
-    fname_cl_cmb_out = f"../cmb_sim/outputs/coadd/{TELE}/coadd_{TELE}_f{band:03}_cl.fits"
+    fname_cl_cmb_in = f"../cmb_sim/outputs/cl/{TELE}/input_{TELE}_f{band:03}_cl.fits"
+    fname_cl_cmb_out = f"../cmb_sim/outputs/cl/{TELE}/coadd_{TELE}_f{band:03}_cl.fits"
+    print(f"Loading {fname_cl_cmb_in}", flush=True)
     cl_in = hp.read_cl(fname_cl_cmb_in)
+    print(f"Loading {fname_cl_cmb_out}", flush=True)
     cl_out = hp.read_cl(fname_cl_cmb_out)
     tf = cl_out[:3] / cl_in[:3]
     tf[:, :2] = 1
     tf[:, 2000:] = 1
 
     if os.path.isfile(fname_cl):
+        print(f"Loading {fname_cl}", flush=True)
         cl = hp.read_cl(fname_cl)
     else:
+        outroot = os.path.dirname(fname_cl)
+        os.makedirs(outroot, exist_ok=True)
         print(f"Loading {fname_map}")
         m = hp.read_map(fname_map, None)
         print(f"Loading {fname_cov}")
@@ -52,7 +61,7 @@ for band in 30, 40:
         cl = hp.anafast(m * mask, lmax=lmax, iter=0)
         fsky = np.sum(mask) / mask.size
         cl /= fsky
-        print(f"Writing {fname_cl}")
+        print(f"Writing {fname_cl}", flush=True)
         hp.write_cl(fname_cl, cl, overwrite=True)
 
     freq = {30 : 27, 40 : 39, 90 : 93, 150 : 145, 220 : 225, 280 : 278}[band]
@@ -83,7 +92,7 @@ for band in 30, 40:
     if not multipanel:
         fname_out = f"cl_comparison_noise_{band:03}_TT.png"
         fig.savefig(fname_out)
-        print(f"Wrote {fname_out}")
+        print(f"Wrote {fname_out}", flush=True)
         plt.clf()
         iplot = 0
 
@@ -99,7 +108,7 @@ for band in 30, 40:
     if not multipanel:
         fname_out = f"cl_comparison_noise_{band:03}_EE.png"
         fig.savefig(fname_out)
-        print(f"Wrote {fname_out}")
+        print(f"Wrote {fname_out}", flush=True)
         plt.clf()
         iplot = 0
 
@@ -115,8 +124,8 @@ for band in 30, 40:
     if multipanel: 
         fname_out = f"cl_comparison_noise_{band:03}.png"
         fig.savefig(fname_out)
-        print(f"Wrote {fname_out}")
+        print(f"Wrote {fname_out}", flush=True)
     else:
         fname_out = f"cl_comparison_noise_{band:03}_BB.png"
         fig.savefig(fname_out)
-        print(f"Wrote {fname_out}")
+        print(f"Wrote {fname_out}", flush=True)
