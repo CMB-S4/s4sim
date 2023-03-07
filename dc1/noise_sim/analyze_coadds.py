@@ -19,15 +19,16 @@ ell = np.arange(lmax + 1)
 ntele = 1
 nseason = 1
 
-rootdir = "/global/cfs/cdirs/cmbs4/dc/dc1/staging"
+#rootdir = "/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim/outputs_rk"
+rootdir = "outputs"
 
 #for band in 90, 150:
 for band in 30, 40, 90, 150, 220, 280,:
     tele = "chlat"
     TELE = "LAT0_CHLAT"
 
-    fname_map = f"{rootdir}/noise_sim/outputs_rk/coadd/{TELE}/coadd_{TELE}_f{band:03}_001of001_map.fits"
-    fname_cov = f"{rootdir}/noise_sim/outputs_rk/coadd/{TELE}/coadd_{TELE}_f{band:03}_001of001_cov.fits"
+    fname_map = f"{rootdir}/coadd/{TELE}/coadd_{TELE}_f{band:03}_001of001_map.fits"
+    fname_cov = f"{rootdir}/coadd/{TELE}/coadd_{TELE}_f{band:03}_001of001_cov.fits"
     fname_cl = f"outputs/cl/coadd_{TELE}_f{band:03}_001of001_cl.fits"
 
     fname_cl_cmb_in = f"../cmb_sim/outputs/cl/{TELE}/input_{TELE}_f{band:03}_cl.fits"
@@ -86,8 +87,8 @@ for band in 30, 40, 90, 150, 220, 280,:
     ax.set_ylabel("D$\ell$ [$\mu$K$^2$]")
     ax.loglog(req.fiducial_ell, req.fiducial_TT, "k", label="fiducial")
     ax.loglog(req.ells, nltt, label="requirement")
-    ax.loglog(ell[2:], (ellnorm * cl[0] * scale)[2:], label=f"DC1")
-    ax.loglog(ell[2:], (ellnorm * cl[0] * bl * scale / tf[0])[2:], label=f"TF-corrected DC1")
+    ax.loglog(ell[2:], (ellnorm * cl[0] * scale)[2:], label=f"DC0")
+    ax.loglog(ell[2:], (ellnorm * cl[0] * bl * scale / tf[0])[2:], label=f"TF-corrected DC0")
     ax.legend(loc="best")
     if not multipanel:
         fname_out = f"cl_comparison_noise_{band:03}_TT.png"
@@ -103,8 +104,8 @@ for band in 30, 40, 90, 150, 220, 280,:
     ax.set_ylabel("D$\ell$ [$\mu$K$^2$]")
     ax.loglog(req.fiducial_ell, req.fiducial_EE, "k", label="CMB")
     ax.loglog(req.ells, nlee, label="requirement")
-    ax.loglog(ell[2:], (ellnorm * cl[1] * scale)[2:], label=f"DC1")
-    ax.loglog(ell[2:], (ellnorm * cl[1] * bl * scale / tf[1])[2:], label=f"DC1")
+    ax.loglog(ell[2:], (ellnorm * cl[1] * scale)[2:], label=f"DC0")
+    ax.loglog(ell[2:], (ellnorm * cl[1] * bl * scale / tf[1])[2:], label=f"DC0")
     if not multipanel:
         fname_out = f"cl_comparison_noise_{band:03}_EE.png"
         fig.savefig(fname_out)
@@ -119,8 +120,8 @@ for band in 30, 40, 90, 150, 220, 280,:
     ax.set_ylabel("D$\ell$ [$\mu$K$^2$]")
     ax.loglog(req.fiducial_ell, req.fiducial_BB, "k", label="CMB")
     ax.loglog(req.ells, nlee, label="requirement")
-    ax.loglog(ell[2:], (ellnorm * cl[2] * scale)[2:], label=f"DC1")
-    ax.loglog(ell[2:], (ellnorm * cl[2] * bl * scale / tf[2])[2:], label=f"DC1")
+    ax.loglog(ell[2:], (ellnorm * cl[2] * scale)[2:], label=f"DC0")
+    ax.loglog(ell[2:], (ellnorm * cl[2] * bl * scale / tf[2])[2:], label=f"DC0")
     if multipanel: 
         fname_out = f"cl_comparison_noise_{band:03}.png"
         fig.savefig(fname_out)
