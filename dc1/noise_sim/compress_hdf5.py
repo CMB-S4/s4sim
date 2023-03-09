@@ -35,6 +35,14 @@ def parse_arguments():
     )
 
     parser.add_argument(
+        "--verify",
+        required=False,
+        action="store_true",
+        default=False,
+        help="Re-load the converted data and verify consistency",
+    )
+
+    parser.add_argument(
         "--obs",
         type=str,
         required=False,
@@ -122,29 +130,33 @@ def main():
             msg += f"file name ({obs_path})"
             raise RuntimeError(msg)
 
-        timer.start()
-        compare = toast.io.load_hdf5(
-            obs_path,
-            comm,
-            process_rows=comm.group_size,
-        )
-        if comm.comm_world is not None:
-            comm.comm_world.barrier()
-        timer.stop()
-        if comm.world_rank == 0:
-            print(
-                f"  Re-load {obs_path} for verification in {timer.seconds()} s",
-                flush=True
+        if args.verify:
+            timer.start()
+            compare = toast.io.load_hdf5(
+                obs_path,
+                comm,
+                process_rows=comm.group_size,
             )
+            if comm.comm_world is not None:
+                comm.comm_world.barrier()
+            timer.stop()
+            if comm.world_rank == 0:
+                print(
+                    f"  Re-load {obs_path} for verification in {timer.seconds()} s",
+                    flush=True
+                )
 
-        if compare != obs:
-            msg = f"Observation HDF5 verify failed:\n"
-            msg += f"Input = {obs}\n"
-            msg += f"Loaded = {compare}"
-            log.error(msg)
-            raise RuntimeError(msg)
-        elif comm.world_rank == 0:
-            print(f"  Verification PASS", flush=True)
+            if compare != obs:
+                msg = f"Observation HDF5 verify failed:\n"
+                msg += f"Input = {obs}\n"
+                msg += f"Loaded = {compare}"
+                log.error(msg)
+                raise RuntimeError(msg)
+            elif comm.world_rank == 0:
+                print(f"  Verification PASS", flush=True)
+        else:
+            if comm.world_rank == 0:
+                print(f"  Skipping verification", flush=True)
 
     # Dump all the timing information to the output dir
 
