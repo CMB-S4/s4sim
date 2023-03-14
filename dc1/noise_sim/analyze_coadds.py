@@ -75,7 +75,7 @@ for band in 30, 40, 90, 150, 220, 280,:
         nrow, ncol = 2, 2
     else:
         nrow, ncol = 1, 1
-    fig = plt.figure(figsize=[6 * ncol, 6 * nrow])
+    fig = plt.figure(figsize=[4 * ncol, 3 * nrow])
     ell = np.arange(lmax + 1)
     ellnorm = ell * (ell + 1) / (2 * np.pi) * 1e12
     scale = 1 / ntele / nseason
@@ -122,11 +122,12 @@ for band in 30, 40, 90, 150, 220, 280,:
     ax.loglog(req.ells, nlee, label="requirement")
     ax.loglog(ell[2:], (ellnorm * cl[2] * scale)[2:], label=f"DC0")
     ax.loglog(ell[2:], (ellnorm * cl[2] * bl * scale / tf[2])[2:], label=f"DC0")
+    fig.tight_layout()
     if multipanel: 
-        fname_out = f"cl_comparison_noise_{band:03}.png"
+        fname_out = f"cl_comparison_noise_{band:03}.pdf"
         fig.savefig(fname_out)
         print(f"Wrote {fname_out}", flush=True)
     else:
-        fname_out = f"cl_comparison_noise_{band:03}_BB.png"
+        fname_out = f"cl_comparison_noise_{band:03}_BB.pdf"
         fig.savefig(fname_out)
         print(f"Wrote {fname_out}", flush=True)

@@ -22,6 +22,9 @@ alternate_names = {
     "145" : "f150",
     "225" : "f220",
     "278" : "f280",
+    "cmb" : "primary CMB",
+    "foreground" : "galactic + extragalactic + secondary CMB",
+    "noise" : "atmosphere + noise",
 }
 
 # Subsets
@@ -35,6 +38,7 @@ realization_name = f"r{realization:03}"
 components = ["cmb", "noise", "foreground"]
 # three-digit mask identifying signal content
 complements = ["001", "010", "100", "111"]
+#complements = ["111"]
 
 # Which data products to build
 
@@ -47,7 +51,7 @@ supporting_products = [
     # ("map00", "hit map"),
     ("map03", "T/P depth map"),
     # ("mat01", "inverse white noise covariance matrix"),
-    # ("mat02", "white noise covariance matrix"),
+    ("mat02", "white noise covariance matrix"),
 ]
 
 rootdir = "/global/cfs/cdirs/cmbs4/dc/dc1/staging"
@@ -56,10 +60,12 @@ outdir = "/global/cfs/cdirs/cmbs4/dc/dc1/delivery"
 for telescope, bands in telescopes_to_bands.items():
     alt_telescope = alternate_names[telescope]
     for band in bands:
+        if len(sys.argv) > 1 and band not in sys.argv[1:]:
+            continue
         alt_band = alternate_names[band]
-        dir_out = f"{outdir}/dc0/mission/{telescope}/{band}"
-        os.makedirs(dir_out, exist_ok=True)
         for n_time_split in time_splits:
+            dir_out = f"{outdir}/dc0/mission/{telescope}/split{n_time_split:02}/{band}"
+            os.makedirs(dir_out, exist_ok=True)
             for i_time_split in range(1, n_time_split + 1):
                 time_split_name = f"t{n_time_split:02}.{i_time_split:02}"
 
@@ -78,8 +84,7 @@ for telescope, bands in telescopes_to_bands.items():
                 for product, description in supporting_products:
                     fname_out = os.path.join(
                         dir_out,
-                        f"dc0_{telescope}_{band}_{product}_{wafer_split_name}_"
-                        f"{time_split_name}_{realization_name}.fits",
+                        f"dc0_{telescope}_{time_split_name}_{band}_{product}.fits",
                     )
                     if os.path.isfile(fname_out):
                         print(f"{fname_out} exists, skipping ...", flush=True)
@@ -96,11 +101,11 @@ for telescope, bands in telescopes_to_bands.items():
                         print(f"Loading {fname_in}", flush=True)
                         ii, qq, uu = hp.read_map(fname_in, [0, 3, 5])
                         root_area = np.sqrt(hp.nside2pixarea(hp.get_nside(ii), degrees=True)) * 60
-                        t_depth = np.sqrt(ii) * 1e6 * root_area
+                        t_depth = np.sqrt(ii) * root_area
                         p_depth = np.sqrt(qq + uu) * 1e6 * root_area
                         total = np.vstack([t_depth, p_depth])
                         column_names = ["T_DEPTH", "P_DEPTH"]
-                        column_units = "uK_arcmin"
+                        column_units = "K_CMB_arcmin"
                     elif product == "mat01":
                         # Inverse white noise covariance
                         fname_in = os.path.join(
@@ -148,9 +153,7 @@ for telescope, bands in telescopes_to_bands.items():
                     for product, description in signal_products:
                         fname_out = os.path.join(
                             dir_out,
-                            f"dc0_{telescope}_{band}_{product}_{complement_name}_"
-                            f"{wafer_split_name}_{time_split_name}_"
-                            f"{realization_name}.fits",
+                            f"dc0_{telescope}_{time_split_name}_{band}_{product}_{complement_name}.fits",
                         )
                         if os.path.isfile(fname_out):
                             print(f"{fname_out} exists, skipping ...")
@@ -161,6 +164,7 @@ for telescope, bands in telescopes_to_bands.items():
                         for i, component in enumerate(components):
                             if complement[i] == "0":
                                 continue
+                            alt_component = alternate_names[component]
                             if product == "map02":
                                 # Filter-and-bin map
                                 fname_in = os.path.join(
@@ -176,18 +180,20 @@ for telescope, bands in telescopes_to_bands.items():
                             m = hp.read_map(fname_in, None)
                             if total is None:
                                 total = m
-                                component_names = f"{component}"
+                                component_names = f"{alt_component}"
                             else:
                                 total += m
-                                component_names += f", {component}"
+                                component_names += f", {alt_component}"
                         column_names = ["TEMPERATURE", "Q_POLARIZATION", "U_POLARIZATION"]
                         column_units = "K_CMB"
                         signal_header = [
                             ("HIERARCH complement", complement, "Component bit mask"),
-                            ("HIERARCH components", component_names, "Component names"),
+                            #("HIERARCH components", component_names, "Component names"),
+                            ("CONTENT", component_names, "Component names"),
                         ]
                         product_header = [("PRODUCT", product, description)]
                         print(f"Writing {fname_out}", flush=True)
+                        total[total == 0] = hp.UNSEEN
                         hp.write_map(
                             fname_out,
                             total,
@@ -199,4 +205,4 @@ for telescope, bands in telescopes_to_bands.items():
                             extra_header=supporting_header + signal_header \
                             + product_header,
                         )
-                        sys.exit()
+                        print(f"Done!", flush=True)

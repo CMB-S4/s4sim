@@ -34,19 +34,17 @@ echo "Running with"
 echo "  OMP_NUM_THREADS = ${OMP_NUM_THREADS}"
 
 indir_root=/global/cfs/cdirs/cmbs4/dc/dc1/staging/foreground_sim
-indir1=${indir_root}/outputs_rk
-#indir1=outputs
-indir2=${indir_root}/outputs_DUMMY1
-indir3=${indir_root}/outputs_DUMMY2
+indir=${indir_root}/outputs_rk
 let nsplit=32
 
 # Random wait time to reduce clashes
 # sleep $((RANDOM % 15))
 
 for telescope in LAT0_CHLAT; do
-    outdir=outputs/coadd/${telescope}
+    #outdir=outputs/coadd/${telescope}
+    outdir=$indir/coadd/${telescope}
     for band in f030 f040 f090 f150 f220 f280; do
-    #for band in f280; do
+    #for band in f220; do
         case $band in
             f030|f040|f090|f150)
                 schedule_dir=split_schedules_1_upto3mm_with_break
