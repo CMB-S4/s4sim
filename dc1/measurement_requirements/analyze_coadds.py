@@ -9,7 +9,10 @@ import numpy as np
 import requirements as req
 
 
+#multipanel = False
 multipanel = True
+#fileformat = "pdf"
+fileformat = "png"
 
 nside = 4096
 lmax = 2 * nside
@@ -19,8 +22,8 @@ ell = np.arange(lmax + 1)
 ntele = 1
 nseason = 1
 
-#rootdir = "/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim/outputs_rk"
-rootdir = "outputs"
+rootdir = "/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim/outputs_rk"
+#rootdir = "outputs"
 
 #for band in 90, 150:
 for band in 30, 40, 90, 150, 220, 280,:
@@ -72,7 +75,7 @@ for band in 30, 40, 90, 150, 220, 280,:
     nlee = req.NlEE_Chile_LAT[freq]
 
     if multipanel:
-        nrow, ncol = 2, 2
+        nrow, ncol = 1, 3
     else:
         nrow, ncol = 1, 1
     fig = plt.figure(figsize=[4 * ncol, 3 * nrow])
@@ -91,7 +94,7 @@ for band in 30, 40, 90, 150, 220, 280,:
     ax.loglog(ell[2:], (ellnorm * cl[0] * bl * scale / tf[0])[2:], label=f"TF-corrected DC0")
     ax.legend(loc="best")
     if not multipanel:
-        fname_out = f"cl_comparison_noise_{band:03}_TT.png"
+        fname_out = f"cl_comparison_noise_{band:03}_TT.{fileformat}"
         fig.savefig(fname_out)
         print(f"Wrote {fname_out}", flush=True)
         plt.clf()
@@ -107,7 +110,7 @@ for band in 30, 40, 90, 150, 220, 280,:
     ax.loglog(ell[2:], (ellnorm * cl[1] * scale)[2:], label=f"DC0")
     ax.loglog(ell[2:], (ellnorm * cl[1] * bl * scale / tf[1])[2:], label=f"DC0")
     if not multipanel:
-        fname_out = f"cl_comparison_noise_{band:03}_EE.png"
+        fname_out = f"cl_comparison_noise_{band:03}_EE.{fileformat}"
         fig.savefig(fname_out)
         print(f"Wrote {fname_out}", flush=True)
         plt.clf()
@@ -124,10 +127,10 @@ for band in 30, 40, 90, 150, 220, 280,:
     ax.loglog(ell[2:], (ellnorm * cl[2] * bl * scale / tf[2])[2:], label=f"DC0")
     fig.tight_layout()
     if multipanel: 
-        fname_out = f"cl_comparison_noise_{band:03}.pdf"
+        fname_out = f"cl_comparison_noise_{band:03}.{fileformat}"
         fig.savefig(fname_out)
         print(f"Wrote {fname_out}", flush=True)
     else:
-        fname_out = f"cl_comparison_noise_{band:03}_BB.pdf"
+        fname_out = f"cl_comparison_noise_{band:03}_BB.{fileformat}"
         fig.savefig(fname_out)
         print(f"Wrote {fname_out}", flush=True)
