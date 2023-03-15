@@ -1288,7 +1288,7 @@ def get_example():
                         off += 1
             # 29.0 deg/(422mm)
             tb["platescale"] = 0.0687
-            tb["FOV_cut"] = 40.0
+            tb["FOV_cut"] = 30.0
         elif ttyp == "SAT_MFL":
             for tw in range(12):
                 off = 0
@@ -1301,7 +1301,7 @@ def get_example():
                         off += 1
             # 29.4/(420mm)
             tb["platescale"] = 0.070
-            tb["FOV_cut"] = 29.4
+            tb["FOV_cut"] = 30.0
             tb["waferspace"] = 122.16
         elif ttyp == "SAT_MFH":
             for tw in range(12):
@@ -1315,7 +1315,7 @@ def get_example():
                         off += 1
             # 29.4/(420mm)
             tb["platescale"] = 0.0701
-            tb["FOV_cut"] = 29.4
+            tb["FOV_cut"] = 30.0
             tb["waferspace"] = 121.85
         else:
             for tw in range(12):
@@ -1329,7 +1329,7 @@ def get_example():
                         off += 1
             # 29.0/(490mm)
             tb["platescale"] = 0.0592
-            tb["FOV_cut"] = 40.0
+            tb["FOV_cut"] = 30.0
         tb["location"] = stubepos[tindx]
         tubes[nm] = tb
 
@@ -1642,14 +1642,14 @@ def get_example():
 
     #from the DSR
     sfwhm = OrderedDict()
-    sfwhm["SAT_f030"] = 72.8
-    sfwhm["SAT_f040"] = 72.8
-    sfwhm["SAT_f085"] = 25.5
-    sfwhm["SAT_f145"] = 25.5
-    sfwhm["SAT_f095"] = 22.7
-    sfwhm["SAT_f155"] = 22.7
-    sfwhm["SAT_f220"] = 13.0
-    sfwhm["SAT_f280"] = 13.0
+    sfwhm["SAT_f030"] = 73.6
+    sfwhm["SAT_f040"] = 73.6
+    sfwhm["SAT_f085"] = 26.0
+    sfwhm["SAT_f145"] = 26.0
+    sfwhm["SAT_f095"] = 23.2
+    sfwhm["SAT_f155"] = 23.2
+    sfwhm["SAT_f220"] = 10.0
+    sfwhm["SAT_f280"] = 10.0
 
     tele = OrderedDict()
     tele["tubes"] = ["ST0", "ST1", "ST2"]
