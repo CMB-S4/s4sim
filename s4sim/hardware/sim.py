@@ -634,7 +634,7 @@ def sim_wafer_detectors(
             pol_B[p] = 90.0 + pol_A[p]
         # kill pixels in partial arrays
         if partial_type is None:
-            kill = []
+            kill = wprops["pins"]
         elif partial_type == "rhombus":
             kill = np.linspace(dim ** 2, 3 * dim ** 2 - 1, 2 * dim ** 2, dtype=np.int)
         elif partial_type == "half":
@@ -644,7 +644,7 @@ def sim_wafer_detectors(
             kill2 = np.linspace(dim ** 2, 2 * dim ** 2 - 1, dim ** 2, dtype=np.int)
             kill = np.append(kill1, kill2)
         else:
-            kill = []
+            kill = wprops["pins"]
         # We are going to remove 2 pixels for mechanical reasons
         # kf = dim * (dim - 1) // 2
         # kill = [kf, kf + dim - 2]
@@ -672,7 +672,7 @@ def sim_wafer_detectors(
                 pol_A[p] = 45.0
             pol_B[p] = 90.0 + pol_A[p]
         if partial_type is None:
-            kill = []
+            kill = wprops["pins"]
         elif partial_type == "half":
             kill = []
             for ii in range(npix):
@@ -689,7 +689,7 @@ def sim_wafer_detectors(
                 ):
                     kill.append(ii)
         else:
-            kill = []
+            kill = wprops["pins"]
         layout_A = hex_layout(npix, width, rotate=pol_A, killpix=kill)
         layout_B = hex_layout(npix, width, rotate=pol_B, killpix=kill)
         # Do we need a kill pixel function here?
@@ -839,7 +839,7 @@ def sim_telescope_detectors(hw, tele, tubes=None):
                     alldets.update(dets)
                     windx += 1
                 tindx += 1
-            else:
+            elif type == "SAT_LF":
                 tuberot = 0.0 * np.ones(7, dtype=np.float64)
                 tcenters = hex_layout(7, 2 * (tubespace * tele_platescale), rotate=tuberot)
                 shift = waferspace * platescale * np.pi / 180.0
@@ -855,6 +855,80 @@ def sim_telescope_detectors(hw, tele, tubes=None):
                     np.array([-5.*shift/(4.*np.cos(thirty)), -shift/2., 0.0]),
                     np.array([-shift/(2.*np.cos(thirty)), -shift, 0.0]),
                     np.array([shift/(4.*np.cos(thirty)), -shift/2. - shift, 0.0]),
+                    np.array([shift/(np.cos(thirty)),-shift, 0.0]),
+                ]
+                qwcenters = ang_to_quat(wcenters)
+                centers = list()
+                for qwc in qwcenters:
+                    centers.append(qa.mult(tcenters[location], qwc))
+
+                windx = 0
+                for wafer in tubeprops["wafers"]:
+                    partial_type = None
+                    dets = sim_wafer_detectors(
+                        hw,
+                        wafer,
+                        platescale,
+                        fwhm,
+                        center=centers[windx],
+                        partial_type=partial_type,
+                    )
+                    alldets.update(dets)
+                    windx += 1
+                tindx += 1
+            elif type == "SAT_MFL":
+                tuberot = 0.0 * np.ones(7, dtype=np.float64)
+                tcenters = hex_layout(7, 2 * (tubespace * tele_platescale), rotate=tuberot)
+                shift = waferspace * platescale * np.pi / 180.0
+                wcenters = [
+                    np.array([-shift/(2.*np.cos(thirty)), 0.0, 0.0]),
+                    np.array([shift/(4.*np.cos(thirty)), -shift/2., 0.0]),
+                    np.array([shift/(4.*np.cos(thirty)), shift/2., 0.0]),
+                    np.array([shift/(np.cos(thirty)),0.0, 0.0]),
+                    np.array([shift/(np.cos(thirty)),shift,-4*thirty]),
+                    np.array([shift/(4.*np.cos(thirty)), shift/2. + shift, 0.0]),
+                    np.array([-shift/(2.*np.cos(thirty)), shift, 0.0]),
+                    np.array([-5.*shift/(4.*np.cos(thirty)), shift/2., 0.0]),
+                    np.array([-5.*shift/(4.*np.cos(thirty)), -shift/2., 4*thirty]),
+                    np.array([-shift/(2.*np.cos(thirty)), -shift, 0.0]),
+                    np.array([shift/(4.*np.cos(thirty)), -shift/2. - shift, 4*thirty]),
+                    np.array([shift/(np.cos(thirty)),-shift, 8*thirty]),
+                ]
+                qwcenters = ang_to_quat(wcenters)
+                centers = list()
+                for qwc in qwcenters:
+                    centers.append(qa.mult(tcenters[location], qwc))
+
+                windx = 0
+                for wafer in tubeprops["wafers"]:
+                    partial_type = None
+                    dets = sim_wafer_detectors(
+                        hw,
+                        wafer,
+                        platescale,
+                        fwhm,
+                        center=centers[windx],
+                        partial_type=partial_type,
+                    )
+                    alldets.update(dets)
+                    windx += 1
+                tindx += 1
+            else:
+                tuberot = 0.0 * np.ones(7, dtype=np.float64)
+                tcenters = hex_layout(7, 2 * (tubespace * tele_platescale), rotate=tuberot)
+                shift = waferspace * platescale * np.pi / 180.0
+                wcenters = [
+                    np.array([-shift/(2.*np.cos(thirty)), 0.0, 0.0]),
+                    np.array([shift/(4.*np.cos(thirty)), -shift/2., 0.0]),
+                    np.array([shift/(4.*np.cos(thirty)), shift/2., 0.0]),
+                    np.array([shift/(np.cos(thirty)),0.0, 0.0]),
+                    np.array([shift/(np.cos(thirty)),shift,0.0]),
+                    np.array([shift/(4.*np.cos(thirty)), shift/2. + shift, 2*thirty]),
+                    np.array([-shift/(2.*np.cos(thirty)), shift, 0.0]),
+                    np.array([-5.*shift/(4.*np.cos(thirty)), shift/2., 6*thirty]),
+                    np.array([-5.*shift/(4.*np.cos(thirty)), -shift/2., 6*thirty]),
+                    np.array([-shift/(2.*np.cos(thirty)), -shift, 0.0]),
+                    np.array([shift/(4.*np.cos(thirty)), -shift/2. - shift, -2*thirty]),
                     np.array([shift/(np.cos(thirty)),-shift, 0.0]),
                 ]
                 qwcenters = ang_to_quat(wcenters)

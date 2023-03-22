@@ -682,6 +682,19 @@ def get_example():
         "SPLAT_HF": ["SPLAT_f220", "SPLAT_f280"],
         "SAT_HF": ["SAT_f220", "SAT_f280"],
     }
+    pins = {
+        "SPLAT_ULF": [],
+        "CHLAT_LF": [],
+        "SPLAT_LF": [],
+        "SAT_LF": [],
+        "CHLAT_MF": [],
+        "SPLAT_MF": [210,220],
+        "SAT_MFL": [70,75],
+        "SAT_MFH": [0,91],
+        "CHLAT_HF": [],
+        "SPLAT_HF": [0,331],
+        "SAT_HF": [0,331],
+    }
     windx = 0
     cardindx = 0
     for wt in wtypes:
@@ -695,6 +708,7 @@ def get_example():
             wf["pixsize"] = wpixmm[wt]
             wf["bands"] = wbd[wt]
             wf["card"] = "{:02d}".format(cardindx)
+            wf["pins"]=pins[wt]
             cardindx += 1
             wafers[wn] = wf
             windx += 1
@@ -1287,7 +1301,7 @@ def get_example():
                             break
                         off += 1
             # 29.0 deg/(422mm)
-            tb["platescale"] = 0.0687
+            tb["platescale"] = 0.0700
             tb["FOV_cut"] = 30.0
         elif ttyp == "SAT_MFL":
             for tw in range(12):
@@ -1300,7 +1314,7 @@ def get_example():
                             break
                         off += 1
             # 29.4/(420mm)
-            tb["platescale"] = 0.070
+            tb["platescale"] = 0.0700
             tb["FOV_cut"] = 30.0
             #tb["waferspace"] = 122.16
         elif ttyp == "SAT_MFH":
@@ -1314,7 +1328,7 @@ def get_example():
                             break
                         off += 1
             # 29.4/(420mm)
-            tb["platescale"] = 0.0701
+            tb["platescale"] = 0.0700
             tb["FOV_cut"] = 30.0
             #tb["waferspace"] = 121.85
         else:
@@ -1328,7 +1342,7 @@ def get_example():
                             break
                         off += 1
             # 29.0/(490mm)
-            tb["platescale"] = 0.0592
+            tb["platescale"] = 0.0700
             tb["FOV_cut"] = 30.0
         tb["location"] = stubepos[tindx]
         tubes[nm] = tb
