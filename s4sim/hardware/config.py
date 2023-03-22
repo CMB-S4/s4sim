@@ -329,9 +329,9 @@ def get_example():
     bands["CHLAT_f040"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 25.75
+    bnd["center"] = 24.75
     bnd["low"] = 21.5
-    bnd["high"] = 30.0
+    bnd["high"] = 28.0
     bnd["bandpass"] = ""
     bnd["NET"] = 286.7
     bnd["fknee"] = 50.0
@@ -344,9 +344,9 @@ def get_example():
     bands["SPLAT_f030"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 38.75
-    bnd["low"] = 30.0
-    bnd["high"] = 47.5
+    bnd["center"] = 36.5
+    bnd["low"] = 28.0
+    bnd["high"] = 45.0
     bnd["bandpass"] = ""
     bnd["NET"] = 269.0
     bnd["fknee"] = 50.0
@@ -359,9 +359,9 @@ def get_example():
     bands["SPLAT_f040"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 25.75
+    bnd["center"] = 24.75
     bnd["low"] = 21.5
-    bnd["high"] = 30.0
+    bnd["high"] = 28.0
     bnd["bandpass"] = ""
     bnd["NET"] = 164.0
     bnd["fknee"] = 50.0
@@ -374,9 +374,9 @@ def get_example():
     bands["SAT_f030"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 38.75
-    bnd["low"] = 30.0
-    bnd["high"] = 47.5
+    bnd["center"] = 36.5
+    bnd["low"] = 28.0
+    bnd["high"] = 45.0
     bnd["bandpass"] = ""
     bnd["NET"] = 206.4
     bnd["fknee"] = 50.0
@@ -540,8 +540,8 @@ def get_example():
 
     bnd = OrderedDict()
     bnd["center"] = 227.0
-    bnd["low"] = 197.9
-    bnd["high"] = 256.1
+    bnd["low"] = 198.0
+    bnd["high"] = 256.0
     bnd["bandpass"] = ""
     bnd["NET"] = 549.3
     bnd["fknee"] = 50.0
@@ -570,8 +570,8 @@ def get_example():
 
     bnd = OrderedDict()
     bnd["center"] = 227.0
-    bnd["low"] = 197.9
-    bnd["high"] = 256.1
+    bnd["low"] = 198.0
+    bnd["high"] = 256.0
     bnd["bandpass"] = ""
     bnd["NET"] = 653.8
     bnd["fknee"] = 50.0
