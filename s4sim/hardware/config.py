@@ -1266,7 +1266,12 @@ def get_example():
                         woff[ttyp] += 1
                         break
                     off += 1
-        tb["platescale"] = 0.0047619
+        if tindx<170:
+            #CHLAT platescale
+            tb["platescale"] = 0.0047619
+        else:
+            #SPLAT platescale
+            tb["platescale"] = 0.00429
         tb["location"] = ltubepos[tindx]
         tubes[nm] = tb
 
@@ -1646,11 +1651,11 @@ def get_example():
         "LT253",
         "LT254"
     ]
-    tele["platescale"] = 0.0047619
-    # This tube spacing in mm corresponds to 0.83 degrees projected on
-    # the sky at a plate scale of 210 mm/deg or 0.0047619 deg/mm
-    # The physical tube spacing is actually 210 mm.
-    tele["tubespace"] =  174.3
+    tele["platescale"] = 0.00429
+    # This tube spacing in mm corresponds to 0.94 degrees projected on
+    # the sky at a plate scale of 0.00429 deg/mm
+    # The physical tube spacing may be different.
+    tele["tubespace"] =  0.94/0.00429
     tele["fwhm"] = lfwhm
     telescopes["LAT2"] = tele
 
