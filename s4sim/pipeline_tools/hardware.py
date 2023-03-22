@@ -148,9 +148,9 @@ class BandParams:
         self.net = band_data["NET"] * 1e-6  # uK -> K
         self.fknee = band_data["fknee"] * 1e-3  # mHz -> Hz
         self.fmin = band_data["fmin"] * 1e-3  # mHz -> Hz
-        # self.alpha = banddata[band]["alpha"]
+        self.alpha = band_data[band]["alpha"]
         # overwrite the hardware model value of 3.5, to a more realistic value
-        self.alpha = 1.0
+        #self.alpha = 1.0
         self.A = band_data["A"]
         self.C = band_data["C"]
         self.lower = band_data["low"]  # GHz
