@@ -1257,14 +1257,14 @@ def get_example():
         tubes[nm] = tb
 
     stubes = [
-        "SAT_MFL",
+        "SAT_MFH",
         "SAT_MFH",
         "SAT_HF",
         "SAT_MFL",
         "SAT_MFH",
         "SAT_HF",
         "SAT_MFL",
-        "SAT_MFH",
+        "SAT_MFL",
         "SAT_LF",
     ]
     stubepos = [0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -1273,7 +1273,7 @@ def get_example():
         ttyp = stubes[tindx]
         tb = OrderedDict()
         tb["type"] = ttyp
-        tb["waferspace"] = 124.
+        tb["waferspace"] = 122.
         tb["wafers"] = list()
         # HF tubes have 8 full wafers + 2 partial, all others 11+2
         if ttyp == "SAT_HF":
@@ -1302,7 +1302,7 @@ def get_example():
             # 29.4/(420mm)
             tb["platescale"] = 0.070
             tb["FOV_cut"] = 30.0
-            tb["waferspace"] = 122.16
+            #tb["waferspace"] = 122.16
         elif ttyp == "SAT_MFH":
             for tw in range(12):
                 off = 0
@@ -1316,7 +1316,7 @@ def get_example():
             # 29.4/(420mm)
             tb["platescale"] = 0.0701
             tb["FOV_cut"] = 30.0
-            tb["waferspace"] = 121.85
+            #tb["waferspace"] = 121.85
         else:
             for tw in range(12):
                 off = 0
@@ -1656,21 +1656,21 @@ def get_example():
     tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
-    telescopes["SAT0"] = tele
+    telescopes["SAT1"] = tele
 
     tele = OrderedDict()
     tele["tubes"] = ["ST3", "ST4", "ST5"]
     tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
-    telescopes["SAT1"] = tele
+    telescopes["SAT2"] = tele
 
     tele = OrderedDict()
     tele["tubes"] = ["ST6", "ST7", "ST8"]
     tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
-    telescopes["SAT2"] = tele
+    telescopes["SAT3"] = tele
 
     cnf["telescopes"] = telescopes
 
