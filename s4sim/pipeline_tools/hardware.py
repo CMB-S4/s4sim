@@ -20,13 +20,10 @@ XAXIS, YAXIS, ZAXIS = np.eye(3)
 FOCALPLANE_RADII_DEG = {
     "LAT0": 3.9,
     "LAT1": 3.9,
-    "LAT2": 3.9,
-    "SAT0": 17.5,
-    "SAT1": 17.5,
-    "SAT2": 17.5,
-    "SAT3": 17.5,
-    "SAT4": 14.5,
-    "SAT5": 14.5,
+    "LAT2": 4.6,
+    "SAT1": 15.0,
+    "SAT2": 15.0,
+    "SAT3": 15.0,
 }
 
 
@@ -51,16 +48,13 @@ class S4Telescope(Telescope):
         self.id = {
             # Use the same telescope index for telescopes of the same type
             # in the same place to re-use the atmospheric simulations
-            #'LAT0' : 0, 'LAT1' : 1, 'LAT2' : 2, 'SAT0' : 3, 'SAT1' : 4...
+            #'LAT0' : 0, 'LAT1' : 1, 'LAT2' : 2, 'SAT1' : 3, 'SAT2' : 4...
             "LAT0": 1 + offset,
             "LAT1": 1 + offset,
             "LAT2": 1 + offset,
-            "SAT0": 8 + offset,
             "SAT1": 8 + offset,
             "SAT2": 8 + offset,
             "SAT3": 8 + offset,
-            "SAT4": 8 + offset,
-            "SAT5": 8 + offset,
         }[name]
 
 
@@ -114,30 +108,20 @@ def add_hw_args(parser):
         "LAT2-SPLAT_LF : LT232, LT234, LT236, LT239, LT242, LT245, LT248, LT251, LT254. "
         "LAT2-SPLAT_MF : LT170..LT176, LT180, LT186, LT189..LT206, LT208, LT210, LT212, LT214, LT216, LT218, LT220, LT222, LT224, LT226, LT228, LT230, LT231, LT233, LT235, LT237, LT238, LT240, LT241, LT243, LT244, LT246, LT247, LT249, LT250, LT252, LT253. "
         "LAT2-SPLAT_HF : LT177, LT179, LT181, LT183, LT185, LT187, LT207, LT209, LT211, LT213, LT215, LT217, LT219, LT221, LT223, LT225, LT227, LT229. "
-        "SAT0-SAT_MFL : ST0. "
-        "SAT0-SAT_MFH : ST1. "
-        "SAT0-SAT_HF : ST2. "
-        "SAT1-SAT_MFL : ST3. "
-        "SAT1-SAT_MFH : ST4. "
-        "SAT1-SAT_HF : ST5. "
-        "SAT2-SAT_MFL : ST6. "
-        "SAT2-SAT_MFH  : ST7. "
-        "SAT2-SAT_HF : ST8. "
-        "SAT3-SAT_MFL : ST9. "
-        "SAT3-SAT_MFH  : ST10. "
-        "SAT3-SAT_HF : ST11. "
-        "SAT4-SAT_LF : ST14. "
-        "SAT4-SAT_MFL : ST12. "
-        "SAT4-SAT_MFH : ST13. "
-        "SAT5-SAT_LF : ST17. "
-        "SAT5-SAT_MFL : ST15. "
-        "SAT6-SAT_MFH : ST16."
+        "SAT1-SAT_MFH : ST0. "
+        "SAT1-SAT_MFH : ST1. "
+        "SAT1-SAT_HF : ST2. "
+        "SAT2-SAT_MFL : ST3. "
+        "SAT2-SAT_MFH : ST4. "
+        "SAT2-SAT_HF : ST5. "
+        "SAT3-SAT_MFL : ST6. "
+        "SAT3-SAT_MFL  : ST7. "
+        "SAT3-SAT_LF : ST8. "
     )
     parser.add_argument(
         "--telescope",
         required=False,
-        help="Telescope, one of: LAT0, LAT1, LAT2, SAT0, SAT1, SAT2, "
-        "SAT3, SAT4, SAT5",
+        help="Telescope, one of: LAT0, LAT1, LAT2, SAT1, SAT2, SAT3"
     )
     return
 
