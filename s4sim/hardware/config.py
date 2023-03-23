@@ -1305,8 +1305,8 @@ def get_example():
                             woff[ttyp] += 1
                             break
                         off += 1
-            # 29.0 deg/(422mm)
-            tb["platescale"] = 0.0700
+            # 30 deg, 10008 detectors/band
+            tb["platescale"] = 0.06946
             tb["FOV_cut"] = 30.0
         elif ttyp == "SAT_MFL":
             for tw in range(12):
@@ -1318,8 +1318,8 @@ def get_example():
                             woff[ttyp] += 1
                             break
                         off += 1
-            # 29.4/(420mm)
-            tb["platescale"] = 0.0700
+            # 30 deg, 3048 detectors/band
+            tb["platescale"] = 0.07031
             tb["FOV_cut"] = 30.0
             #tb["waferspace"] = 122.16
         elif ttyp == "SAT_MFH":
@@ -1332,8 +1332,8 @@ def get_example():
                             woff[ttyp] += 1
                             break
                         off += 1
-            # 29.4/(420mm)
-            tb["platescale"] = 0.0700
+            # 30 deg, 3552 det/band
+            tb["platescale"] = 0.0698
             tb["FOV_cut"] = 30.0
             #tb["waferspace"] = 121.85
         else:
@@ -1346,7 +1346,7 @@ def get_example():
                             woff[ttyp] += 1
                             break
                         off += 1
-            # 29.0/(490mm)
+            # 30 deg, 252 det/band
             tb["platescale"] = 0.0700
             tb["FOV_cut"] = 30.0
         tb["location"] = stubepos[tindx]
