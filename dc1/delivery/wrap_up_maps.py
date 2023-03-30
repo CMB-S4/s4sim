@@ -9,21 +9,28 @@ import numpy as np
 # https://docs.google.com/document/d/1VIQYsGMza9rOn3E0GY1hDpzLN4hcR7Fwm7tpXGUxSlY/edit?usp=sharing
 
 telescopes_to_bands = {
-    "chlat" : ["027", "039", "093", "145", "225", "278"],
+    "chlat" : ["025", "040", "090", "150", "230", "280"],
 }
 
 # Simulation scripts used different names than the delivery
 
 alternate_names = {
     "chlat" : "LAT0_CHLAT",
-    "027" : "f030",
-    "039" : "f040",
-    "093" : "f090",
-    "145" : "f150",
-    "225" : "f220",
-    "278" : "f280",
-    "cmb" : "primary CMB",
-    "foreground" : "galactic + extragalactic + secondary CMB",
+    #"027" : "f030",
+    #"039" : "f040",
+    #"093" : "f090",
+    #"145" : "f150",
+    #"225" : "f220",
+    #"278" : "f280",
+    "025" : "f030",
+    "040" : "f040",
+    "090" : "f090",
+    "150" : "f150",
+    "230" : "f220",
+    "280" : "f280",
+    "cmb" : "unlensed CMB",
+    "cmb_lensing" : "lensing perturbation",
+    "foreground" : "extragalactic + galactic foregrounds",
     "noise" : "atmosphere + noise",
 }
 
@@ -35,15 +42,16 @@ i_wafer_split = 1
 wafer_split_name = f"w{n_wafer_split:02}.{i_wafer_split:02}"
 realization = 0
 realization_name = f"r{realization:03}"
-components = ["cmb", "noise", "foreground"]
-# three-digit mask identifying signal content
-complements = ["001", "010", "100", "111"]
-#complements = ["111"]
+components = ["noise", "foreground", "cmb_lensing", "cmb"]
+# four-digit mask identifying signal content.  The position of each
+# digit matches an entry in `components`
+complements = ["0001", "0010", "0100", "1000", "1111"]
+#complements = ["1111"]
 
 # Which data products to build
 
 signal_products = [
-    #("map01", "noise-weighted filter+bin IQU map"),
+    # ("map01", "noise-weighted filter+bin IQU map"),
     ("map02", "filter+bin IQU map"),
 ]
 
@@ -54,8 +62,8 @@ supporting_products = [
     ("mat02", "white noise covariance matrix"),
 ]
 
-rootdir = "/global/cfs/cdirs/cmbs4/dc/dc1/staging"
-outdir = "/global/cfs/cdirs/cmbs4/dc/dc1/delivery"
+rootdir = "/global/cfs/cdirs/cmbs4/dc/dc0/staging"
+outdir = "/global/cfs/cdirs/cmbs4/dc/dc0"
 
 for telescope, bands in telescopes_to_bands.items():
     alt_telescope = alternate_names[telescope]
@@ -64,7 +72,7 @@ for telescope, bands in telescopes_to_bands.items():
             continue
         alt_band = alternate_names[band]
         for n_time_split in time_splits:
-            dir_out = f"{outdir}/dc0/mission/{telescope}/split{n_time_split:02}/{band}"
+            dir_out = f"{outdir}/mission/{telescope}/split{n_time_split:02}/{band}"
             os.makedirs(dir_out, exist_ok=True)
             for i_time_split in range(1, n_time_split + 1):
                 time_split_name = f"t{n_time_split:02}.{i_time_split:02}"
@@ -178,6 +186,13 @@ for telescope, bands in telescopes_to_bands.items():
                                 raise RuntimeError(msg)
                             print(f"Loading {fname_in}", flush=True)
                             m = hp.read_map(fname_in, None)
+                            if component == "foreground":
+                                # Foreground maps had the CMB included
+                                # but we want it out
+                                fname_cmb = fname_in.replace("foreground", "cmb")
+                                print(f"Loading and subtracting {fname_cmb}")
+                                cmb = hp.read_map(fname_cmb, None)
+                                m -= cmb
                             if total is None:
                                 total = m
                                 component_names = f"{alt_component}"

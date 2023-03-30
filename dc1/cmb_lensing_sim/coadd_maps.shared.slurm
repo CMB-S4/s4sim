@@ -4,8 +4,8 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 # OOM: 24
-# Success: 48, 36, 30
-#SBATCH --cpus-per-task=26
+# Success: 48, 36, 30, 26
+#SBATCH --cpus-per-task=32
 #SBATCH --job-name=CMBS4_DC1_coadd
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
@@ -26,15 +26,14 @@ export HDF5_USE_FILE_LOCKING=FALSE
 export TOAST_FUNCTIME=1
 
 # Parallelization
-export OMP_NUM_THREADS=13
+export OMP_NUM_THREADS=16
 export OMP_PLACES=threads
 export OMP_PROC_BIND=spread
 
 echo "Running with"
 echo "  OMP_NUM_THREADS = ${OMP_NUM_THREADS}"
 
-#indir_root=/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim
-indir_root=.
+indir_root=/global/cfs/cdirs/cmbs4/dc/dc1/staging/cmb_lensing_sim
 indir1=${indir_root}/outputs_rk
 #indir1=outputs
 indir2=${indir_root}/outputs_DUMMY1
@@ -47,7 +46,7 @@ let nsplit=32
 for telescope in LAT0_CHLAT; do
     outdir=outputs/coadd/${telescope}
     #for band in f030 f040 f090 f150 f220 f280; do
-    #for band in f280; do
+    for band in f280; do
         case $band in
             f030|f040|f090|f150)
                 schedule_dir=split_schedules_1_upto3mm_with_break

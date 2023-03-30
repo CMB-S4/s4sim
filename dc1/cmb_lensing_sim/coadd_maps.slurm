@@ -1,15 +1,11 @@
 #!/bin/bash
 #SBATCH --qos=regular
-#SBATCH --time=02:00:00
-#SBATCH --nodes=4
+#SBATCH --time=01:00:00
+#SBATCH --nodes=8
 #SBATCH --job-name=CMBS4_DC1_coadd
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
-
-# Scale the noise maps to match 7-year 2-LAT sensitivity
-
-scale=$(echo "1 / sqrt(2 * 7)" | bc -l)
 
 # Perlmutter-specific fixes
 export FI_CXI_OPTIMIZED_MRS="false"
@@ -41,7 +37,7 @@ echo "  OMP_NUM_THREADS = ${OMP_NUM_THREADS}"
 echo "       ntask_node = ${ntask_node}"
 echo "            ntask = ${ntask}"
 
-indir_root=/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim
+indir_root=/global/cfs/cdirs/cmbs4/dc/dc1/staging/cmb_lensing_sim
 indir1=${indir_root}/outputs_rk
 #indir1=outputs
 indir2=${indir_root}/outputs_DUMMY1
@@ -54,7 +50,6 @@ sleep $((RANDOM % 15))
 for telescope in LAT0_CHLAT; do
     outdir=outputs/coadd/${telescope}
     for band in f030 f040 f090 f150 f220 f280; do
-    #for band in f150; do
         case $band in
             f030|f040|f090|f150)
                 schedule_dir=split_schedules_1_upto3mm_with_break
@@ -107,6 +102,13 @@ for telescope in LAT0_CHLAT; do
                     let nfail++
                 else
                     echo $fname >> $fname_maps
+                    # Ensure we have a symbolic link in place to the
+                    # inverse white noise covariance
+                    fname_invcov_out=${fname/noiseweighted_map/invcov}
+                    if [[ ! -e $fname_invcov_out ]]; then
+                        fname_invcov_in=${fname_invcov_out/cmb_lensing/cmb}
+                        ln -s $fname_invcov_in $fname_invcov_out
+                    fi
                     let nfound++
                 fi
                 let ntotal++
@@ -117,7 +119,6 @@ for telescope in LAT0_CHLAT; do
             echo "Writing $logfile"
             date >> $logfile
             srun -n $ntask -c $ncore --cpu_bind=cores toast_healpix_coadd \
-                 --scale ${scale} \
                  --outmap ${outmap} \
                  --rcond ${outroot}_rcond.fits \
                  --rcond_limit 1e-3 \
@@ -128,8 +129,7 @@ for telescope in LAT0_CHLAT; do
             date >> $logfile
         done
 
-        # Stop at this level for now.  There has to be a more efficient way to
-        # combine just two maps
+        # The rest of the co-adds to be handled with serial code
         continue
         
         let nsplit_in=$nsplit

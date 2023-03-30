@@ -1,12 +1,12 @@
 #!/bin/bash
 #SBATCH --qos=shared
-#SBATCH --time=12:00:00
+#SBATCH --time=08:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-# OOM: 12, 18
-# Success: 24
+# OOM: 12
+# Success: 
 #SBATCH --cpus-per-task=24
-#SBATCH --job-name=CMBS4_DC1_wrap_up
+#SBATCH --job-name=CMBS4_DC1_coadd
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -27,15 +27,8 @@ export TOAST_FUNCTIME=1
 
 # Parallelization
 export OMP_NUM_THREADS=12
-export OMP_PLACES=threads
-export OMP_PROC_BIND=spread
 
 echo "Running with"
 echo "  OMP_NUM_THREADS = ${OMP_NUM_THREADS}"
 
-#python3 wrap_up_maps.py 025
-#python3 wrap_up_maps.py 040
-#python3 wrap_up_maps.py 090
-#python3 wrap_up_maps.py 150
-#python3 wrap_up_maps.py 230
-python3 wrap_up_maps.py 280
+python cadence_and_depth.py

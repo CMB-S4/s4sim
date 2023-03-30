@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --qos=regular
-#SBATCH --time=12:00:00
+#SBATCH --time=02:00:00
 #SBATCH --nodes=4
-#SBATCH --job-name=CMBS4_DC1_lf_cmb
+#SBATCH --job-name=CMBS4_DC1_lf_cmb_lensing
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -47,10 +47,6 @@ echo "      ntask_group = ${ntask_group}"
 echo "        groupsize = ${groupsize}"
 echo "           ngroup = ${ngroup}"
 
-suffix=""
-#suffix="_lowcomplexity"
-#suffix="_highcomplexity"
-
 telescope=chlat
 site=chile
 TELESCOPE=LAT0_CHLAT
@@ -62,8 +58,8 @@ bands=(f030 f040)
 
 echo "Listing schedules at" `date`
 
-fnames=(`python3 get_fnames_serial.py split_schedules_1_upto2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
-#fnames=(`python3 get_fnames_serial.py split_schedules_1_over2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+#fnames=(`python3 get_fnames_serial.py split_schedules_1_upto2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+fnames=(`python3 get_fnames_serial.py split_schedules_1_over2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
 echo "Found ${#fnames[@]} schedule files"
 
 # Random wait time to reduce clashes
@@ -73,21 +69,15 @@ echo "Looking for schedule at" `date`
 
 let running=0
 for band in ${bands[*]}; do
-    logdir=logs${suffix}/${TELESCOPE}/${band}
+    logdir=logs/${TELESCOPE}/${band}
     mkdir -p $logdir
 done
-
-if [[ x$suffix -eq "x" ]]; then
-    write_invcov="--mapmaker.write_invcov"
-else
-    write_invcov=""
-fi
 
 for schedule in ${fnames[*]}; do
     rootname=`basename $schedule .txt`
     #rootname=${TELESCOPE}_${rootname}
     for band in ${bands[*]}; do
-        logdir=logs${suffix}/${TELESCOPE}/${band}
+        logdir=logs/${TELESCOPE}/${band}
         #logfile=$logdir/${rootname}_${band}.log
         logfile=$logdir/${rootname}.log
         logfile2=cleared_$logdir/${rootname}.log
@@ -95,7 +85,7 @@ for schedule in ${fnames[*]}; do
             echo "Writing $logfile at" `date`
             date > ${logfile}
 
-            outdir=outputs${suffix}/${TELESCOPE}/${band}/${rootname}
+            outdir=outputs/${TELESCOPE}/${band}/${rootname}
             mkdir -p --mode=g+rXs-w $outdir
             chgrp -R cmbs4 $outdir
 
@@ -110,14 +100,14 @@ for schedule in ${fnames[*]}; do
                  --obsmaps \
                  --mem_count.enable \
                  --scan_healpix_map.enable \
-                 --scan_healpix_map.file input_maps/cmb${suffix}.${telescope}.${band}.h5 \
+                 --scan_healpix_map.file input_maps/cmb_lensing.${telescope}.${band}.h5 \
                  --sim_noise.disable \
                  --sim_atmosphere.disable \
                  --raw_statistics.disable \
                  --filtered_statistics.disable \
                  --mapmaker.report_memory \
-                 --processing_mask.file input_maps/mask15${suffix}.${telescope}.${band}.h5 \
-                 $write_invcov \
+                 --processing_mask.file input_maps/mask15.${telescope}.${band}.h5 \
+                 --mapmaker.no_write_hits \
                  --save_hdf5.disable \
                  >> ${logfile} 2>&1 &
             sleep 1

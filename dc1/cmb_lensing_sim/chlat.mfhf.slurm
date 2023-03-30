@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --qos=regular
-#SBATCH --time=12:00:00
-#SBATCH --nodes=4
-#SBATCH --job-name=CMBS4_DC1_lf_cmb
+#SBATCH --time=02:00:00
+#SBATCH --nodes=16
+#SBATCH --job-name=CMBS4_DC1_mfhf_cmb_lensing
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -31,7 +31,7 @@ let ntask_node=256/$OMP_NUM_THREADS
 let ntask=$nnode*$ntask_node
 let ncore=$OMP_NUM_THREADS
 # Make sure nnode is divisible by nnode_group
-let nnode_group=1
+let nnode_group=4
 let ntask_group=$nnode_group*$ntask_node
 let groupsize=nnode_group*ntask_node
 let ngroup=$nnode/$nnode_group
@@ -47,23 +47,20 @@ echo "      ntask_group = ${ntask_group}"
 echo "        groupsize = ${groupsize}"
 echo "           ngroup = ${ngroup}"
 
-suffix=""
-#suffix="_lowcomplexity"
-#suffix="_highcomplexity"
-
 telescope=chlat
 site=chile
 TELESCOPE=LAT0_CHLAT
 # cannot have more than 384 MPI tasks in a group to process 30 and 40GHz
 #bands=( f030 )
-bands=(f030 f040)
+#bands=(f030 f040)
 #bands=(f090 f150)
-#bands=(f090 f150 f220 f280)
+bands=(f090 f150 f220 f280)
 
 echo "Listing schedules at" `date`
 
-fnames=(`python3 get_fnames_serial.py split_schedules_1_upto2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
-#fnames=(`python3 get_fnames_serial.py split_schedules_1_over2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+#fnames=(`python3 get_fnames_serial.py split_schedules_1_upto3mm_with_break/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+#fnames=(`python3 get_fnames_serial.py split_schedules_1_upto2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+fnames=(`python3 get_fnames_serial.py split_schedules_1_over2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
 echo "Found ${#fnames[@]} schedule files"
 
 # Random wait time to reduce clashes
@@ -73,21 +70,17 @@ echo "Looking for schedule at" `date`
 
 let running=0
 for band in ${bands[*]}; do
-    logdir=logs${suffix}/${TELESCOPE}/${band}
+    logdir=logs/${TELESCOPE}/${band}
     mkdir -p $logdir
 done
 
-if [[ x$suffix -eq "x" ]]; then
-    write_invcov="--mapmaker.write_invcov"
-else
-    write_invcov=""
-fi
+write_invcov=""
 
 for schedule in ${fnames[*]}; do
     rootname=`basename $schedule .txt`
     #rootname=${TELESCOPE}_${rootname}
     for band in ${bands[*]}; do
-        logdir=logs${suffix}/${TELESCOPE}/${band}
+        logdir=logs/${TELESCOPE}/${band}
         #logfile=$logdir/${rootname}_${band}.log
         logfile=$logdir/${rootname}.log
         logfile2=cleared_$logdir/${rootname}.log
@@ -95,7 +88,7 @@ for schedule in ${fnames[*]}; do
             echo "Writing $logfile at" `date`
             date > ${logfile}
 
-            outdir=outputs${suffix}/${TELESCOPE}/${band}/${rootname}
+            outdir=outputs/${TELESCOPE}/${band}/${rootname}
             mkdir -p --mode=g+rXs-w $outdir
             chgrp -R cmbs4 $outdir
 
@@ -110,14 +103,14 @@ for schedule in ${fnames[*]}; do
                  --obsmaps \
                  --mem_count.enable \
                  --scan_healpix_map.enable \
-                 --scan_healpix_map.file input_maps/cmb${suffix}.${telescope}.${band}.h5 \
+                 --scan_healpix_map.file input_maps/cmb_lensing.${telescope}.${band}.h5 \
                  --sim_noise.disable \
                  --sim_atmosphere.disable \
                  --raw_statistics.disable \
                  --filtered_statistics.disable \
                  --mapmaker.report_memory \
-                 --processing_mask.file input_maps/mask15${suffix}.${telescope}.${band}.h5 \
-                 $write_invcov \
+                 --processing_mask.file input_maps/mask15.${telescope}.${band}.h5 \
+                 --mapmaker.no_write_hits \
                  --save_hdf5.disable \
                  >> ${logfile} 2>&1 &
             sleep 1
