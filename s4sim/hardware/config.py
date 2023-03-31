@@ -1319,7 +1319,7 @@ def get_example():
                             break
                         off += 1
             # 30 deg, 3048 detectors/band
-            tb["platescale"] = 0.07031
+            tb["platescale"] = 0.0699
             tb["FOV_cut"] = 30.0
             #tb["waferspace"] = 122.16
         elif ttyp == "SAT_MFH":

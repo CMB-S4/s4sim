@@ -885,14 +885,14 @@ def sim_telescope_detectors(hw, tele, tubes=None):
                     np.array([shift/(4.*np.cos(thirty)), -shift/2., 0.0]),
                     np.array([shift/(4.*np.cos(thirty)), shift/2., 0.0]),
                     np.array([shift/(np.cos(thirty)),0.0, 0.0]),
-                    np.array([shift/(np.cos(thirty)),shift,-4*thirty]),
-                    np.array([shift/(4.*np.cos(thirty)), shift/2. + shift, 0.0]),
+                    np.array([shift/(np.cos(thirty)),shift,-2*thirty]),
+                    np.array([shift/(4.*np.cos(thirty)), shift/2. + shift, -2*thirty]),
                     np.array([-shift/(2.*np.cos(thirty)), shift, 0.0]),
-                    np.array([-5.*shift/(4.*np.cos(thirty)), shift/2., 0.0]),
-                    np.array([-5.*shift/(4.*np.cos(thirty)), -shift/2., 4*thirty]),
+                    np.array([-5.*shift/(4.*np.cos(thirty)), shift/2., 2*thirty]),
+                    np.array([-5.*shift/(4.*np.cos(thirty)), -shift/2., 2*thirty]),
                     np.array([-shift/(2.*np.cos(thirty)), -shift, 0.0]),
-                    np.array([shift/(4.*np.cos(thirty)), -shift/2. - shift, 4*thirty]),
-                    np.array([shift/(np.cos(thirty)),-shift, 8*thirty]),
+                    np.array([shift/(4.*np.cos(thirty)), -shift/2. - shift, 6*thirty]),
+                    np.array([shift/(np.cos(thirty)),-shift, 6*thirty]),
                 ]
                 qwcenters = ang_to_quat(wcenters)
                 centers = list()
