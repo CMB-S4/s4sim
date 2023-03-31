@@ -229,4 +229,3 @@ for telescope, bands in telescopes_to_bands.items():
                         if os.path.isfile(fname_out):
                             print(f"Deleting failed output file: {fname_out}")
                             os.remove(fname_out)
-                    sys.exit()

@@ -13,7 +13,7 @@ np.random.seed(673653982)
 realization = 0
 
 # Additional, random downtime
-fdown = 0.816
+fdown = 0.864
 
 # Fraction of the year surviving the weather cuts
 if False:
@@ -62,7 +62,7 @@ with open(fname_in, "r") as schedule_in:
         if weather is None:
             weather = toast.weather.SimWeather(
                 time=mid_time,
-                name="atacama",
+                name="south_pole",
                 site_uid=site_uid,
                 realization=realization,
             )
