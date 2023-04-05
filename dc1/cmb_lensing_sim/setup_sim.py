@@ -18,14 +18,14 @@ for band, freq in [
         ("HFL1", 220),
         ("HFL2", 280),
 ]:
-    fname_out = os.path.join(outdir, f"cmb.chlat.f{freq:03}.h5")
+    fname_out = os.path.join(outdir, f"cmb_lensing.chlat.f{freq:03}.h5")
     if os.path.isfile(fname_out):
         print(f"Output file exists: {fname_out}")
         continue
     fname_in = (
         f"/global/cfs/cdirs/cmbs4/dm/dstool_202102/input_pysm"
-        f"/4096/cmb_unlensed_solardipole/0000/"
-        f"cmbs4_cmb_unlensed_solardipole_uKCMB_LAT-{band}_nside4096_0000.fits"
+        f"/4096/cmb_lensing_signal/0000/"
+        f"cmbs4_cmb_lensing_signal_uKCMB_LAT-{band}_nside4096_0000.fits"
     )
     if not os.path.isfile(fname_in):
         raise RuntimeError(f"Input file does not exist: {fname_in}")
