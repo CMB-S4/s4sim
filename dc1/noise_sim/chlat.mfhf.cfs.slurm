@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --qos=regular
+#SBATCH --qos=preempt
 #SBATCH --time=12:00:00
 #SBATCH --nodes=24
-#SBATCH --job-name=DC1_noise_MF_CFS
+#SBATCH --job-name=CMBS4_DC0_mfhf_noise_CFS
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -34,7 +34,7 @@ let ncore=$OMP_NUM_THREADS
 let nnode_group=8
 let ntask_group=$nnode_group*$ntask_node
 #let groupsize=nnode_group*ntask_node
-let groupsize=ntask_node/4
+let groupsize=ntask_node
 let ngroup=$nnode/$nnode_group
 
 echo "Start: " `date`
@@ -54,15 +54,13 @@ TELESCOPE=LAT0_CHLAT
 #bands=( f030 )
 #bands=(f030 f040)
 #bands=(f090 f150)
-bands=(f090 f150)
-#bands=(f090 f150 f220 f280)
+bands=(f090 f150 f220 f280)
 
 echo "Listing schedules at" `date`
 
-#fnames=split_schedules_1/${telescope}/split_schedule_????.txt
-#fnames=(`python3 get_fnames.py split_schedules_1_upto2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
-#fnames=(`python3 get_fnames_serial.py split_schedules_1_upto2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
-fnames=(`python3 get_fnames_serial.py split_schedules_1_over2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+fnames1=(`python3 get_fnames_serial.py ../split_schedules_1_upto2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+fnames2=(`python3 get_fnames_serial.py ../split_schedules_1_over2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+fnames=( ${fnames1[@]} ${fnames2[@]} )
 echo "Found ${#fnames[@]} schedule files"
 
 # Random wait time to reduce clashes
@@ -87,7 +85,7 @@ for band in ${bands[*]}; do
             echo "Writing $logfile at" `date`
             date > ${logfile}
 
-            # Generate this directory not to confure rsync.sh
+            # Generate this directory not to confuse rsync.sh
             outdir=outputs/${TELESCOPE}/${band}/${rootname}
             mkdir -p --mode=g+rXs-w $outdir
             chgrp -R cmbs4 $outdir
@@ -98,8 +96,8 @@ for band in ${bands[*]}; do
 
             srun -N $nnode_group -n $ntask_group -c $ncore --cpu_bind=cores \
                  toast_sim_ground.py \
-                 --config common.new.toml scanning_${telescope}.toml \
-                 atmosphere_${site}.toml reduce_${telescope}.new.toml \
+                 --config ../params/common.toml ../params/scanning_${telescope}.toml \
+                 ../params/atmosphere_${site}.toml ../params/reduce_${telescope}.toml \
                  --focalplane ../focalplanes/focalplane_${TELESCOPE}_${band}.h5 \
                  --telescope $TELESCOPE \
                  --schedule $schedule \
@@ -110,6 +108,9 @@ for band in ${bands[*]}; do
                  --sim_atmosphere.cache_dir atm_cache_${TELESCOPE} \
                  --mapmaker.report_memory \
                  --mapmaker.name mapmaker_${rootname} \
+                 --mapmaker.write_invcov \
+                 --mapmaker.write_hits \
+                 --processing_mask.file ../foreground_sim/input_maps/mask15_mediumcomplexity.${telescope}.${band}.h5 \
                  --save_hdf5.enable \
                  --save_hdf5.volume $outdir \
                  --sim_ground.session_split_key tube \

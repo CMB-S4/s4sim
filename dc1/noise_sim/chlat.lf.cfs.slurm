@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --qos=regular
+#SBATCH --qos=preempt
 #SBATCH --time=12:00:00
-#SBATCH --nodes=16
-#SBATCH --job-name=DC1_hf_foregrounds
+#SBATCH --nodes=4
+#SBATCH --job-name=CMBS4_DC0_lf_noise_CFS
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -31,9 +31,10 @@ let ntask_node=256/$OMP_NUM_THREADS
 let ntask=$nnode*$ntask_node
 let ncore=$OMP_NUM_THREADS
 # Make sure nnode is divisible by nnode_group
-let nnode_group=4
+let nnode_group=1
 let ntask_group=$nnode_group*$ntask_node
-let groupsize=nnode_group*ntask_node
+#let groupsize=nnode_group*ntask_node
+let groupsize=ntask_node
 let ngroup=$nnode/$nnode_group
 
 echo "Start: " `date`
@@ -50,17 +51,17 @@ echo "           ngroup = ${ngroup}"
 telescope=chlat
 site=chile
 TELESCOPE=LAT0_CHLAT
-# cannot have more than 384 MPI tasks in a group to process 30 and 40GHz
 #bands=( f030 )
-#bands=(f030 f040)
+bands=(f030 f040)
 #bands=(f090 f150)
-bands=(f220 f280)
+#bands=(f090 f150)
+#bands=(f090 f150 f220 f280)
 
 echo "Listing schedules at" `date`
 
-#fnames=split_schedules_1/${telescope}/split_schedule_????.txt
-#fnames=(`python3 get_fnames.py split_schedules_1_upto2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
-fnames=(`python3 get_fnames_serial.py split_schedules_1_upto2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+fnames1=(`python3 get_fnames_serial.py ../split_schedules_1_upto2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+fnames2=(`python3 get_fnames_serial.py ../split_schedules_1_over2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+fnames=( ${fnames1[@]} ${fnames2[@]} )
 echo "Found ${#fnames[@]} schedule files"
 
 # Random wait time to reduce clashes
@@ -68,29 +69,34 @@ sleep $((RANDOM % 15))
 
 echo "Looking for schedule at" `date`
 
-let running=0
 for band in ${bands[*]}; do
     logdir=logs/${TELESCOPE}/${band}
     mkdir -p $logdir
 done
 
-for schedule in ${fnames[*]}; do
-    rootname=`basename $schedule .txt`
-    #rootname=${TELESCOPE}_${rootname}
-    for band in ${bands[*]}; do
+for band in ${bands[*]}; do
+    for schedule in ${fnames[*]}; do
+        rootname=`basename $schedule .txt`
         logdir=logs/${TELESCOPE}/${band}
-        #logfile=$logdir/${rootname}_${band}.log
+        mkdir -p $logdir
         logfile=$logdir/${rootname}.log
         logfile2=cleared_$logdir/${rootname}.log
-        if [[ ! -e $logfile && ! -e $logfile2 ]]; then
+        logfile3=staged_$logdir/${rootname}.log
+        if [[ ! -e $logfile && ! -e $logfile2 && ! -e $logfile3 ]]; then
             echo "Writing $logfile at" `date`
             date > ${logfile}
 
+            # Generate this directory not to confure rsync.sh
             outdir=outputs/${TELESCOPE}/${band}/${rootname}
             mkdir -p --mode=g+rXs-w $outdir
             chgrp -R cmbs4 $outdir
+            # But actual outputs go here
+            outdir=/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim/outputs_rk/${TELESCOPE}/${band}/${rootname}
+            mkdir -p --mode=g+rXs-w $outdir
+            chgrp -R cmbs4 $outdir
 
-            srun -N $nnode_group -n $ntask_group -c $ncore --cpu_bind=cores toast_sim_ground.py \
+            srun -N $nnode_group -n $ntask_group -c $ncore --cpu_bind=cores \
+                 toast_sim_ground.py \
                  --config common.toml scanning_${telescope}.toml \
                  atmosphere_${site}.toml reduce_${telescope}.toml \
                  --focalplane ../focalplanes/focalplane_${TELESCOPE}_${band}.h5 \
@@ -98,25 +104,39 @@ for schedule in ${fnames[*]}; do
                  --schedule $schedule \
                  --out $outdir \
                  --job_group_size ${groupsize} \
-                 --obsmaps \
                  --mem_count.enable \
-                 --scan_map.enable \
-                 --scan_map.file input_maps/foreground.${telescope}.${band}.h5 \
-                 --sim_noise.disable \
-                 --sim_atmosphere.disable \
-                 --raw_statistics.disable \
-                 --filtered_statistics.disable \
+                 --scan_healpix_map.disable \
+                 --sim_atmosphere.cache_dir atm_cache_${TELESCOPE} \
                  --mapmaker.report_memory \
-                 --save_hdf5.disable \
+                 --mapmaker.name mapmaker_${rootname} \
+                 --mapmaker.write_invcov \
+                 --mapmaker.write_hits \
+                 --processing_mask.file ../foreground_sim/input_maps/mask15_mediumcomplexity.${telescope}.${band}.h5 \
+                 --save_hdf5.enable \
+                 --save_hdf5.volume $outdir \
+                 --sim_ground.session_split_key tube \
                  >> ${logfile} 2>&1 &
             sleep 1
-            let running=`ps | grep srun | wc -l`/2
-            echo "There are $running running processes at" `date`
+            # Wait until the srun process has time to spawn another one
+            # Running jobs always have two srun instances
+            let nsrun=`ps | grep srun | wc -l`
+            let running=${nsrun}/2
+            let nsrun_estimate=${running}*2
+            while [[ $nsrun -ne $nsrun_estimate ]]; do
+                echo "There are $running running processes and $nsrun srun instances at" `date`
+                echo "Waiting for 15 seconds."
+                sleep 15
+                let nsrun=`ps | grep srun | wc -l`
+                let running=${nsrun}/2
+                let nsrun_estimate=${running}*2
+            done
+            # Now see if we have all the slots taken
             while [[ $running -ge $ngroup ]]; do
-                echo "Waiting for 10 seconds."
-                sleep 10
-                let running=`ps | grep srun | wc -l`/2
+                # We do. Wait for at least one slot to be freed
                 echo "There are $running running processes at" `date`
+                echo "Waiting for 15 seconds."
+                sleep 15
+                let running=`ps | grep srun | wc -l`/2
             done
             echo "Finding more work at" `date`
         else

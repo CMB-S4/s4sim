@@ -1,3 +1,17 @@
+[operators.processing_mask]
+    class = "toast.ops.scan_healpix.ScanHealpixMask"
+    API = 0 # Internal interface version for this operator
+    det_flags = "flags" # Observation detdata key for flags to use
+    det_flags_value = 2 # The detector flag value to set where the mask result is non-zero
+    enabled = true # If True, this class instance is marked as enabled
+    file = "None" # Path to healpix FITS file
+    mask_bits = 255 # The number to bitwise-and with each mask value to form the result
+    name = "processing_mask" # The 'name' of this class instance
+    pixel_dist = "pixel_dist" # The Data key where the PixelDistribution object is located
+    pixel_pointing = "None" # This must be an instance of a pixel pointing operator
+    save_mask = false # If True, do not delete mask during finalize
+    save_pointing = false # If True, do not clear detector pointing matrices if we generate the pixel distribution
+
 [operators.flag_sso]
     class = "toast.ops.flag_sso.FlagSSO"
     API = 0 # Internal interface version for this operator
@@ -214,8 +228,8 @@
     write_cov = false # If True, write the white noise covariance matrices.
     write_hdf5 = true # If True, outputs are in HDF5 rather than FITS format.
     write_hdf5_serial = true # If True, force serial HDF5 write of output maps.
-    write_hits = true # If True, write the hits map
-    write_invcov = true # If True, write the inverse white noise covariance matrices.
+    write_hits = false # If True, write the hits map
+    write_invcov = false # If True, write the inverse white noise covariance matrices.
     write_map = false # If True, write the projected map
     write_noiseweighted_map = true # If True, write the noise-weighted map
     write_rcond = false # If True, write the reciprocal condition numbers.
