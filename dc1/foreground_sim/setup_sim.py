@@ -58,9 +58,12 @@ for suffix in "_mediumcomplexity",:  #  "_lowcomplexity", "_highcomplexity":
         lim = radio_sorted[int(npix * .99)]
         mask[radio > lim] = True
         # write out
-        fname_out = os.path.join(outdir, f"mask{int(mask_frac * 100):02}{suffix}.chlat.f{freq:03}.h5")
-        write_healpix(fname_out, mask, dtype=np.int16, coord="C", nest=True, overwrite=True)
-        print(f"Wrote {fname_out}")
+        fname_out_hdf5 = os.path.join(outdir, f"mask{int(mask_frac * 100):02}{suffix}.chlat.f{freq:03}.h5")
+        write_healpix(fname_out_hdf5, mask, dtype=np.int16, coord="C", nest=True, overwrite=True)
+        print(f"Wrote {fname_out_hdf5}")
+        fname_out_fits = os.path.join(outdir, f"mask{int(mask_frac * 100):02}{suffix}.chlat.f{freq:03}.fits")
+        hp.write_map(fname_out_fits, mask, dtype=np.int16, coord="C", nest=True, overwrite=True)
+        print(f"Wrote {fname_out_fits}")
 
 sys.exit()
 
@@ -130,23 +133,3 @@ for band, freq in [
     )
     write_healpix(fname_out, m * 1e-6, coord="C", nest=True)
     print(f"Wrote {fname_out}")
-
-"""
-python -c '
-import numpy as np
-from healpy import hp.read_map;
-from toast.pixels_io import write_healpix
-m = hp.read_map(
-    None,
-    nest=True,
-    verbose=False,
-    dtype=np.float32,
-);
-write_healpix(
-    "cmb.spsat.f085.h5",
-    m * 1e-6,
-    coord="G",
-    nest=True,
-)
-'
-"""

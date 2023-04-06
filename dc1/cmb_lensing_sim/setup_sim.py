@@ -2,7 +2,7 @@ import os
 import sys
 
 import numpy as np
-from healpy import read_map
+import healpy as hp
 from toast.pixels_io_healpix import write_healpix
 
 
@@ -27,7 +27,7 @@ for band, freq in [
     if not os.path.isfile(fname_in):
         raise RuntimeError(f"Input file does not exist: {fname_in}")
     print(f"Reading {fname_in}")
-    m = read_map(
+    m = hp.read_map(
         fname_in,
         None,
         nest=True,
@@ -62,7 +62,7 @@ for band, freq in [
     if not os.path.isfile(fname_in):
         raise RuntimeError(f"Input file does not exist: {fname_in}")
     print(f"Reading {fname_in}")
-    m = read_map(
+    m = hp.read_map(
         fname_in,
         None,
         nest=True,
@@ -96,7 +96,7 @@ for band, freq in [
     if not os.path.isfile(fname_in):
         raise RuntimeError(f"Input file does not exist: {fname_in}")
     print(f"Reading {fname_in}")
-    m = read_map(
+    m = hp.read_map(
         fname_in,
         None,
         nest=True,
@@ -105,23 +105,3 @@ for band, freq in [
     )
     write_healpix(fname_out, m * 1e-6, coord="C", nest=True)
     print(f"Wrote {fname_out}")
-
-"""
-python -c '
-import numpy as np
-from healpy import read_map;
-from toast.pixels_io import write_healpix
-m = read_map(
-    None,
-    nest=True,
-    verbose=False,
-    dtype=np.float32,
-);
-write_healpix(
-    "cmb.spsat.f085.h5",
-    m * 1e-6,
-    coord="G",
-    nest=True,
-)
-'
-"""
