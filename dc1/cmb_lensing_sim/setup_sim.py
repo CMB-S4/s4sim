@@ -7,6 +7,7 @@ from toast.pixels_io_healpix import write_healpix
 
 
 outdir = "input_maps"
+os.makedirs(outdir, exist_ok=True)
 
 # CHLAT
 
@@ -22,11 +23,7 @@ for band, freq in [
     if os.path.isfile(fname_out):
         print(f"Output file exists: {fname_out}")
         continue
-    fname_in = (
-        f"/global/cfs/cdirs/cmbs4/dm/dstool_202102/input_pysm"
-        f"/4096/cmb_lensing_signal/0000/"
-        f"cmbs4_cmb_lensing_signal_uKCMB_LAT-{band}_nside4096_0000.fits"
-    )
+    fname_in = f"/global/cfs/cdirs/cmbs4/dc/dc0/sky/4096/combined_cmb_lensing_signal/0000/cmbs4_combined_cmb_lensing_signal_uKCMB_LAT-{band}_nside4096_0000.fits"
     if not os.path.isfile(fname_in):
         raise RuntimeError(f"Input file does not exist: {fname_in}")
     print(f"Reading {fname_in}")
