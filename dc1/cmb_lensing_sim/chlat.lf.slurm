@@ -106,7 +106,7 @@ for schedule in ${fnames[*]}; do
                  --raw_statistics.disable \
                  --filtered_statistics.disable \
                  --mapmaker.report_memory \
-                 --processing_mask.file input_maps/mask15.${telescope}.${band}.h5 \
+                 --processing_mask.file ../foreground_sim/input_maps/mask15_mediumcomplexity.${telescope}.${band}.h5 \
                  --mapmaker.no_write_hits \
                  --save_hdf5.disable \
                  >> ${logfile} 2>&1 &

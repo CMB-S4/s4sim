@@ -47,7 +47,7 @@ echo "      ntask_group = ${ntask_group}"
 echo "        groupsize = ${groupsize}"
 echo "           ngroup = ${ngroup}"
 
-suffix=""
+suffix="_mediumcomplexity"
 #suffix="_lowcomplexity"
 #suffix="_highcomplexity"
 
@@ -87,7 +87,8 @@ for schedule in ${fnames[*]}; do
     rootname=`basename $schedule .txt`
     #rootname=${TELESCOPE}_${rootname}
     for band in ${bands[*]}; do
-        logdir=logs${suffix}/${TELESCOPE}/${band}
+        #logdir=logs${suffix}/${TELESCOPE}/${band}
+        logdir=logs/${TELESCOPE}/${band}
         #logfile=$logdir/${rootname}_${band}.log
         logfile=$logdir/${rootname}.log
         logfile2=cleared_$logdir/${rootname}.log
@@ -95,7 +96,8 @@ for schedule in ${fnames[*]}; do
             echo "Writing $logfile at" `date`
             date > ${logfile}
 
-            outdir=outputs${suffix}/${TELESCOPE}/${band}/${rootname}
+            #outdir=outputs${suffix}/${TELESCOPE}/${band}/${rootname}
+            outdir=outputs/${TELESCOPE}/${band}/${rootname}
             mkdir -p --mode=g+rXs-w $outdir
             chgrp -R cmbs4 $outdir
 

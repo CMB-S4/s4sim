@@ -2,11 +2,12 @@ import os
 import sys
 
 import numpy as np
-from healpy import read_map
+import healpy as hp
 from toast.pixels_io_healpix import write_healpix
 
 
 outdir = "input_maps"
+os.makedirs(outdir, exist_ok=True)
 
 # CHLAT
 
@@ -22,15 +23,11 @@ for band, freq in [
     if os.path.isfile(fname_out):
         print(f"Output file exists: {fname_out}")
         continue
-    fname_in = (
-        f"/global/cfs/cdirs/cmbs4/dm/dstool_202102/input_pysm"
-        f"/4096/cmb_lensing_signal/0000/"
-        f"cmbs4_cmb_lensing_signal_uKCMB_LAT-{band}_nside4096_0000.fits"
-    )
+    fname_in = f"/global/cfs/cdirs/cmbs4/dc/dc0/sky/4096/combined_cmb_lensing_signal/0000/cmbs4_combined_cmb_lensing_signal_uKCMB_LAT-{band}_nside4096_0000.fits"
     if not os.path.isfile(fname_in):
         raise RuntimeError(f"Input file does not exist: {fname_in}")
     print(f"Reading {fname_in}")
-    m = read_map(
+    m = hp.read_map(
         fname_in,
         None,
         nest=True,
@@ -65,7 +62,7 @@ for band, freq in [
     if not os.path.isfile(fname_in):
         raise RuntimeError(f"Input file does not exist: {fname_in}")
     print(f"Reading {fname_in}")
-    m = read_map(
+    m = hp.read_map(
         fname_in,
         None,
         nest=True,
@@ -99,7 +96,7 @@ for band, freq in [
     if not os.path.isfile(fname_in):
         raise RuntimeError(f"Input file does not exist: {fname_in}")
     print(f"Reading {fname_in}")
-    m = read_map(
+    m = hp.read_map(
         fname_in,
         None,
         nest=True,
@@ -108,23 +105,3 @@ for band, freq in [
     )
     write_healpix(fname_out, m * 1e-6, coord="C", nest=True)
     print(f"Wrote {fname_out}")
-
-"""
-python -c '
-import numpy as np
-from healpy import read_map;
-from toast.pixels_io import write_healpix
-m = read_map(
-    None,
-    nest=True,
-    verbose=False,
-    dtype=np.float32,
-);
-write_healpix(
-    "cmb.spsat.f085.h5",
-    m * 1e-6,
-    coord="G",
-    nest=True,
-)
-'
-"""
