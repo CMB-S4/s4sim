@@ -288,13 +288,13 @@ def get_example():
     bnd["low"] = 17.5
     bnd["high"] = 22.5
     bnd["bandpass"] = ""
-    bnd["NET"] = 332.7
+    bnd["NET"] = 421.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.08386
-    bnd["C"] = 0.89063
-    bnd["NET_corr"] = 1.22
+    bnd["A"] = 0.05443
+    bnd["C"] = 0.92913
+    bnd["NET_corr"] = 1.23
     bnd["pwv_poly"] = 0.971399, 0.088721, 0.001181
     bands["SPLAT_f020"] = bnd
 
@@ -333,13 +333,13 @@ def get_example():
     bnd["low"] = 21.5
     bnd["high"] = 28.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 286.7
+    bnd["NET"] = 407.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.10372
-    bnd["C"] = 0.86476
-    bnd["NET_corr"] = 1.24
+    bnd["A"] = 0.06565
+    bnd["C"] = 0.91454
+    bnd["NET_corr"] = 1.27
     bnd["pwv_poly"] = 0.981351, 0.057846, 0.000779
     bands["SPLAT_f030"] = bnd
 
@@ -348,13 +348,13 @@ def get_example():
     bnd["low"] = 28.0
     bnd["high"] = 45.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 269.0
+    bnd["NET"] = 260.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.38043
-    bnd["C"] = 0.50426
-    bnd["NET_corr"] = 1.04
+    bnd["A"] = 0.26014
+    bnd["C"] = 0.66203
+    bnd["NET_corr"] = 1.17
     bnd["pwv_poly"] = 0.994233, 0.017840, 0.000388
     bands["SPLAT_f040"] = bnd
 
@@ -423,13 +423,13 @@ def get_example():
     bnd["low"] = 77.0
     bnd["high"] = 106.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 287.0
+    bnd["NET"] = 324.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.27837
-    bnd["C"] = 0.63703
-    bnd["NET_corr"] = 1.15
+    bnd["A"] = 0.23242
+    bnd["C"] = 0.69750
+    bnd["NET_corr"] = 1.18
     bnd["pwv_poly"] = 0.974286, 0.079438, 0.002080
     bands["SPLAT_f090"] = bnd
     
@@ -438,12 +438,12 @@ def get_example():
     bnd["low"] = 128.0
     bnd["high"] = 169.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 268.8
+    bnd["NET"] = 297.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.22972
-    bnd["C"] = 0.70032
+    bnd["A"] = 0.19995
+    bnd["C"] = 0.73946
     bnd["NET_corr"] = 1.01
     bnd["pwv_poly"] = 0.892955, 0.330207, 0.010174
     bands["SPLAT_f150"] = bnd
@@ -543,13 +543,13 @@ def get_example():
     bnd["low"] = 198.0
     bnd["high"] = 256.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 549.3
+    bnd["NET"] = 580.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.29109
-    bnd["C"] = 0.62028
-    bnd["NET_corr"] = 1.01
+    bnd["A"] = 0.27310
+    bnd["C"] = 0.64416
+    bnd["NET_corr"] = 1.02
     bnd["pwv_poly"] = 0.825060, 0.534043, 0.034081
     bands["SPLAT_f220"] = bnd
     
@@ -558,13 +558,13 @@ def get_example():
     bnd["low"] = 256.0
     bnd["high"] = 315.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 1295.9
+    bnd["NET"] = 1327.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.33985
-    bnd["C"] = 0.55678
-    bnd["NET_corr"] = 1.01
+    bnd["A"] = 0.33182
+    bnd["C"] = 0.56786
+    bnd["NET_corr"] = 1.00
     bnd["pwv_poly"] = 0.776403, 0.676221, 0.063374
     bands["SPLAT_f280"] = bnd
 
