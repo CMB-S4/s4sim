@@ -58,8 +58,8 @@ bands=(f090 f150 f220 f280)
 
 echo "Listing schedules at" `date`
 
-fnames1=(`python3 get_fnames_serial.py ../split_schedules_1_upto2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
-fnames2=(`python3 get_fnames_serial.py ../split_schedules_1_over2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+fnames1=(`python3 ../get_fnames_serial.py ../split_schedules_1_upto2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+fnames2=(`python3 ../get_fnames_serial.py ../split_schedules_1_over2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
 fnames=( ${fnames1[@]} ${fnames2[@]} )
 echo "Found ${#fnames[@]} schedule files"
 

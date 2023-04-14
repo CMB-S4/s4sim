@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #for suffix in "" "_lowcomplexity" "_highcomplexity"; do
-for suffix in "_mediumcomplexity"; do
+for suffix in ""; do
     echo "suffix = ${suffix}"
 
     fnames=(`grep -lR --include '*.log' -e '^TOAST INFO: Workflow completed in' logs${suffix}/LAT0_CHLAT`)

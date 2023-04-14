@@ -62,8 +62,8 @@ bands=(f090 f150 f220 f280)
 
 echo "Listing schedules at" `date`
 
-fnames1=(`python3 get_fnames_serial.py ../split_schedules_1_upto2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
-fnames2=(`python3 get_fnames_serial.py ../split_schedules_1_over2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+fnames1=(`python3 ../get_fnames_serial.py ../split_schedules_1_upto2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+fnames2=(`python3 ../get_fnames_serial.py ../split_schedules_1_over2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
 fnames=( ${fnames1[@]} ${fnames2[@]} )
 echo "Found ${#fnames[@]} schedule files"
 
@@ -80,17 +80,14 @@ done
 for schedule in ${fnames[*]}; do
     rootname=`basename $schedule .txt`
     for band in ${bands[*]}; do
-        #logdir=logs${suffix}/${TELESCOPE}/${band}
-        logdir=logs/${TELESCOPE}/${band}
-        #logfile=$logdir/${rootname}_${band}.log
-        logfile=$logdir/${rootname}.log
-        logfile2=cleared_$logdir/${rootname}.log
+        logdir=logs${suffix}/${TELESCOPE}/${band}
+        logfile=$logdir/${rootname}_${band}.log
+        logfile2=cleared_$logfile
         if [[ ! -e $logfile && ! -e $logfile2 ]]; then
             echo "Writing $logfile at" `date`
             date > ${logfile}
 
-            #outdir=outputs${suffix}/${TELESCOPE}/${band}/${rootname}
-            outdir=outputs/${TELESCOPE}/${band}/${rootname}
+            outdir=outputs${suffix}/${TELESCOPE}/${band}/${rootname}
             mkdir -p --mode=g+rXs-w $outdir
             chgrp -R cmbs4 $outdir
 

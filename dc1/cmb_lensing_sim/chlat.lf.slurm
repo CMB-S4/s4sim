@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --qos=preempt
-#SBATCH --time=12:00:00
-#SBATCH --nodes=4
+#SBATCH --qos=regular
+#SBATCH --time=00:30:00
+#SBATCH --nodes=1
 #SBATCH --job-name=CMBS4_DC0_lf_cmb_lensing
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
@@ -58,8 +58,8 @@ bands=(f030 f040)
 
 echo "Listing schedules at" `date`
 
-fnames1=(`python3 get_fnames_serial.py ../split_schedules_1_upto2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
-fnames2=(`python3 get_fnames_serial.py ../split_schedules_1_over2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+fnames1=(`python3 ../get_fnames_serial.py ../split_schedules_1_upto2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+fnames2=(`python3 ../get_fnames_serial.py ../split_schedules_1_over2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
 fnames=( ${fnames1[@]} ${fnames2[@]} )
 echo "Found ${#fnames[@]} schedule files"
 
@@ -75,12 +75,10 @@ done
 
 for schedule in ${fnames[*]}; do
     rootname=`basename $schedule .txt`
-    #rootname=${TELESCOPE}_${rootname}
     for band in ${bands[*]}; do
         logdir=logs/${TELESCOPE}/${band}
-        #logfile=$logdir/${rootname}_${band}.log
-        logfile=$logdir/${rootname}.log
-        logfile2=cleared_$logdir/${rootname}.log
+        logfile=$logdir/${rootname}_${band}.log
+        logfile2=cleared_$logfile
         if [[ ! -e $logfile && ! -e $logfile2 ]]; then
             echo "Writing $logfile at" `date`
             date > ${logfile}

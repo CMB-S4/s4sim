@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --qos=regular
-#SBATCH --time=00:30:00
-#SBATCH --nodes=1
-#SBATCH --job-name=CMBS4_DC0_lf_foregrounds
+#SBATCH --qos=preempt
+#SBATCH --time=02:00:00
+#SBATCH --nodes=4
+#SBATCH --job-name=CMBS4_DC0_lf_multimap
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -47,10 +47,6 @@ echo "      ntask_group = ${ntask_group}"
 echo "        groupsize = ${groupsize}"
 echo "           ngroup = ${ngroup}"
 
-suffix="_mediumcomplexity"
-#suffix="_lowcomplexity"
-#suffix="_highcomplexity"
-
 telescope=chlat
 site=chile
 TELESCOPE=LAT0_CHLAT
@@ -62,8 +58,8 @@ bands=(f030 f040)
 
 echo "Listing schedules at" `date`
 
-fnames1=(`python3 ../get_fnames_serial.py ../split_schedules_1_upto2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
-fnames2=(`python3 ../get_fnames_serial.py ../split_schedules_1_over2mm/${telescope} logs${suffix}/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+fnames1=(`python3 ../get_fnames_serial.py ../split_schedules_1_upto2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
+fnames2=(`python3 ../get_fnames_serial.py ../split_schedules_1_over2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
 fnames=( ${fnames1[@]} ${fnames2[@]} )
 echo "Found ${#fnames[@]} schedule files"
 
@@ -73,27 +69,28 @@ sleep $((RANDOM % 15))
 echo "Looking for schedule at" `date`
 
 for band in ${bands[*]}; do
-    logdir=logs${suffix}/${TELESCOPE}/${band}
+    logdir=logs/${TELESCOPE}/${band}
     mkdir -p $logdir
 done
 
 for schedule in ${fnames[*]}; do
     rootname=`basename $schedule .txt`
     for band in ${bands[*]}; do
-        logdir=logs${suffix}/${TELESCOPE}/${band}
+        logdir=logs/${TELESCOPE}/${band}
         logfile=$logdir/${rootname}_${band}.log
         logfile2=cleared_$logfile
         if [[ ! -e $logfile && ! -e $logfile2 ]]; then
             echo "Writing $logfile at" `date`
             date > ${logfile}
 
-            outdir=outputs${suffix}/${TELESCOPE}/${band}/${rootname}
+            outdir=outputs/${TELESCOPE}/${band}/${rootname}
             mkdir -p --mode=g+rXs-w $outdir
             chgrp -R cmbs4 $outdir
 
-            srun -N $nnode_group -n $ntask_group -c $ncore --cpu_bind=cores toast_sim_ground.py \
-                 --config ../params/common.toml ../params/scanning_${telescope}.toml \
-                 ../params/atmosphere_${site}.toml ../params/reduce_${telescope}.toml \
+            srun -N $nnode_group -n $ntask_group -c $ncore --cpu_bind=cores \
+                 toast_sim_ground.py \
+                 --config ../params/common.new.toml ../params/scanning_${telescope}.toml \
+                 ../params/atmosphere_${site}.toml ../params/reduce_${telescope}.new.toml \
                  --focalplane ../focalplanes/focalplane_${TELESCOPE}_${band}.h5 \
                  --telescope $TELESCOPE \
                  --schedule $schedule \
@@ -102,13 +99,15 @@ for schedule in ${fnames[*]}; do
                  --obsmaps \
                  --mem_count.enable \
                  --scan_healpix_map.enable \
-                 --scan_healpix_map.file input_maps/foreground${suffix}.${telescope}.${band}.h5 \
+                 --scan_healpix_map.det_data "unlensed_cmb;cmb_lensing;foreground" \
+                 --scan_healpix_map.file "../cmb_sim/input_maps/cmb.${telescope}.${band}.h5;../cmb_lensing_sim/input_maps/cmb_lensing.${telescope}.${band}.h5;../foreground_sim/input_maps/foreground_mediumcomplexity.${telescope}.${band}.h5" \
                  --sim_noise.disable \
                  --sim_atmosphere.disable \
                  --raw_statistics.disable \
                  --filtered_statistics.disable \
                  --mapmaker.report_memory \
-                 --processing_mask.file input_maps/mask15${suffix}.${telescope}.${band}.h5 \
+                 --processing_mask.file ../foreground_sim/input_maps/mask15_mediumcomplexity.${telescope}.${band}.h5 \
+                 --mapmaker.write_invcov \
                  --save_hdf5.disable \
                  >> ${logfile} 2>&1 &
             sleep 1

@@ -10,10 +10,8 @@ import numpy as np
 tele = "chlat"
 TELE = "LAT0_CHLAT"
 
-# logs/LAT0_CHLAT/f090/LAT0_CHLAT_split_schedule_0000_f090.log
-
 #for suffix in "", "_lowcomplexity", "_highcomplexity":
-for suffix in "",:
+for suffix in "_mediumcomplexity",:
     print(f"\nsuffix = {suffix}\n")
 
     hits_tot = 0
@@ -21,9 +19,7 @@ for suffix in "",:
 
     for subset in "upto2mm", "over2mm":
         print(f"\nsubset = {subset}\n")
-        fnames_in = sorted(glob(f"split_schedules_1_{subset}/{tele}/*.txt"))
-        #fnames_done = glob(f"split_schedules/{tele}/done/split_schedule_*.txt")
-        #nsplit = len(fnames) + len(fnames_done)
+        fnames_in = sorted(glob(f"../split_schedules_1_{subset}/{tele}/*.txt"))
         nsplit = len(fnames_in)
         print(f"Found {nsplit} split schedule files")
         obs = set()
@@ -34,7 +30,7 @@ for suffix in "",:
             freq_obs = set()
             fnames = sorted(glob(f"cleared_logs{suffix}/{TELE}/f{freq:03}/*.log"))
             for fname in fnames:
-                freq_obs.add(os.path.basename(fname).replace(".log", ""))
+                freq_obs.add(os.path.basename(fname).replace("_f{freq:03}.log", ""))
             hits = 0
             for ob in freq_obs:
                 if ob in obs:
