@@ -1661,14 +1661,14 @@ def get_example():
 
     #from the DSR
     sfwhm = OrderedDict()
-    sfwhm["SAT_f030"] = 73.6
-    sfwhm["SAT_f040"] = 73.6
-    sfwhm["SAT_f085"] = 26.0
-    sfwhm["SAT_f145"] = 26.0
-    sfwhm["SAT_f095"] = 23.2
-    sfwhm["SAT_f155"] = 23.2
-    sfwhm["SAT_f220"] = 10.0
-    sfwhm["SAT_f280"] = 10.0
+    sfwhm["SAT_f030"] = 85.2
+    sfwhm["SAT_f040"] = 61.6
+    sfwhm["SAT_f085"] = 24.6
+    sfwhm["SAT_f145"] = 15.8
+    sfwhm["SAT_f095"] = 22.4
+    sfwhm["SAT_f155"] = 14.3
+    sfwhm["SAT_f220"] = 9.4
+    sfwhm["SAT_f280"] = 7.7
 
     tele = OrderedDict()
     tele["tubes"] = ["ST0", "ST1", "ST2"]
