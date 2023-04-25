@@ -1357,19 +1357,19 @@ def get_example():
     telescopes = OrderedDict()
 
     lfwhm = OrderedDict()
-    lfwhm["SPLAT_f020"] = 10.8
+    lfwhm["SPLAT_f020"] = 11.2
     lfwhm["CHLAT_f030"] = 7.4
-    lfwhm["SPLAT_f030"] = 8.7
+    lfwhm["SPLAT_f030"] = 9.1
     lfwhm["CHLAT_f040"] = 5.1
-    lfwhm["SPLAT_f040"] = 5.9
+    lfwhm["SPLAT_f040"] = 6.2
     lfwhm["CHLAT_f090"] = 2.2
-    lfwhm["SPLAT_f090"] = 2.4
+    lfwhm["SPLAT_f090"] = 2.5
     lfwhm["CHLAT_f150"] = 1.4
     lfwhm["SPLAT_f150"] = 1.5
     lfwhm["CHLAT_f220"] = 1.0
     lfwhm["SPLAT_f220"] = 1.1
     lfwhm["CHLAT_f280"] = 0.9
-    lfwhm["SPLAT_f280"] = 0.9
+    lfwhm["SPLAT_f280"] = 1.0
 
     tele = OrderedDict()
     tele["tubes"] = [
