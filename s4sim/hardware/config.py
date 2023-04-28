@@ -682,6 +682,7 @@ def get_example():
         "SPLAT_HF": ["SPLAT_f220", "SPLAT_f280"],
         "SAT_HF": ["SAT_f220", "SAT_f280"],
     }
+    #location positions of mechanical pin holes that kill pixels on the wafers
     pins = {
         "SPLAT_ULF": [],
         "CHLAT_LF": [],
