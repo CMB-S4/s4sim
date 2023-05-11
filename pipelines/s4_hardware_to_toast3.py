@@ -1,6 +1,6 @@
 #!/usr/bin/env/python
 
-# Copyright (c) 2020-2020 CMB-S4 Collaboration.
+# Copyright (c) 2020-2023 CMB-S4 Collaboration.
 # Full license can be found in the top level "LICENSE" file.
 
 """Translate an S4 hardware map on disk into an HDF5 supported by TOAST3
@@ -64,7 +64,7 @@ def main():
         if args.telescope is None:
             raise RuntimeError("Must select a telescope if not providing a hardware file.")
         print(f"Simulating hardware for {args.telescope}...", end="", flush=True)
-        hw = hardware.get_example()
+        hw = hardware.sim_nominal()
         hw.data["detectors"] = hardware.sim_telescope_detectors(hw, args.telescope)
     else:
         if args.telescope is not None:
@@ -145,7 +145,7 @@ def main():
         ):
             if wafer in wafer_to_FOV_cut:
                 theta_max = wafer_to_FOV_cut[wafer] / 2
-                theta, phi = qa.to_position(quat)
+                theta, phi, _ = qa.to_iso_angles(quat)
                 if theta > theta_max:
                     cut[idet] = False
         print(f"INFO: FOV_cut rejects {(1 - np.sum(cut) / n_det) * 100:.2f} % pixels")

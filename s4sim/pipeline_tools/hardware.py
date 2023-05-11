@@ -1,4 +1,4 @@
-# Copyright (c) 2020-2020 CMB-S4 Collaboration.
+# Copyright (c) 2020-2023 CMB-S4 Collaboration.
 # Full license can be found in the top level "LICENSE" file.
 
 import pickle
@@ -242,7 +242,7 @@ def get_hardware(args, comm, verbose=False):
             timer.report_clear("Load {}".format(args.hardware))
         else:
             log.info("Simulating default hardware configuration")
-            hw = hardware.get_example()
+            hw = hardware.sim_nominal()
             timer.report_clear("Get example hardware")
             hw.data["detectors"] = hardware.sim_telescope_detectors(hw, telescope.name)
             timer.report_clear("Get telescope detectors")
@@ -325,7 +325,7 @@ def get_telescope(args, comm, verbose=False):
         return S4Telescope(args.telescope, site=args.site)
     telescope = None
     if comm.world_rank == 0:
-        hwexample = hardware.get_example()
+        hwexample = hardware.sim_nominal()
         tubes = args.tubes.split(",")
         for tube in tubes:
             for telescope_name, telescope_data in hwexample.data["telescopes"].items():

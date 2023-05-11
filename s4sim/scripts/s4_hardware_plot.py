@@ -1,9 +1,11 @@
-# Copyright (c) 2020-2020 CMB-S4 Collaboration.
+# Copyright (c) 2020-2023 CMB-S4 Collaboration.
 # Full license can be found in the top level "LICENSE" file.
 """Plot a hardware model.
 """
 
 import argparse
+
+import astropy.units as u
 
 from ..hardware import Hardware, plot_detectors, summary_text
 
@@ -22,6 +24,11 @@ def main():
 
     parser.add_argument(
         "--out", required=False, default=None, help="Name of the output PDF file."
+    )
+
+    parser.add_argument(
+        "--xieta", required=False, default=False, action="store_true",
+        help="Plot in Xi / Eta coordinates."
     )
 
     parser.add_argument(
@@ -57,13 +64,21 @@ def main():
     hw = Hardware(args.hardware)
     # summary_text(hw)
 
+    width = args.width
+    if width is not None:
+        width = float(width)
+    height = args.height
+    if height is not None:
+        height = float(height)
+
     print("Generating detector plot...", flush=True)
     plot_detectors(
         hw.data["detectors"],
         outfile,
-        width=args.width,
-        height=args.height,
+        width=width,
+        height=height,
         labels=args.labels,
+        xieta=args.xieta,
     )
 
     return

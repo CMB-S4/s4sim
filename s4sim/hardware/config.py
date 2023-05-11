@@ -269,15 +269,16 @@ class Hardware(object):
         return hw
 
 
-def get_example():
-    """Return an example Hardware config with the required sections.
+def sim_nominal():
+    """Return a simulated nominal hardware configuration.
 
-    The returned Hardware object has 4 fake detectors as an example.  These
-    detectors can be replaced by the results of other simulation functions.
+    This returns a simulated Hardware object with the nominal instrument
+    properties / metadata, but with an empty set of detector locations.
+    This can then be passed to one of the detector simulation functions
+    to build up the list of detectors.
 
     Returns:
-        (Hardware): Hardware object with example parameters.
-
+        (Hardware): Hardware object with nominal metadata.
     """
     cnf = OrderedDict()
 
@@ -432,7 +433,7 @@ def get_example():
     bnd["NET_corr"] = 1.15
     bnd["pwv_poly"] = 0.974286, 0.079438, 0.002080
     bands["SPLAT_f090"] = bnd
-    
+
     bnd = OrderedDict()
     bnd["center"] = 148.5
     bnd["low"] = 128.0
@@ -552,7 +553,7 @@ def get_example():
     bnd["NET_corr"] = 1.01
     bnd["pwv_poly"] = 0.825060, 0.534043, 0.034081
     bands["SPLAT_f220"] = bnd
-    
+
     bnd = OrderedDict()
     bnd["center"] = 285.5
     bnd["low"] = 256.0
@@ -977,7 +978,8 @@ def get_example():
         "SPLAT_MF",
         "SPLAT_LF",
     ]
-    ltubepos = [
+    # TOAST hexagon layout positions in Xi/Eta coordinates
+    ltube_toasthex_pos = [
         0,
         1,
         2,
@@ -1242,7 +1244,8 @@ def get_example():
         tb["type"] = ttyp
         tb["waferspace"] = 124.
         tb["wafers"] = list()
-        # tw is the wafer number in the tube. Here we use 6 for the 3 full and 3 partial wafers/tube
+        # tw is the wafer number in the tube.
+        # Here we use 6 for the 3 full and 3 partial wafers/tube
         for tw in range(1):
             off = 0
             for w, props in cnf["wafers"].items():
@@ -1253,7 +1256,7 @@ def get_example():
                         break
                     off += 1
         tb["platescale"] = 0.0047619
-        tb["location"] = ltubepos[tindx]
+        tb["toast_hex_pos"] = ltube_toasthex_pos[tindx]
         tubes[nm] = tb
 
     stubes = [
@@ -1276,7 +1279,7 @@ def get_example():
         "SAT_MFH",
         "SAT_LF",
     ]
-    stubepos = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    stube_toasthex_pos = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     for tindx in range(18):
         nm = "ST{:d}".format(tindx)
         ttyp = stubes[tindx]
@@ -1339,7 +1342,7 @@ def get_example():
             # 29.0/(490mm)
             tb["platescale"] = 0.0592
             tb["FOV_cut"] = 40.0
-        tb["location"] = stubepos[tindx]
+        tb["toast_hex_pos"] = stube_toasthex_pos[tindx]
         tubes[nm] = tb
 
     cnf["tubes"] = tubes
@@ -1747,30 +1750,9 @@ def get_example():
     cnf["cards"] = cards
     cnf["crates"] = crates
 
-    pl = ["A", "B"]
-    hand = ["L", "R"]
-    bandarr=["CHLAT_f030","CHLAT_f040"]
-
-    dets = OrderedDict()
-    for d in range(4):
-        dprops = OrderedDict()
-        dprops["wafer"] = "07"
-        dprops["ID"] = d
-        dprops["pixel"] = "000"
-        bindx = d % 2
-        dprops["band"] = bandarr[bindx]
-        dprops["fwhm"] = 1.0
-        dprops["pol"] = pl[bindx]
-        dprops["handed"] = None
-        dprops["card"] = "07"
-        dprops["channel"] = d
-        dprops["coax"] = 0
-        dprops["bias"] = 0
-        dprops["quat"] = np.array([0.0, 0.0, 0.0, 1.0])
-        dname = "{}_{}_{}_{}".format("07", "000", dprops["band"], dprops["pol"])
-        dets[dname] = dprops
-
-    cnf["detectors"] = dets
+    # Add an empty set of detectors here, in case the user just wants access to
+    # the hardware metadata.
+    cnf["detectors"] = OrderedDict()
 
     hw = Hardware()
     hw.data = cnf
