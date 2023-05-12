@@ -343,7 +343,8 @@ def sim_wafer_detectors(
         if band in bands:
             bands = [band]
         else:
-            raise RuntimeError("band '{}' not valid for wafer '{}'".format(band, wafer))
+            msg = f"band '{band}' not valid for wafer '{wafer}'"
+            raise RuntimeError(msg)
 
     # Lay out the pixel locations depending on the wafer type.  Also
     # compute the polarization orientation rotation, as well as the A/B
@@ -354,6 +355,7 @@ def sim_wafer_detectors(
     layout_A = None
     layout_B = None
     handed = None
+    print(f"PACKING = {wprops['packing']}, BANDS = {bands}", flush=True)  # DEBUG
     if wprops["packing"] == "RP":
         # Feedhorn (NIST style)
         # Make gap zero for partial_arrays
@@ -367,31 +369,32 @@ def sim_wafer_detectors(
         dim = rhomb_dim(nrhombus)
         # This is the center-center distance along the short axis
         width = (dim - 1) * pixsep
+        print(f"DIM = {dim}, WIDTH = {width}, PIXSEP = {pixsep}, PLATESCALE = {platescale}, GAP = {gap}", flush=True)  # DEBUG
         # The orientation within each rhombus alternates between zero and 45
         # degrees.  However there is an offset.  We choose this arbitrarily
         # for the nominal rhombus position, and then the rotation of the
         # other 2 rhombi will naturally modulate this.
-        pol_A = np.zeros(nrhombus, dtype=np.float64)
-        pol_B = np.zeros(nrhombus, dtype=np.float64)
+        pol_A = np.zeros(nrhombus, dtype=float)
+        pol_B = np.zeros(nrhombus, dtype=float)
         poloff = 22.5
         for p in range(nrhombus):
             # get the row / col of the pixel
             row, col = rhomb_xieta_row_col(nrhombus, p)
             if np.mod(row, 2) == 0:
-                pol_A[p] = 0.0 + poloff
+                pol_A[p] = 0 + poloff
             else:
-                pol_A[p] = 45.0 + poloff
-            pol_B[p] = 90.0 + pol_A[p]
+                pol_A[p] = 45 + poloff
+            pol_B[p] = 90 + pol_A[p]
         # kill pixels in partial arrays
         if partial_type is None:
             kill = []
         elif partial_type == "rhombus":
-            kill = np.linspace(dim ** 2, 3 * dim ** 2 - 1, 2 * dim ** 2, dtype=np.int)
+            kill = np.linspace(dim**2, 3 * dim**2 - 1, 2 * dim**2, dtype=int)
         elif partial_type == "half":
             kill1 = np.linspace(
-                0, ((dim ** 2 - dim) // 2 - 1), (dim ** 2 - dim) // 2, dtype=np.int
+                0, ((dim**2 - dim) // 2 - 1), (dim**2 - dim) // 2, dtype=int
             )
-            kill2 = np.linspace(dim ** 2, 2 * dim ** 2 - 1, dim ** 2, dtype=np.int)
+            kill2 = np.linspace(dim**2, 2 * dim**2 - 1, dim**2, dtype=int)
             kill = np.append(kill1, kill2)
         else:
             kill = []
@@ -420,15 +423,15 @@ def sim_wafer_detectors(
         # same nominal orientation but trail each other along the
         # vertex-vertex axis of the hexagon.  The polarization orientation
         # changes every other column
-        pol_A = np.zeros(npix, dtype=np.float64)
-        pol_B = np.zeros(npix, dtype=np.float64)
+        pol_A = np.zeros(npix, dtype=float)
+        pol_B = np.zeros(npix, dtype=float)
         for p in range(npix):
             row, col = hex_xieta_row_col(npix, p)
             if np.mod(col, 4) < 2:
                 pol_A[p] = 0.0
             else:
                 pol_A[p] = 45.0
-            pol_B[p] = 90.0 + pol_A[p]
+            pol_B[p] = 90 + pol_A[p]
         if partial_type is None:
             kill = []
         elif partial_type == "half":
@@ -501,8 +504,10 @@ def sim_wafer_detectors(
                 # Layout quaternion offset is from the origin.  Now we apply
                 # the rotation of the wafer center.
                 try:
+                    # Rhombus layout from a list
                     dprops["quat"] = qa.mult(center, layout[p]).flatten()
                 except KeyError:
+                    # Hexagonal layout from a dictionary
                     dprops["quat"] = qa.mult(center, layout[f"{p:03}"]["quat"]).flatten()
                 dname = f"{wafer}_{pstr}_{b}_{pl}"
                 dets[dname] = dprops
@@ -614,6 +619,7 @@ def sim_telescope_detectors(hw, tele, tubes=None):
                     "",
                     np.zeros(7, dtype=float) * u.degree,
                 )
+                """
                 nwafer = len(tubeprops["wafers"])
                 wcenters = hex_layout(
                     nwafer,
@@ -624,17 +630,37 @@ def sim_telescope_detectors(hw, tele, tubes=None):
                 )
                 centers = list()
                 for p, q in wcenters.items():
-                    centers.append(qa.mult(tcenters[location]["quat"], q["quat"]))
+                    # centers.append(qa.mult(tcenters[location]["quat"], q["quat"]))
+                    centers.append(q["quat"])
+                """
+                shift = waferspace * platescale * np.pi / 180.0
+                wcenters = [
+                    np.array([-shift/(2.*np.cos(thirty)), 0.0, 0.0]),
+                    np.array([shift/(4.*np.cos(thirty)), -shift/2., 0.0]),
+                    np.array([shift/(4.*np.cos(thirty)), shift/2., 0.0]),
+                    np.array([shift/(np.cos(thirty)),0.0, 0.0]),
+                    np.array([shift/(np.cos(thirty)),shift,0.0]),
+                    np.array([shift/(4.*np.cos(thirty)), shift/2. + shift, 0.0]),
+                    np.array([-shift/(2.*np.cos(thirty)), shift, 0.0]),
+                    np.array([-5.*shift/(4.*np.cos(thirty)), shift/2., 0.0]),
+                    np.array([-5.*shift/(4.*np.cos(thirty)), -shift/2., 0.0]),
+                    np.array([-shift/(2.*np.cos(thirty)), -shift, 0.0]),
+                    np.array([shift/(4.*np.cos(thirty)), -shift/2. - shift, 0.0]),
+                    np.array([shift/(np.cos(thirty)),-shift, 0.0]),
+                ]
+                qwcenters = ang_to_quat(wcenters)
+                centers = list()
+                for qwc in qwcenters:
+                    centers.append(qa.mult(tcenters[location]["quat"], qwc))
 
                 for windx, wafer in enumerate(tubeprops["wafers"]):
-                    partial_type = None
                     dets = sim_wafer_detectors(
                         hw,
                         wafer,
                         platescale,
                         fwhm,
                         center=centers[windx],
-                        partial_type=partial_type,
+                        partial_type=None,
                     )
                     alldets.update(dets)
     else:
