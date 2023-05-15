@@ -21,6 +21,9 @@ from toast.instrument_sim import (
 import toast.qarray as qa
 
 
+XAXIS, YAXIS, ZAXIS = np.eye(3)
+
+
 def ang_to_quat(offsets):
     """Convert cartesian angle offsets and rotation into quaternions.
 
@@ -355,7 +358,7 @@ def sim_wafer_detectors(
     layout_A = None
     layout_B = None
     handed = None
-    print(f"PACKING = {wprops['packing']}, BANDS = {bands}", flush=True)  # DEBUG
+    print(f"WAFER = {wafer}, PARTIAL = {partial_type}, PACKING = {wprops['packing']}, BANDS = {bands}", flush=True)  # DEBUG
     if wprops["packing"] == "RP":
         # Feedhorn (NIST style)
         # Make gap zero for partial_arrays
@@ -442,21 +445,19 @@ def sim_wafer_detectors(
         elif partial_type == "rhombus":
             kill = []
             for ii in range(npix):
-                if (
-                    (sector2(npix, ii) == 1)
-                    or (sector2(npix, ii) == 2)
-                    or (sector2(npix, ii) == 3)
-                    or (sector2(npix, ii) == 4)
-                ):
+                if (sector2(npix, ii) in [1, 2, 3, 4]):
                     kill.append(ii)
         else:
             kill = []
+        print(f"WIDTH = {width}, NPIX = {npix}, PIXSEP = {pixsep}, PLATESCALE = {platescale}", flush=True)  # DEBUG
+        rot = qa.rotation(ZAXIS, np.radians(-90))  # DEBUG
         layout_A = hex_layout(
             npix,
             width * u.degree,
             "",
             "",
             pol_A * u.degree,
+            center=rot,  # DEBUG
         )
         kill_pixels(layout_A, kill)
         layout_B = hex_layout(
@@ -465,6 +466,7 @@ def sim_wafer_detectors(
             "",
             "",
             pol_B * u.degree,
+            center=rot,  # DEBUG
         )
         kill_pixels(layout_B, kill)
     else:
@@ -513,6 +515,8 @@ def sim_wafer_detectors(
                 dets[dname] = dprops
                 doff += 1
         p += 1
+
+    print(f"  WAFER SIMULATED WITH {len(dets)} DETECTORS", flush=True)  # DEBUG
 
     return dets
 
@@ -575,6 +579,7 @@ def sim_telescope_detectors(hw, tele, tubes=None):
                     "",
                     90 * np.ones(7, dtype=float) * u.degree,
                 )
+                """
                 nwafer = len(tubeprops["wafers"])
                 wcenters = hex_layout(
                     nwafer,
@@ -586,6 +591,26 @@ def sim_telescope_detectors(hw, tele, tubes=None):
                 centers = list()
                 for p, q in wcenters.items():
                     centers.append(qa.mult(tcenters[location]["quat"], q["quat"]))
+                """
+                srad = waferspace * platescale * np.pi / 180.0
+                wcenters = [
+                        np.array([-srad/(2.*np.cos(thirty)), 0.0, 0.0]),
+                        np.array([srad/(4.*np.cos(thirty)), -srad/2., 0.0]),
+                        np.array([srad/(4.*np.cos(thirty)), srad/2., 0.0]),
+                        np.array([srad/(np.cos(thirty)),0.0, 0.0]),
+                        np.array([srad/(np.cos(thirty)),srad,10 * thirty]),
+                        np.array([srad/(4.*np.cos(thirty)), srad/2. + srad, 0.0]),
+                        np.array([-srad/(2.*np.cos(thirty)), srad, 0.0]),
+                        np.array([-5.*srad/(4.*np.cos(thirty)), srad/2., 2 * thirty]),
+                        np.array([-5.*srad/(4.*np.cos(thirty)), -srad/2., 4 * thirty]),
+                        np.array([-srad/(2.*np.cos(thirty)), -srad, 0.0]),
+                        np.array([srad/(4.*np.cos(thirty)), -srad/2. - srad, 6 * thirty]),
+                        np.array([srad/(np.cos(thirty)),-srad, -4 * thirty]),
+                ]
+                qwcenters = ang_to_quat(wcenters)
+                centers = list()
+                for qwc in qwcenters:
+                    centers.append(qa.mult(tcenters[location]["quat"], qwc))
 
                 for windx, wafer in enumerate(tubeprops["wafers"]):
                     if windx == 4:
@@ -672,7 +697,8 @@ def sim_telescope_detectors(hw, tele, tubes=None):
             10 * tubespace * tele_platescale * u.degree,
             "",
             "",
-            90 * np.ones(91, dtype=float) * u.degree,
+            # 90 * np.ones(91, dtype=float) * u.degree,
+            0 * np.ones(91, dtype=float) * u.degree,  # DEBUG
         )
 
         for tindx, tube in enumerate(tubes):
