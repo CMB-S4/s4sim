@@ -18,8 +18,8 @@ XAXIS, YAXIS, ZAXIS = np.eye(3)
 # Note, this is for atmospheric sims only and doesn't affect the wafer/tube scaling to the sky.
 # For SATs, this is FOV/2*(1+2/sqrt(3)), FOV UHF=35 deg, FOV others=29 deg
 FOCALPLANE_RADII_DEG = {
-    "LAT0": 3.9,
-    "LAT1": 3.9,
+    "LAT0": 4.3,
+    "LAT1": 4.3,
     "LAT2": 4.6,
     "SAT1": 15.0,
     "SAT2": 15.0,
