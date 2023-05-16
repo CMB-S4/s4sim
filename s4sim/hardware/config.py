@@ -299,9 +299,9 @@ def get_example():
     bands["SPLAT_f020"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 25.75
+    bnd["center"] = 24.75
     bnd["low"] = 21.5
-    bnd["high"] = 30.0
+    bnd["high"] = 28.0
     bnd["bandpass"] = ""
     bnd["NET"] = 307.7
     bnd["fknee"] = 50.0
@@ -314,9 +314,9 @@ def get_example():
     bands["CHLAT_f030"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 38.75
-    bnd["low"] = 30.0
-    bnd["high"] = 47.5
+    bnd["center"] = 36.5
+    bnd["low"] = 28.0
+    bnd["high"] = 45.0
     bnd["bandpass"] = ""
     bnd["NET"] = 240.7
     bnd["fknee"] = 50.0
@@ -510,8 +510,8 @@ def get_example():
 
     bnd = OrderedDict()
     bnd["center"] = 227.0
-    bnd["low"] = 197.9
-    bnd["high"] = 256.1
+    bnd["low"] = 198.0
+    bnd["high"] = 256.0
     bnd["bandpass"] = ""
     bnd["NET"] = 683.2
     bnd["fknee"] = 50.0
@@ -688,11 +688,11 @@ def get_example():
         "CHLAT_LF": [],
         "SPLAT_LF": [],
         "SAT_LF": [],
-        "CHLAT_MF": [],
+        "CHLAT_MF": [210,220],
         "SPLAT_MF": [210,220],
         "SAT_MFL": [70,75],
         "SAT_MFH": [0,91],
-        "CHLAT_HF": [],
+        "CHLAT_HF": [0,331],
         "SPLAT_HF": [0,331],
         "SAT_HF": [0,331],
     }
@@ -1269,7 +1269,7 @@ def get_example():
                     off += 1
         if tindx<170:
             #CHLAT platescale
-            tb["platescale"] = 0.0047619
+            tb["platescale"] = 0.003964
         else:
             #SPLAT platescale
             tb["platescale"] = 0.00429
@@ -1359,17 +1359,17 @@ def get_example():
 
     lfwhm = OrderedDict()
     lfwhm["SPLAT_f020"] = 11.2
-    lfwhm["CHLAT_f030"] = 7.4
+    lfwhm["CHLAT_f030"] = 7.8
     lfwhm["SPLAT_f030"] = 9.1
-    lfwhm["CHLAT_f040"] = 5.1
+    lfwhm["CHLAT_f040"] = 5.3
     lfwhm["SPLAT_f040"] = 6.2
-    lfwhm["CHLAT_f090"] = 2.2
+    lfwhm["CHLAT_f090"] = 2.1
     lfwhm["SPLAT_f090"] = 2.5
-    lfwhm["CHLAT_f150"] = 1.4
+    lfwhm["CHLAT_f150"] = 1.3
     lfwhm["SPLAT_f150"] = 1.5
-    lfwhm["CHLAT_f220"] = 1.0
+    lfwhm["CHLAT_f220"] = 0.95
     lfwhm["SPLAT_f220"] = 1.1
-    lfwhm["CHLAT_f280"] = 0.9
+    lfwhm["CHLAT_f280"] = 0.83
     lfwhm["SPLAT_f280"] = 1.0
 
     tele = OrderedDict()
@@ -1460,11 +1460,11 @@ def get_example():
         "LT83",
         "LT84"
     ]
-    tele["platescale"] = 0.0047619
-    # This tube spacing in mm corresponds to 0.83 degrees projected on
-    # the sky at a plate scale of 210 mm/deg or 0.0047619 deg/mm
-    # The physical tube spacing is actually 210 mm.
-    tele["tubespace"] =  174.3
+    tele["platescale"] = 0.003964
+    # This tube spacing in mm corresponds to 0.87 degrees projected on
+    # the sky at a plate scale of 0.003964 deg/mm
+    # The physical tube spacing may be different.
+    tele["tubespace"] =  0.87/0.003964
     tele["fwhm"] = lfwhm
     telescopes["LAT0"] = tele
 
@@ -1556,11 +1556,11 @@ def get_example():
         "LT168",
         "LT169"
     ]
-    tele["platescale"] =  0.0047619
-    # This tube spacing in mm corresponds to 0.83 degrees projected on
-    # the sky at a plate scale of 210 mm/deg or 0.0047619 deg/mm
-    # The physical tube spacing is actually 210 mm.
-    tele["tubespace"] =  174.3
+    tele["platescale"] =  0.003964
+    # This tube spacing in mm corresponds to 0.87 degrees projected on
+    # the sky at a plate scale of 0.003964 deg/mm
+    # The physical tube spacing may be different.
+    tele["tubespace"] =  0.87/0.003964
     tele["fwhm"] = lfwhm
     telescopes["LAT1"] = tele
 
