@@ -358,7 +358,6 @@ def sim_wafer_detectors(
     layout_A = None
     layout_B = None
     handed = None
-    print(f"WAFER = {wafer}, PARTIAL = {partial_type}, PACKING = {wprops['packing']}, BANDS = {bands}", flush=True)  # DEBUG
     if wprops["packing"] == "RP":
         # Feedhorn (NIST style)
         # Make gap zero for partial_arrays
@@ -371,8 +370,7 @@ def sim_wafer_detectors(
         # This dim is also the number of pixels along the short axis.
         dim = rhomb_dim(nrhombus)
         # This is the center-center distance along the short axis
-        width = (dim - 1) * pixsep
-        print(f"DIM = {dim}, WIDTH = {width}, PIXSEP = {pixsep}, PLATESCALE = {platescale}, GAP = {gap}", flush=True)  # DEBUG
+        width = dim * pixsep
         # The orientation within each rhombus alternates between zero and 45
         # degrees.  However there is an offset.  We choose this arbitrarily
         # for the nominal rhombus position, and then the rotation of the
@@ -422,6 +420,8 @@ def sim_wafer_detectors(
         # Hex close-packed
         # This is the center-center distance along the vertex-vertex axis
         width = (2 * (hex_nring(npix) - 1)) * pixsep
+        # Compensate for different wafer width conventions
+        width *= 0.90  # DEBUG
         # The sinuous handedness is chosen so that A/B pairs of pixels have the
         # same nominal orientation but trail each other along the
         # vertex-vertex axis of the hexagon.  The polarization orientation
@@ -449,7 +449,6 @@ def sim_wafer_detectors(
                     kill.append(ii)
         else:
             kill = []
-        print(f"WIDTH = {width}, NPIX = {npix}, PIXSEP = {pixsep}, PLATESCALE = {platescale}", flush=True)  # DEBUG
         rot = qa.rotation(ZAXIS, np.radians(-90))  # DEBUG
         layout_A = hex_layout(
             npix,
@@ -515,8 +514,6 @@ def sim_wafer_detectors(
                 dets[dname] = dprops
                 doff += 1
         p += 1
-
-    print(f"  WAFER SIMULATED WITH {len(dets)} DETECTORS", flush=True)  # DEBUG
 
     return dets
 
@@ -637,54 +634,38 @@ def sim_telescope_detectors(hw, tele, tubes=None):
                     )
                     alldets.update(dets)
             else:
-                tcenters = hex_layout(
-                    7,
-                    2 * tubespace * tele_platescale * u.degree,
-                    "",
-                    "",
-                    np.zeros(7, dtype=float) * u.degree,
-                )
-                """
-                nwafer = len(tubeprops["wafers"])
+                # Compensate for different wafer width conventions
+                waferspace *= 1.0833333  # DEBUG
+                # We only want 12 wafers but we want to offset the
+                # default 19-wafer hexagonal layout by half a wafer
+                # and then drop the ones which are the furthest away
+                # from the new center
+                # nwafer = len(tubeprops["wafers"])
+                nwafer = 19
+                offset = qa.rotation(YAXIS, -np.radians(waferspace * platescale / 2))
                 wcenters = hex_layout(
                     nwafer,
-                    2 * waferspace * platescale * u.degree,
+                    4 * waferspace * platescale * u.degree,
                     "",
                     "",
                     np.zeros(nwafer, dtype=float) * u.degree,
+                    center=offset
                 )
                 centers = list()
                 for p, q in wcenters.items():
-                    # centers.append(qa.mult(tcenters[location]["quat"], q["quat"]))
+                    vec = qa.rotate(q["quat"], ZAXIS)
+                    dist = np.arccos(np.dot(vec, ZAXIS))
+                    if dist > np.radians(1.5 * waferspace * platescale):
+                        continue
                     centers.append(q["quat"])
-                """
-                shift = waferspace * platescale * np.pi / 180.0
-                wcenters = [
-                    np.array([-shift/(2.*np.cos(thirty)), 0.0, 0.0]),
-                    np.array([shift/(4.*np.cos(thirty)), -shift/2., 0.0]),
-                    np.array([shift/(4.*np.cos(thirty)), shift/2., 0.0]),
-                    np.array([shift/(np.cos(thirty)),0.0, 0.0]),
-                    np.array([shift/(np.cos(thirty)),shift,0.0]),
-                    np.array([shift/(4.*np.cos(thirty)), shift/2. + shift, 0.0]),
-                    np.array([-shift/(2.*np.cos(thirty)), shift, 0.0]),
-                    np.array([-5.*shift/(4.*np.cos(thirty)), shift/2., 0.0]),
-                    np.array([-5.*shift/(4.*np.cos(thirty)), -shift/2., 0.0]),
-                    np.array([-shift/(2.*np.cos(thirty)), -shift, 0.0]),
-                    np.array([shift/(4.*np.cos(thirty)), -shift/2. - shift, 0.0]),
-                    np.array([shift/(np.cos(thirty)),-shift, 0.0]),
-                ]
-                qwcenters = ang_to_quat(wcenters)
-                centers = list()
-                for qwc in qwcenters:
-                    centers.append(qa.mult(tcenters[location]["quat"], qwc))
 
-                for windx, wafer in enumerate(tubeprops["wafers"]):
+                for wafer, center in zip(tubeprops["wafers"], centers):
                     dets = sim_wafer_detectors(
                         hw,
                         wafer,
                         platescale,
                         fwhm,
-                        center=centers[windx],
+                        center=center,
                         partial_type=None,
                     )
                     alldets.update(dets)
@@ -697,8 +678,7 @@ def sim_telescope_detectors(hw, tele, tubes=None):
             10 * tubespace * tele_platescale * u.degree,
             "",
             "",
-            # 90 * np.ones(91, dtype=float) * u.degree,
-            0 * np.ones(91, dtype=float) * u.degree,  # DEBUG
+            0 * np.ones(91, dtype=float) * u.degree,
         )
 
         for tindx, tube in enumerate(tubes):
