@@ -2,9 +2,11 @@
 
 # Split schedules for batch processing
 
-for suffix in .upto2mm .over2mm; do
+#for suffix in .upto2mm .over2mm .upto2mm_with_break .upto3mm_with_break; do
+for suffix in .upto2mm_with_break .upto3mm_with_break; do
     for nline in 1; do
-        for telescope in chlat splat spsat; do
+        #for telescope in chlat splat spsat; do
+        for telescope in chlat; do
             case $telescope in
                 chlat)
                     schedule_in=scan_strategy/chile_lat/schedules/chile_schedule_lat.pruned${suffix}.txt
@@ -46,6 +48,8 @@ for suffix in .upto2mm .over2mm; do
         done
     done
 done
+
+exit
 
 # Generate TOAST focalplane files
 

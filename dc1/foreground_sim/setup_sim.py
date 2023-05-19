@@ -8,11 +8,26 @@ from toast.pixels_io_healpix import write_healpix
 
 outdir = "input_maps"
 os.makedirs(outdir, exist_ok=True)
-mask_frac = 0.15
+#mask_frac = 0.15
+snr_limit_fg = 1000
+snr_limit_radio = 30
 mask_fwhm = np.radians(1)
 mask_lmax = 512
 
 # CHLAT
+
+measurement_requirements = {
+    #  T/P measurement requirement in uK.arcmin
+    30 : (21.8, 30.8),
+    40 : (12.4, 17.6),
+    90 : (2.0, 2.9),
+    150 : (2.0, 2.8),
+    220 : (6.9, 9.8),
+    280 : (16.7, 23.6),
+}
+nside = 4096
+pixarea = hp.nside2pixarea(nside, degrees=True)
+
 
 for suffix in "_mediumcomplexity",:  #  "_lowcomplexity", "_highcomplexity":
     for band, freq in [
@@ -45,23 +60,33 @@ for suffix in "_mediumcomplexity",:  #  "_lowcomplexity", "_highcomplexity":
             print(f"Wrote {fname_out}")
 
         # Processing mask
+        mr_T, mr_P = measurement_requirements[freq]  # Pixel depth measurement requirement, uK.arcmin
+        sdev = mr_T / 60 / np.sqrt(pixarea)  # Translate to pixel RMS
         fg = fg[0]
-        fg_sorted = np.sort(fg)
-        npix = fg.size
-        lim = fg_sorted[int(npix * (1 - mask_frac))]
-        mask = fg > lim
+        # fg_sorted = np.sort(fg)
+        # npix = fg.size
+        # lim = fg_sorted[int(npix * (1 - mask_frac))]
+        # mask = fg > lim
+        snr_fg = ((fg - np.median(fg)) / sdev)**2
+        mask = snr_fg > snr_limit_fg
+        print(f"  Mask fraction after fg : {np.sum(mask)/mask.size:.3f}")
         mask = hp.smoothing(mask, lmax=mask_lmax, fwhm=mask_fwhm, nest=True) > 0.25
         # mask radio sources separately
         fname_radio = f"/global/cfs/cdirs/cmbs4/dc/dc0/sky/4096/raw/radio/0000/cmbs4_radio_uKCMB_LAT-{band}_nside4096_0000.fits"
         radio = hp.read_map(fname_radio, nest=True)
-        radio_sorted = np.sort(radio)
-        lim = radio_sorted[int(npix * .99)]
-        mask[radio > lim] = True
+        # radio_sorted = np.sort(radio)
+        # lim = radio_sorted[int(npix * .99)]
+        # mask[radio > lim] = True
+        snr_radio = (radio / sdev)**2
+        mask[snr_radio > snr_limit_radio] = True
+        print(f"  Mask fraction after ps : {np.sum(mask)/mask.size:.3f}")
         # write out
-        fname_out_hdf5 = os.path.join(outdir, f"mask{int(mask_frac * 100):02}{suffix}.chlat.f{freq:03}.h5")
+        # fname_out_hdf5 = os.path.join(outdir, f"mask{int(mask_frac * 100):02}{suffix}.chlat.f{freq:03}.h5")
+        fname_out_hdf5 = os.path.join(outdir, f"mask_snr_fg_{int(snr_limit_fg):03}{suffix}_snr_ps_{int(snr_limit_radio):03}.chlat.f{freq:03}.h5")
         write_healpix(fname_out_hdf5, mask, dtype=np.int16, coord="C", nest=True, overwrite=True)
         print(f"Wrote {fname_out_hdf5}")
-        fname_out_fits = os.path.join(outdir, f"mask{int(mask_frac * 100):02}{suffix}.chlat.f{freq:03}.fits")
+        # fname_out_fits = os.path.join(outdir, f"mask{int(mask_frac * 100):02}{suffix}.chlat.f{freq:03}.fits")
+        fname_out_fits = os.path.join(outdir, f"mask_snr_fg_{int(snr_limit_fg):03}{suffix}_snr_ps_{int(snr_limit_radio):03}.chlat.f{freq:03}.fits")
         hp.write_map(fname_out_fits, mask, dtype=np.int16, coord="C", nest=True, overwrite=True)
         print(f"Wrote {fname_out_fits}")
 
