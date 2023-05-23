@@ -27,7 +27,7 @@
 
 [operators.cadence_map]
     class = "toast.ops.cadence_map.CadenceMap"
-    det_flag_mask = 1 # Bit mask value for optional detector flagging
+    det_flag_mask = 3 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     enabled = false # If True, this class instance is marked as enabled
     name = "cadence_map" # The 'name' of this class instance
@@ -35,14 +35,14 @@
     pixel_dist = "None" # The Data key containing the submap distribution
     pixel_pointing = "None" # This must be an instance of a pixel pointing operator.
     save_pointing = false # If True, do not clear pixel numbers after use
-    shared_flag_mask = 1 # Bit mask value for optional telescope flagging
+    shared_flag_mask = 3 # Bit mask value for optional telescope flagging
     shared_flags = "flags" # Observation shared key for telescope flags to use
     times = "times" # Observation shared key for timestamps
 
 [operators.crosslinking]
     class = "toast.ops.crosslinking.CrossLinking"
     API = 0 # Internal interface version for this operator
-    det_flag_mask = 1 # Bit mask value for optional detector flagging
+    det_flag_mask = 3 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     enabled = false # If True, this class instance is marked as enabled
     name = "crosslinking" # The 'name' of this class instance
@@ -50,7 +50,7 @@
     pixel_dist = "pixel_dist" # The Data key where the PixelDist object should be stored
     pixel_pointing = "None" # This must be an instance of a pixel pointing operator.
     save_pointing = false # If True, do not clear pixel numbers after use
-    shared_flag_mask = 1 # Bit mask value for optional telescope flagging
+    shared_flag_mask = 3 # Bit mask value for optional telescope flagging
     shared_flags = "flags" # Observation shared key for telescope flags to use
     sync_type = "alltoallv" # Communication algorithm: 'allreduce' or 'alltoallv'
 
@@ -58,12 +58,12 @@
     class = "toast.ops.statistics.Statistics"
     API = 0 # Internal interface version for this operator
     det_data = "signal" # Observation detdata key to analyze
-    det_flag_mask = 1 # Bit mask value for optional detector flagging
+    det_flag_mask = 3 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     enabled = true # If True, this class instance is marked as enabled
     name = "raw_statistics" # The 'name' of this class instance
     output_dir = "None" # If specified, write output data products to this directory
-    shared_flag_mask = 1 # Bit mask value for optional shared flagging
+    shared_flag_mask = 3 # Bit mask value for optional shared flagging
     shared_flags = "flags" # Observation shared key for telescope flags to use
     view = "None" # Use this view of the data in all observations
 
@@ -83,7 +83,7 @@
     class = "toast.ops.hwpfilter.HWPFilter"
     API = 0 # Internal interface version for this operator
     det_data = "signal" # Observation detdata key
-    det_flag_mask = 1 # Bit mask value for optional detector flagging
+    det_flag_mask = 3 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     detrend = false # Subtract the fitted trend along with the ground template
     enabled = false # If True, this class instance is marked as enabled
@@ -91,7 +91,7 @@
     hwp_angle = "hwp_angle" # Observation shared key for HWP angle
     hwp_flag_mask = 1 # Bit mask to use when adding flags based on HWP filter failures.
     name = "hwpfilter" # The 'name' of this class instance
-    shared_flag_mask = 1 # Bit mask value for optional shared flagging
+    shared_flag_mask = 3 # Bit mask value for optional shared flagging
     shared_flags = "flags" # Observation shared key for telescope flags to use
     trend_order = 5 # Order of a Legendre polynomial to fit along with the HWPSS template.
     view = "None" # Use this view of the data in all observations
@@ -102,7 +102,7 @@
     azimuth = "azimuth" # Observation shared key for Azimuth
     boresight_azel = "boresight_azel" # Observation shared key for boresight Az/El
     det_data = "signal" # Observation detdata key for accumulating atmosphere timestreams
-    det_flag_mask = 1 # Bit mask value for optional detector flagging
+    det_flag_mask = 3 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     detrend = false # Subtract the fitted trend along with the ground template
     enabled = true # If True, this class instance is marked as enabled
@@ -111,7 +111,7 @@
     leftright_mask = 8 # Bit mask value for left-to-right scans
     name = "groundfilter" # The 'name' of this class instance
     rightleft_mask = 16 # Bit mask value for right-to-left scans
-    shared_flag_mask = 1 # Bit mask value for optional shared flagging
+    shared_flag_mask = 3 # Bit mask value for optional shared flagging
     shared_flags = "flags" # Observation shared key for telescope flags to use
     split_template = false # Apply a different template for left and right scans
     trend_order = 5 # Order of a Legendre polynomial to fit along with the ground template.
@@ -121,14 +121,14 @@
     class = "toast.ops.polyfilter.PolyFilter"
     API = 0 # Internal interface version for this operator
     det_data = "signal" # Observation detdata key apply filtering to
-    det_flag_mask = 1 # Bit mask value for optional detector flagging
+    det_flag_mask = 3 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     enabled = true # If True, this class instance is marked as enabled
     name = "polyfilter1D" # The 'name' of this class instance
     order = 1 # Polynomial order
     pattern = ".*" # Regex pattern to match against detector names. Only detectors that match the pattern are filtered.
     poly_flag_mask = 1 # Bit mask value for intervals that fail to filter
-    shared_flag_mask = 1 # Bit mask value for optional shared flagging
+    shared_flag_mask = 3 # Bit mask value for optional shared flagging
     shared_flags = "flags" # Observation shared key for telescope flags to use
     view = "scanning" # Use this view of the data in all observations
 
@@ -136,7 +136,7 @@
     class = "toast.ops.polyfilter.PolyFilter2D"
     API = 0 # Internal interface version for this operator
     det_data = "signal" # Observation detdata key apply filtering to
-    det_flag_mask = 1 # Bit mask value for optional detector flagging
+    det_flag_mask = 3 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     enabled = false # If True, this class instance is marked as enabled
     focalplane_key = "None" # Which focalplane key to match
@@ -144,7 +144,7 @@
     order = 1 # Polynomial order
     pattern = ".*" # Regex pattern to match against detector names. Only detectors that match the pattern are filtered.
     poly_flag_mask = 1 # Bit mask value for intervals that fail to filter
-    shared_flag_mask = 1 # Bit mask value for optional shared flagging
+    shared_flag_mask = 3 # Bit mask value for optional shared flagging
     shared_flags = "flags" # Observation shared key for telescope flags to use
     times = "times" # Observation shared key for timestamps
     use_python = false # If True, use a pure python implementation for testing.
@@ -154,14 +154,14 @@
     class = "toast.ops.polyfilter.CommonModeFilter"
     API = 0 # Internal interface version for this operator
     det_data = "signal" # Observation detdata key apply filtering to
-    det_flag_mask = 1 # Bit mask value for optional detector flagging
+    det_flag_mask = 3 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     enabled = true # If True, this class instance is marked as enabled
     focalplane_key = "tube" # Which focalplane key to match
     name = "common_mode_filter" # The 'name' of this class instance
     pattern = ".*" # Regex pattern to match against detector names. Only detectors that match the pattern are filtered.
     redistribute = false # If True, redistribute data before and after filtering for optimal data locality.
-    shared_flag_mask = 1 # Bit mask value for optional shared flagging
+    shared_flag_mask = 3 # Bit mask value for optional shared flagging
     shared_flags = "flags" # Observation shared key for telescope flags to use
     times = "times" # Observation shared key for timestamps
 
@@ -169,12 +169,12 @@
     class = "toast.ops.statistics.Statistics"
     API = 0 # Internal interface version for this operator
     det_data = "signal" # Observation detdata key to analyze
-    det_flag_mask = 1 # Bit mask value for optional detector flagging
+    det_flag_mask = 3 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     enabled = true # If True, this class instance is marked as enabled
     name = "filtered_statistics" # The 'name' of this class instance
     output_dir = "None" # If specified, write output data products to this directory
-    shared_flag_mask = 1 # Bit mask value for optional shared flagging
+    shared_flag_mask = 3 # Bit mask value for optional shared flagging
     shared_flags = "flags" # Observation shared key for telescope flags to use
     view = "None" # Use this view of the data in all observations
 
@@ -195,7 +195,7 @@
     pixel_dist = "pix_dist" # The Data key where the PixelDist object should be stored
     pixel_pointing = "None" # This must be an instance of a pixel pointing operator
     pre_process = "None" # Optional extra operator to run prior to binning
-    shared_flag_mask = 1 # Bit mask value for optional telescope flagging
+    shared_flag_mask = 3 # Bit mask value for optional telescope flagging
     shared_flags = "flags" # Observation shared key for telescope flags to use
     stokes_weights = "None" # This must be an instance of a Stokes weights operator
     sync_type = "alltoallv" # Communication algorithm: 'allreduce' or 'alltoallv'
@@ -268,7 +268,7 @@
     pixel_dist = "pix_dist_final" # The Data key where the PixelDist object should be stored
     pixel_pointing = "None" # This must be an instance of a pixel pointing operator
     pre_process = "None" # Optional extra operator to run prior to binning
-    shared_flag_mask = 1 # Bit mask value for optional telescope flagging
+    shared_flag_mask = 3 # Bit mask value for optional telescope flagging
     shared_flags = "flags" # Observation shared key for telescope flags to use
     stokes_weights = "None" # This must be an instance of a Stokes weights operator
     sync_type = "alltoallv" # Communication algorithm: 'allreduce' or 'alltoallv'
@@ -286,7 +286,7 @@
     det_flag_mask = 1 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     enabled = false # If True, this class instance is marked as enabled
-    filter_flag_mask = 1 # Bit mask value for flagging samples that fail filtering
+    filter_flag_mask = 3 # Bit mask value for flagging samples that fail filtering
     ground_filter_order = 10 # Order of a Legendre polynomial to fit as a function of azimuth.
     hwp_angle = "hwp_angle" # Observation shared key for HWP angle
     hwp_filter_order = "None" # Order of HWP-synchronous signal filter.
@@ -300,7 +300,7 @@
     report_memory = false # Report memory throughout the execution
     reset_pix_dist = false # Clear any existing pixel distribution.  Useful when applyingrepeatedly to different data objects.
     rightleft_mask = 16 # Bit mask value for right-to-left scans
-    shared_flag_mask = 1 # Bit mask value for optional telescope flagging
+    shared_flag_mask = 3 # Bit mask value for optional telescope flagging
     shared_flags = "flags" # Observation shared key for telescope flags to use
     split_ground_template = false # Apply a different template for left and right scans
     write_cov = false # If True, write the white noise covariance matrices.
@@ -327,7 +327,7 @@
     data = "None" # This must be an instance of a Data class (or None)
     det_data = "None" # Observation detdata key for the timestream data
     det_data_units = "unit K" # Desired units of detector data
-    det_flag_mask = 1 # Bit mask value for solver flags
+    det_flag_mask = 3 # Bit mask value for solver flags
     det_flags = "flags" # Observation detdata key for solver flags to use
     enabled = false # If True, this class instance is marked as enabled
     good_fraction = 0.5 # Fraction of unflagged samples needed to keep a given offset amplitude

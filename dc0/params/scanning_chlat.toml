@@ -61,6 +61,6 @@
     turn_leftright_interval = "turn_leftright" # Interval name for turnarounds after left to right scans
     turn_rightleft_interval = "turn_rightleft" # Interval name for turnarounds after right to left scans
     turnaround_interval = "turnaround" # Interval name for turnarounds
-    turnaround_mask = 3 # Bit mask to raise turnaround flags with
+    turnaround_mask = 2 # Bit mask to raise turnaround flags with
     velocity = "velocity" # Observation shared key for velocity
     weather = "atacama" # Name of built-in weather site (e.g. 'atacama', 'south_pole') or path to HDF5 file

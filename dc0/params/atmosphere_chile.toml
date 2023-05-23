@@ -31,8 +31,8 @@
     polarization_fraction = 0.0 # Polarization fraction (only Q polarization).
     realization = 0 # If simulating multiple realizations, the realization index
     sample_rate = "55 Hz" # Rate at which to sample atmospheric TOD before interpolation.  Default is no interpolation.
-    shared_flag_mask = 1 # Bit mask value for optional shared flagging
-    shared_flags = "flags" # Observation shared key for telescope flags to use
+    shared_flag_mask = 0 # Bit mask value for optional shared flagging
+    shared_flags = "None" # Observation shared key for telescope flags to use
     times = "times" # Observation shared key for timestamps
     turnaround_interval = "turnaround" # Interval name for turnarounds
     view = "None" # Use this view of the data in all observations

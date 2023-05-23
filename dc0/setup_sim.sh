@@ -2,11 +2,11 @@
 
 # Split schedules for batch processing
 
-#for suffix in .upto2mm .over2mm .upto2mm_with_break .upto3mm_with_break; do
-for suffix in .upto2mm_with_break .upto3mm_with_break; do
+for suffix in .upto2mm .over2mm; do
+#for suffix in .upto2mm_with_break .upto3mm_with_break; do
     for nline in 1; do
-        #for telescope in chlat splat spsat; do
-        for telescope in chlat; do
+        for telescope in chlat splat spsat; do
+        #for telescope in chlat; do
             case $telescope in
                 chlat)
                     schedule_in=scan_strategy/chile_lat/schedules/chile_schedule_lat.pruned${suffix}.txt
@@ -38,7 +38,15 @@ for suffix in .upto2mm_with_break .upto3mm_with_break; do
                       $schedule_out
             for fname_in in ${schedule_out}*; do
                 mv ${fname_in} temp.txt
-                fname_out=`awk '{print $8 "-" $22 "-" $23}' temp.txt`
+                if [[ $telescope == "chlat" ]]; then
+                    fname_out=`awk '{print $8 "-" $22 "-" $23}' temp.txt`
+                else
+                    fname_out=`awk '{print $6 "-" $10 "-" $11}' temp.txt`
+                fi
+                if [[ $fname_out == CALIBRATION_BREAK* ]]; then
+                    # We don't simulate calibration breaks
+                    continue
+                fi
                 fname_out=$(dirname $fname_in)/${fname_out}.txt
                 cat header.txt temp.txt > ${fname_out}
                 rm temp.txt
