@@ -79,7 +79,6 @@
     tau_name = "None" # Key to use to find time constants in the Focalplane.
     tau_sigma = "None" # Randomized fractional error to add to each time constant.
 
-
 [operators.hwpfilter]
     class = "toast.ops.hwpfilter.HWPFilter"
     API = 0 # Internal interface version for this operator
