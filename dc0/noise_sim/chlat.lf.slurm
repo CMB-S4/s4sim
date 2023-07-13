@@ -2,7 +2,7 @@
 #SBATCH --qos=preempt
 #SBATCH --time=12:00:00
 #SBATCH --nodes=4
-#SBATCH --job-name=CMBS4_DC0_lf_noise
+#SBATCH --job-name=CMBS4_DC0_chlat_lf_noise
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107

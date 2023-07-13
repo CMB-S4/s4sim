@@ -106,7 +106,7 @@
     det_flags = "flags" # Observation detdata key for flags to use
     detrend = false # Subtract the fitted trend along with the ground template
     enabled = true # If True, this class instance is marked as enabled
-    filter_order = 100 # Order of a Legendre polynomial to fit as a function of azimuth.
+    filter_order = 10 # Order of a Legendre polynomial to fit as a function of azimuth.
     ground_flag_mask = 1 # Bit mask to use when adding flags based on ground filter failures.
     leftright_mask = 8 # Bit mask value for left-to-right scans
     name = "groundfilter" # The 'name' of this class instance

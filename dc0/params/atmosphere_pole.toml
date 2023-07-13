@@ -29,7 +29,7 @@
     overwrite_cache = false # If True, redo and overwrite any cached atmospheric realizations.
     polarization_fraction = 0.0 # Polarization fraction (only Q polarization).
     realization = 0 # If simulating multiple realizations, the realization index
-    sample_rate = "55 Hz" # Rate at which to sample atmospheric TOD before interpolation.  Default is no interpolation.
+    sample_rate = "None" # Rate at which to sample atmospheric TOD before interpolation.  Default is no interpolation.
     shared_flag_mask = 0 # Bit mask value for optional shared flagging
     shared_flags = "None" # Observation shared key for telescope flags to use
     times = "times" # Observation shared key for timestamps
