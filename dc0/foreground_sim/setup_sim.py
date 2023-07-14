@@ -1,160 +1,118 @@
 import os
 import sys
 
-import healpy as hp
 import numpy as np
+import healpy as hp
 from toast.pixels_io_healpix import write_healpix
 
 
+complexity = "medium"
+inroot = "/pscratch/sd/z/zonca/cmbs4/202305_dc0"
+
 outdir = "input_maps"
 os.makedirs(outdir, exist_ok=True)
-#mask_frac = 0.15
-snr_limit_fg = 1000
-snr_limit_radio = 30
+
+bands = {
+    "CHLAT" : ("chlat", 4096, [30, 40, 90, 150, 220, 280]),
+    "SPLAT" : ("splat", 4096, [20, 30, 40, 90, 150, 220, 280]),
+    "SAT" : ("spsat", 512, [30, 40, 85, 95, 145, 155, 220, 280]),
+}
+
+snr_limits_fg = {"CHLAT" : 1000, "SPLAT" : 20000, "SAT" : 50000}
+snr_limits_radio = {"CHLAT" : 30, "SPLAT" : 1000, "SAT" : 10000}
 mask_fwhm = np.radians(1)
 mask_lmax = 512
 
-# CHLAT
-
 measurement_requirements = {
-    #  T/P measurement requirement in uK.arcmin
-    30 : (21.8, 30.8),
-    40 : (12.4, 17.6),
-    90 : (2.0, 2.9),
-    150 : (2.0, 2.8),
-    220 : (6.9, 9.8),
-    280 : (16.7, 23.6),
+    #  measurement requirement in uK.arcmin, PBDR, Table 2-1, 2-2, 2-3
+    "CHLAT" : {  # T / P noise
+        30 :  (21.8, 30.23),
+        40 :  (12.4, 16.53),
+        90 :  ( 2.0,  2.68),
+        150 : ( 2.0,  2.96),
+        220 : ( 6.9,  9.78),
+        280 : (16.7, 23.93),
+    },
+    "SPLAT" : {  # T / P noise
+        20 :  (9.4, 13.16),
+        30 :  (4.6,  6.5),
+        40 :  (3.0,  4.15),
+        90 :  (0.45, 0.63),
+        150 : (0.41, 0.59),
+        220 : (1.3,  1.83),
+        280 : (3.1,  4.34),
+    },
+    "SAT" : {  # E / B noise
+        30 :  (3.7,  3.5),
+        40 :  (4.7,  4.5),
+        85 :  (0.93, 0.88),
+        95 :  (0.82, 0.78),
+        145 : (1.3,  1.2),
+        155 : (1.33, 1.3),
+        220 : (3.5,  3.5),
+        280 : (8.1,  6.0),
+    },
 }
-nside = 4096
-pixarea = hp.nside2pixarea(nside, degrees=True)
 
-
-for suffix in "_mediumcomplexity",:  #  "_lowcomplexity", "_highcomplexity":
-    for band, freq in [
-            ("LFL1", 30),
-            ("LFL2", 40),
-            ("MFL1", 90),
-            ("MFL2", 150),
-            ("HFL1", 220),
-            ("HFL2", 280),
-    ]:
-        fname_out = os.path.join(outdir, f"foreground{suffix}.chlat.f{freq:03}.h5")
-        #if os.path.isfile(fname_out):
-        #    print(f"Output file exists: {fname_out}")
-        #    continue
-        fname_in = (
-            f"/global/cfs/cdirs/cmbs4/dc/dc0/sky/4096/combined_foregrounds{suffix}/0000/cmbs4_combined_foregrounds{suffix}_uKCMB_LAT-{band}_nside4096_0000.fits"
+for TELESCOPE, (telescope, nside, freqs) in bands.items():
+    for freq in freqs:
+        fname_out = os.path.join(outdir, f"foreground_mediumcomplexity.{telescope}.f{freq:03}.h5")
+        if os.path.isfile(fname_out) and False:
+            print(f"Output file exists: {fname_out}")
+            continue
+        fname_in = os.path.join(
+            inroot,
+            f"combined_foregrounds_{complexity}complexity",
+            f"cmbs4_combined_foregrounds_mediumcomplexity_uKCMB_{TELESCOPE}_f{freq:03}_nside{nside}.fits",
         )
         if not os.path.isfile(fname_in):
             raise RuntimeError(f"Input file does not exist: {fname_in}")
         print(f"Reading {fname_in}")
-        fg = hp.read_map(
+        m = hp.read_map(
             fname_in,
             None,
             nest=True,
             verbose=False,
             dtype=np.float32,
         )
-        if not os.path.isfile(fname_out):
-            write_healpix(fname_out, fg * 1e-6, coord="C", nest=True)
-            print(f"Wrote {fname_out}")
+        write_healpix(fname_out, m * 1e-6, coord="C", nest=True, overwrite=True)
+        print(f"Wrote {fname_out}")
 
-        # Processing mask
-        mr_T, mr_P = measurement_requirements[freq]  # Pixel depth measurement requirement, uK.arcmin
-        sdev = mr_T / 60 / np.sqrt(pixarea)  # Translate to pixel RMS
-        fg = fg[0]
-        # fg_sorted = np.sort(fg)
-        # npix = fg.size
-        # lim = fg_sorted[int(npix * (1 - mask_frac))]
-        # mask = fg > lim
-        snr_fg = ((fg - np.median(fg)) / sdev)**2
-        mask = snr_fg > snr_limit_fg
+        # Build processing masks
+        m = m[0]
+        mr_T, mr_P = measurement_requirements[TELESCOPE][freq]
+        pixarea = hp.nside2pixarea(nside, degrees=True)
+        if TELESCOPE == "SAT":
+            requirement = np.sqrt(2) * max(mr_T, mr_P)
+        else:
+            requirement = mr_T
+        sdev = requirement / 60 / np.sqrt(pixarea)  # Translate to pixel RMS
+        snr_fg = ((m - np.median(m)) / sdev)**2
+        mask = snr_fg > snr_limits_fg[TELESCOPE]
         print(f"  Mask fraction after fg : {np.sum(mask)/mask.size:.3f}")
         mask = hp.smoothing(mask, lmax=mask_lmax, fwhm=mask_fwhm, nest=True) > 0.25
         # mask radio sources separately
-        fname_radio = f"/global/cfs/cdirs/cmbs4/dc/dc0/sky/4096/raw/radio/0000/cmbs4_radio_uKCMB_LAT-{band}_nside4096_0000.fits"
+        fname_radio = os.path.join(
+            inroot,
+            f"radio_rg1",
+            f"cmbs4_radio_rg1_uKCMB_{TELESCOPE}_f{freq:03}_nside{nside}.fits",
+        )
         radio = hp.read_map(fname_radio, nest=True)
-        # radio_sorted = np.sort(radio)
-        # lim = radio_sorted[int(npix * .99)]
-        # mask[radio > lim] = True
         snr_radio = (radio / sdev)**2
-        mask[snr_radio > snr_limit_radio] = True
+        mask[snr_radio > snr_limits_radio[TELESCOPE]] = True
         print(f"  Mask fraction after ps : {np.sum(mask)/mask.size:.3f}")
         # write out
-        # fname_out_hdf5 = os.path.join(outdir, f"mask{int(mask_frac * 100):02}{suffix}.chlat.f{freq:03}.h5")
-        fname_out_hdf5 = os.path.join(outdir, f"mask_snr_fg_{int(snr_limit_fg):03}{suffix}_snr_ps_{int(snr_limit_radio):03}.chlat.f{freq:03}.h5")
-        write_healpix(fname_out_hdf5, mask, dtype=np.int16, coord="C", nest=True, overwrite=True)
+        fname_out_hdf5 = os.path.join(
+            outdir, f"mask_{complexity}complexity.{telescope}.f{freq:03}.h5"
+        )
+        write_healpix(
+            fname_out_hdf5, mask, dtype=np.int16, coord="C", nest=True, overwrite=True
+        )
         print(f"Wrote {fname_out_hdf5}")
-        # fname_out_fits = os.path.join(outdir, f"mask{int(mask_frac * 100):02}{suffix}.chlat.f{freq:03}.fits")
-        fname_out_fits = os.path.join(outdir, f"mask_snr_fg_{int(snr_limit_fg):03}{suffix}_snr_ps_{int(snr_limit_radio):03}.chlat.f{freq:03}.fits")
-        hp.write_map(fname_out_fits, mask, dtype=np.int16, coord="C", nest=True, overwrite=True)
-        print(f"Wrote {fname_out_fits}")
-
-sys.exit()
-
-# SPLAT
-
-for band, freq in [
-        ("ULFPL1", 20),
-        ("LFPL1", 30),
-        ("LFPL2", 40),
-        ("MFPL1", 90),
-        ("MFPL2", 150),
-        ("HFPL1", 220),
-        ("HFPL2", 280),
-]:
-    fname_out = os.path.join(outdir, f"cmb.splat.f{freq:03}.h5")
-    if os.path.isfile(fname_out):
-        print(f"Output file exists: {fname_out}")
-        continue
-    fname_in = (
-        f"/global/cfs/cdirs/cmbs4/dm/dstool_202102/input_pysm"
-        f"/4096/cmb_unlensed_solardipole/0000/"
-        f"cmbs4_cmb_unlensed_solardipole_uKCMB_LAT-{band}_nside4096_0000.fits"
-    )
-    if not os.path.isfile(fname_in):
-        raise RuntimeError(f"Input file does not exist: {fname_in}")
-    print(f"Reading {fname_in}")
-    m = hp.read_map(
-        fname_in,
-        None,
-        nest=True,
-        verbose=False,
-        dtype=np.float32,
-    )
-    write_healpix(fname_out, m * 1e-6, coord="C", nest=True)
-    print(f"Wrote {fname_out}")
-
-# SPSAT
-
-for band, freq in [
-        ("LFS1", 30),
-        ("LFS2", 40),
-        ("MFLS1", 85),
-        ("MFLS2", 145),
-        ("MFHS1", 95),
-        ("MFHS2", 155),
-        ("HFS1", 220),
-        ("HFS2", 280),
-]:
-    fname_out = os.path.join(outdir, f"cmb.spsat.f{freq:03}.h5")
-    if os.path.isfile(fname_out):
-        print(f"Output file exists: {fname_out}")
-        continue
-    fname_in = (
-        f"/global/cfs/cdirs/cmbs4/dm/dstool_202102/input_pysm"
-        f"/512/cmb_unlensed_solardipole/0000/"
-        f"cmbs4_cmb_unlensed_solardipole_uKCMB_SAT-{band}_nside512_0000.fits"
-    )
-    if not os.path.isfile(fname_in):
-        raise RuntimeError(f"Input file does not exist: {fname_in}")
-    print(f"Reading {fname_in}")
-    m = hp.read_map(
-        fname_in,
-        None,
-        nest=True,
-        verbose=False,
-        dtype=np.float32,
-    )
-    write_healpix(fname_out, m * 1e-6, coord="C", nest=True)
-    print(f"Wrote {fname_out}")
+        fname_out_fits = os.path.join(
+            outdir, f"mask_{complexity}complexity.{telescope}.f{freq:03}.fits"
+        )
+        hp.write_map(
+            fname_out_fits, mask, dtype=np.int16, coord="C", nest=True, overwrite=True
+        )
+        print(f"Wrote {fname_out_fits}", flush=True)
