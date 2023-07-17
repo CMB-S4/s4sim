@@ -159,10 +159,8 @@ class Hardware(object):
                                 "pixel": "02."})
 
         Args:
-            telescopes (str): A regex string to apply to telescope names or a
-                list of explicit names.
-            tubes (str): A regex string to apply to tube names or a list of
-                explicit names.
+            telescopes (str): A list of telescope names.
+            tubes (str): A list of tube names.
             match (dict): The dictionary of property names and their matching
                 expressions.
 
@@ -212,7 +210,10 @@ class Hardware(object):
         elif wselect is not None:
             # No pattern in the match dictionary, just our list from the
             # telescope / tube selection.
-            reg["wafer"] = re.compile(r"(^" + "$|^".join(wselect) + r"$)")
+            if wselect is None:
+                reg["wafer"] = re.compile(r".*")
+            else:
+                reg["wafer"] = re.compile(r"(^" + "$|^".join(wselect) + r"$)")
 
         for k, v in match.items():
             if k == "wafer":
@@ -687,7 +688,7 @@ def sim_nominal():
     cardindx = 0
     for wt in wtypes:
         for ct in range(wcnt[wt]):
-            wn = "{:02d}".format(windx)
+            wn = "{:03d}".format(windx)
             wf = OrderedDict()
             wf["type"] = wt
             wf["packing"] = wpac[wt]

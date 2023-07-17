@@ -58,7 +58,7 @@ def ang_to_quat(offsets):
     return out
 
 
-def sim_detectors_toast(hw, tele, tube_slots=None):
+def sim_detectors_toast(hw, tele, tubes=None):
     """Update hardware model with simulated detector positions.
 
     Given a Hardware model, generate all detector properties for the specified
@@ -69,17 +69,17 @@ def sim_detectors_toast(hw, tele, tube_slots=None):
     Args:
         hw (Hardware): The hardware object to update.
         tele (str): The telescope name.
-        tube_slots (list, optional): The optional list of tube slots to include.
+        tubes (list, optional): The optional list of tube slots to include.
 
         Returns:
         None
     """
     sim_telescope_detectors(
-        hw, tele, tube_slots=tube_slots,
+        hw, tele, tubes=tubes,
     )
 
 
-def sim_detectors_physical_optics(hw, tele, tube_slots=None):
+def sim_detectors_physical_optics(hw, tele, tubes=None):
     """Update hardware model with simulated detector positions.
     Given a Hardware model, generate all detector properties for the specified
     telescope and optionally a subset of optics tube slots (for the LAT).  The
@@ -89,7 +89,7 @@ def sim_detectors_physical_optics(hw, tele, tube_slots=None):
     Args:
         hw (Hardware): The hardware object to update.
         tele (str): The telescope name.
-        tube_slots (list, optional): The optional list of tube slots to include.
+        tubes (list, optional): The optional list of tube slots to include.
 
     Returns:
         None
@@ -299,7 +299,7 @@ def kill_pixels(layout, killpix):
         name = f"{pix:03}"
         del layout[name]
     # Assign new pixel numbers
-    for offset, old_name in enumerate(sorted(layout.keys())):
+    for offset, old_name in enumerate(list(sorted(layout.keys()))):
         new_name = f"{offset:03}"
         if old_name == new_name:
             continue
@@ -362,7 +362,7 @@ def sim_wafer_detectors(
         # Feedhorn (NIST style)
         # Make gap zero for partial_arrays
         if no_gap is None:
-            gap = platescale * wprops["rhombusgap"]
+            gap = platescale * wprops["rhombusgap"] + pixsep
         else:
             gap = 0.0
 
@@ -421,7 +421,7 @@ def sim_wafer_detectors(
         # This is the center-center distance along the vertex-vertex axis
         width = (2 * (hex_nring(npix) - 1)) * pixsep
         # Compensate for different wafer width conventions
-        width *= 0.90  # DEBUG
+        #width *= 0.90  # DEBUG
         # The sinuous handedness is chosen so that A/B pairs of pixels have the
         # same nominal orientation but trail each other along the
         # vertex-vertex axis of the hexagon.  The polarization orientation
@@ -635,7 +635,7 @@ def sim_telescope_detectors(hw, tele, tubes=None):
                     alldets.update(dets)
             else:
                 # Compensate for different wafer width conventions
-                waferspace *= 1.0833333  # DEBUG
+                # waferspace *= 1.0833333  # DEBUG
                 # We only want 12 wafers but we want to offset the
                 # default 19-wafer hexagonal layout by half a wafer
                 # and then drop the ones which are the furthest away
@@ -655,7 +655,7 @@ def sim_telescope_detectors(hw, tele, tubes=None):
                 for p, q in wcenters.items():
                     vec = qa.rotate(q["quat"], ZAXIS)
                     dist = np.arccos(np.dot(vec, ZAXIS))
-                    if dist > np.radians(1.5 * waferspace * platescale):
+                    if dist > np.radians(2.0 * waferspace * platescale):
                         continue
                     centers.append(q["quat"])
 
@@ -687,14 +687,6 @@ def sim_telescope_detectors(hw, tele, tubes=None):
             platescale = tubeprops["platescale"]
             location = f"{tubeprops['toast_hex_pos']:02}"
 
-            # get centers and rotations for arrays
-            wcenters = [np.array([0.0, 0.0, 0.0])]
-            qwcenters = ang_to_quat(wcenters)
-            centers = list()
-            for qwc in qwcenters:
-                centers.append(qa.mult(tcenters[location]["quat"], qwc))
-
-            windx = 0
             for wafer in tubeprops["wafers"]:
                 # For first three wafers, use whole wafers,
                 # then construct partial wafers
@@ -703,10 +695,13 @@ def sim_telescope_detectors(hw, tele, tubes=None):
                     wafer,
                     platescale,
                     fwhm,
-                    center=centers[windx],
+                    center=tcenters[location]["quat"],
                     partial_type=None,
                     no_gap=None,
                 )
                 alldets.update(dets)
-                #windx += 1
-    return alldets
+
+    if "detectors" in hw.data:
+        hw.data["detectors"].update(alldets)
+    else:
+        hw.data["detectors"] = alldets
