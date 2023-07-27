@@ -240,7 +240,7 @@ def sim_wafer_detectors(
 
         # kill pixels in partial arrays
         if partial_type is None:
-            kill = []
+            kill = wprops["pins"]
         elif partial_type == "rhombus":
             kill = np.linspace(dim**2, 3 * dim**2 - 1, 2 * dim**2, dtype=np.int32)
         elif partial_type == "half":
@@ -250,7 +250,7 @@ def sim_wafer_detectors(
             kill2 = np.linspace(dim**2, 2 * dim**2 - 1, dim**2, dtype=np.int32)
             kill = np.append(kill1, kill2)
         else:
-            kill = []
+            kill = wprops["pins"]
     elif wprops["packing"] == "HP":
         # Hex close-packed
         # This is the center-center distance along the vertex-vertex axis
@@ -280,7 +280,7 @@ def sim_wafer_detectors(
         layout_B = hex_layout(npix, width, "", "", pol_B, center=hex_cent)
         
         if partial_type is None:
-            kill = []
+            kill = wprops["pins"]
         elif partial_type == "half":
             kill = []
             for ii in range(npix):
@@ -292,7 +292,7 @@ def sim_wafer_detectors(
                 if (sector2(npix, ii) in [1, 2, 3, 4]):
                     kill.append(ii)
         else:
-            kill = []
+            kill = wprops["pins"]
     else:
         msg = f"Unknown wafer packing '{wprops['packing']}'"
         raise RuntimeError(msg)
