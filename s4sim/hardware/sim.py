@@ -403,105 +403,41 @@ def sim_telescope_detectors(hw, tele, tubes=None):
             platescale = tubeprops["platescale"]
             location = str(tubeprops["toast_hex_pos"])
             type = tubeprops["type"]
-            if type == "SAT_HF":
-                tcenters = hex_layout(
-                    7,
-                    2 * tubespace * tele_platescale * u.degree,
-                    "",
-                    "",
-                    90 * np.ones(7, dtype=float) * u.degree,
-                )
-                """
-                nwafer = len(tubeprops["wafers"])
-                wcenters = hex_layout(
-                    nwafer,
-                    2 * waferspace * platescale * u.degree,
-                    "",
-                    "",
-                    np.zeros(nwafer, dtype=float) * u.degree,
-                )
-                centers = list()
-                for p, q in wcenters.items():
-                    centers.append(qa.mult(tcenters[location]["quat"], q["quat"]))
-                """
-                srad = waferspace * platescale * np.pi / 180.0
-                wcenters = [
-                        np.array([-srad/(2.*np.cos(thirty)), 0.0, 0.0]),
-                        np.array([srad/(4.*np.cos(thirty)), -srad/2., 0.0]),
-                        np.array([srad/(4.*np.cos(thirty)), srad/2., 0.0]),
-                        np.array([srad/(np.cos(thirty)),0.0, 0.0]),
-                        np.array([srad/(np.cos(thirty)),srad,10 * thirty]),
-                        np.array([srad/(4.*np.cos(thirty)), srad/2. + srad, 0.0]),
-                        np.array([-srad/(2.*np.cos(thirty)), srad, 0.0]),
-                        np.array([-5.*srad/(4.*np.cos(thirty)), srad/2., 2 * thirty]),
-                        np.array([-5.*srad/(4.*np.cos(thirty)), -srad/2., 4 * thirty]),
-                        np.array([-srad/(2.*np.cos(thirty)), -srad, 0.0]),
-                        np.array([srad/(4.*np.cos(thirty)), -srad/2. - srad, 6 * thirty]),
-                        np.array([srad/(np.cos(thirty)),-srad, -4 * thirty]),
-                ]
-                qwcenters = ang_to_quat(wcenters)
-                centers = list()
-                for qwc in qwcenters:
-                    centers.append(qa.mult(tcenters[location]["quat"], qwc))
 
-                for windx, wafer in enumerate(tubeprops["wafers"]):
-                    if windx == 4:
-                        partial_type = "half"
-                    elif windx == 5:
-                        partial_type = "half"
-                    elif windx == 7:
-                        partial_type = "half"
-                    elif windx == 8:
-                        partial_type = "half"
-                    elif windx == 10:
-                        partial_type = "half"
-                    elif windx == 11:
-                        partial_type = "half"
-                    else:
-                        partial_type = None
-                    dets = sim_wafer_detectors(
-                        hw,
-                        wafer,
-                        platescale,
-                        fwhm,
-                        center=centers[windx],
-                        partial_type=partial_type,
-                    )
-                    alldets.update(dets)
-            else:
-                # We only want 12 wafers but we want to offset the
-                # default 19-wafer hexagonal layout by half a wafer
-                # and then drop the ones which are the furthest away
-                # from the new center
-                # nwafer = len(tubeprops["wafers"])
-                nwafer = 19
-                offset = qa.rotation(YAXIS, -np.radians(waferspace * platescale / 2))
-                wcenters = hex_layout(
-                    nwafer,
-                    4 * waferspace * platescale * u.degree,
-                    "",
-                    "",
-                    np.zeros(nwafer, dtype=float) * u.degree,
-                    center=offset
-                )
-                centers = list()
-                for p, q in wcenters.items():
-                    vec = qa.rotate(q["quat"], ZAXIS)
-                    dist = np.arccos(np.dot(vec, ZAXIS))
-                    if dist > np.radians(2.0 * waferspace * platescale):
-                        continue
-                    centers.append(q["quat"])
+            # We only want 12 wafers but we want to offset the
+            # default 19-wafer hexagonal layout by half a wafer
+            # and then drop the ones which are the furthest away
+            # from the new center
+            nwafer = 19
+            offset = qa.mult(
+                qa.rotation(ZAXIS, -np.pi / 2),
+                qa.rotation(YAXIS, -np.radians(waferspace * platescale / 2)),
+            )
+            wcenters = hex_layout(
+                nwafer,
+                4 * waferspace * platescale * u.degree,
+                "",
+                "",
+                np.zeros(nwafer, dtype=float) * u.degree,
+                center=offset
+            )
+            centers = list()
+            for p, q in wcenters.items():
+                vec = qa.rotate(q["quat"], ZAXIS)
+                dist = np.arccos(np.dot(vec, ZAXIS))
+                if dist > np.radians(2.0 * waferspace * platescale):
+                    continue
+                centers.append(q["quat"])
 
-                for wafer, center in zip(tubeprops["wafers"], centers):
-                    dets = sim_wafer_detectors(
-                        hw,
-                        wafer,
-                        platescale,
-                        fwhm,
-                        center=center,
-                        partial_type=None,
-                    )
-                    alldets.update(dets)
+            for wafer, center in zip(tubeprops["wafers"], centers):
+                dets = sim_wafer_detectors(
+                    hw,
+                    wafer,
+                    platescale,
+                    fwhm,
+                    center=center,
+                )
+                alldets.update(dets)
     else:
         # This is the LAT.  Compute the tube centers.
         # Rotate each tube by 90 degrees, so that it is pointed "down".
@@ -529,7 +465,6 @@ def sim_telescope_detectors(hw, tele, tubes=None):
                     platescale,
                     fwhm,
                     center=tcenters[location]["quat"],
-                    partial_type=None,
                 )
                 alldets.update(dets)
 

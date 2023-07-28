@@ -285,6 +285,7 @@ def sim_nominal():
 
     bands = OrderedDict()
 
+    bnd = OrderedDict()
     bnd["center"] = 20.0
     bnd["low"] = 17.5
     bnd["high"] = 22.5
@@ -604,19 +605,18 @@ def sim_nominal():
     wafers = OrderedDict()
 
     wtypes = ["SPLAT_ULF", "CHLAT_LF", "SPLAT_LF", "SAT_LF", "CHLAT_MF", "SPLAT_MF", "SAT_MFL", "SAT_MFH", "CHLAT_HF", "SPLAT_HF", "SAT_HF"]
-    # partial wafers will be counted as individual wafers since we make a full wafer then kill pixels
     wcnt = {
         "SPLAT_ULF": 4,
         "CHLAT_LF": 8*2,
         "SPLAT_LF": 9,
-        "SAT_LF": (12) * 2,
+        "SAT_LF": (12) * 1,
         "CHLAT_MF": 54*2,
         "SPLAT_MF": 54,
-        "SAT_MFL": (12) * 6,
-        "SAT_MFH": (12) * 6,
+        "SAT_MFL": (12) * 3,
+        "SAT_MFH": (12) * 3,
         "CHLAT_HF": 23*2,
         "SPLAT_HF": 18,
-        "SAT_HF": (6 + 6) * 4,
+        "SAT_HF": (6 + 6) * 2,
     }
     wpac = {
         "SPLAT_ULF": "RP",
