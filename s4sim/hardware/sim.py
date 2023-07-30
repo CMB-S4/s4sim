@@ -381,6 +381,9 @@ def sim_telescope_detectors(hw, tele, tubes=None):
     tele_platescale = teleprops["platescale"]
     fwhm = teleprops["fwhm"]
 
+    # Wafer props
+    wprops = hw.data["wafers"]
+
     # The tubes
     alltubes = teleprops["tubes"]
     ntube = len(alltubes)
@@ -402,25 +405,31 @@ def sim_telescope_detectors(hw, tele, tubes=None):
             waferspace = tubeprops["waferspace"]
             platescale = tubeprops["platescale"]
             location = str(tubeprops["toast_hex_pos"])
+            wafer_ang_deg = np.array(tubeprops["wafer_angle"])
+            wafer_ang_rad = np.radians(wafer_ang_deg)
             type = tubeprops["type"]
 
             # We only want 12 wafers but we want to offset the
             # default 19-wafer hexagonal layout by half a wafer
             # and then drop the ones which are the furthest away
-            # from the new center
+            # from the new center.
             nwafer = 19
+
+            # Simulate the offset layout
             offset = qa.mult(
-                qa.rotation(ZAXIS, -np.pi / 2),
-                qa.rotation(YAXIS, -np.radians(waferspace * platescale / 2)),
+                qa.rotation(XAXIS, -np.radians(waferspace * platescale / 2)),
+                qa.rotation(ZAXIS, -thirty),
             )
             wcenters = hex_layout(
                 nwafer,
                 4 * waferspace * platescale * u.degree,
                 "",
                 "",
-                np.zeros(nwafer, dtype=float) * u.degree,
-                center=offset
+                np.zeros(nwafer, dtype=np.float64) * u.degree,
+                center=offset,
             )
+
+            # Cut wafers outside the footprint
             centers = list()
             for p, q in wcenters.items():
                 vec = qa.rotate(q["quat"], ZAXIS)
@@ -429,13 +438,16 @@ def sim_telescope_detectors(hw, tele, tubes=None):
                     continue
                 centers.append(q["quat"])
 
-            for wafer, center in zip(tubeprops["wafers"], centers):
+            # Simulate each wafer, applying central rotation
+            for windx, (wafer, center) in enumerate(zip(tubeprops["wafers"], centers)):
+                wrot = qa.rotation(ZAXIS, wafer_ang_rad[windx])
+                cent = qa.mult(center, wrot)
                 dets = sim_wafer_detectors(
                     hw,
                     wafer,
                     platescale,
                     fwhm,
-                    center=center,
+                    center=cent,
                 )
                 alldets.update(dets)
     else:
@@ -447,7 +459,8 @@ def sim_telescope_detectors(hw, tele, tubes=None):
             10 * tubespace * tele_platescale * u.degree,
             "",
             "",
-            0 * np.ones(91, dtype=float) * u.degree,
+            np.zeros(91, dtype=np.float64) * u.degree,
+            center=qa.rotation(ZAXIS, np.pi / 2),
         )
 
         for tindx, tube in enumerate(tubes):
@@ -455,16 +468,23 @@ def sim_telescope_detectors(hw, tele, tubes=None):
             waferspace = tubeprops["waferspace"]
             platescale = tubeprops["platescale"]
             location = f"{tubeprops['toast_hex_pos']:02}"
+            wafer_ang_deg = tubeprops["wafer_angle"]
+            wafer_ang_rad = np.radians(wafer_ang_deg)
 
-            for wafer in tubeprops["wafers"]:
-                # For first three wafers, use whole wafers,
-                # then construct partial wafers
+            # NOTE:  If the CHLAT re-imaging optics are similar to SO LAT,
+            # we may need a coordinate flip here for each tube.
+
+            for windx, wafer in enumerate(tubeprops["wafers"]):
+                wcenter = qa.mult(
+                    qa.rotation(ZAXIS, wafer_ang_rad[windx]),
+                    tcenters[location]["quat"],
+                )
                 dets = sim_wafer_detectors(
                     hw,
                     wafer,
                     platescale,
                     fwhm,
-                    center=tcenters[location]["quat"],
+                    center=wcenter,
                 )
                 alldets.update(dets)
 

@@ -1259,8 +1259,7 @@ def sim_nominal():
         tb["type"] = ttyp
         tb["waferspace"] = 124.
         tb["wafers"] = list()
-        # tw is the wafer number in the tube.
-        # Here we use 6 for the 3 full and 3 partial wafers/tube
+        # There is currently one wafer per tube.
         for tw in range(1):
             off = 0
             for w, props in cnf["wafers"].items():
@@ -1270,6 +1269,7 @@ def sim_nominal():
                         woff[ttyp] += 1
                         break
                     off += 1
+        tb["wafer_angle"] = [0.0 for tw in range(1)] # Degrees
         tb["platescale"] = 0.0047619
         if tindx < 170:
             # CHLAT platescale
@@ -1299,7 +1299,6 @@ def sim_nominal():
         tb["type"] = ttyp
         tb["waferspace"] = 122.0
         tb["wafers"] = list()
-        # HF tubes have 8 full wafers + 2 partial, all others 11+2
         if ttyp == "SAT_HF":
             for tw in range(12):
                 off = 0
@@ -1310,6 +1309,20 @@ def sim_nominal():
                             woff[ttyp] += 1
                             break
                         off += 1
+            tb["wafer_angle"] = [ # Degrees
+                30.0,
+                30.0,
+                30.0,
+                -150.0,
+                -150.0,
+                30.0,
+                30.0,
+                30.0,
+                -30.0,
+                90.0,
+                30.0,
+                30.0,
+            ]
             # 30 deg, 10008 detectors/band
             tb["platescale"] = 0.06946
             tb["FOV_cut"] = 30.0
@@ -1323,6 +1336,20 @@ def sim_nominal():
                             woff[ttyp] += 1
                             break
                         off += 1
+            tb["wafer_angle"] = [ # Degrees
+                0.0,
+                0.0,
+                0.0,
+                -60.0,
+                -60.0,
+                0.0,
+                0.0,
+                60.0,
+                60.0,
+                180.0,
+                180.0,
+                0.0,
+            ]
             # 30 deg, 3048 detectors/band
             tb["platescale"] = 0.0699
             tb["FOV_cut"] = 30.0
@@ -1336,6 +1363,20 @@ def sim_nominal():
                             woff[ttyp] += 1
                             break
                         off += 1
+            tb["wafer_angle"] = [ # Degrees
+                30.0,
+                30.0,
+                30.0,
+                -150.0,
+                -150.0,
+                30.0,
+                30.0,
+                30.0,
+                -30.0,
+                90.0,
+                30.0,
+                30.0,
+            ]
             # 30 deg, 3552 det/band
             tb["platescale"] = 0.0698
             tb["FOV_cut"] = 30.0
@@ -1349,6 +1390,20 @@ def sim_nominal():
                             woff[ttyp] += 1
                             break
                         off += 1
+            tb["wafer_angle"] = [ # Degrees
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+            ]
             # 29.0/(490mm)
             tb["platescale"] = 0.0592
             tb["FOV_cut"] = 40.0
