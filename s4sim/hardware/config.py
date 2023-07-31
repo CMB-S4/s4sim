@@ -1323,7 +1323,7 @@ def sim_nominal():
                 30.0,
             ]
             # 30 deg, 10008 detectors/band
-            tb["platescale"] = 0.06946
+            tb["platescale"] = 0.069437
             tb["FOV_cut"] = 30.0
         elif ttyp == "SAT_MFL":
             for tw in range(12):
@@ -1377,7 +1377,7 @@ def sim_nominal():
                 30.0,
             ]
             # 30 deg, 3552 det/band
-            tb["platescale"] = 0.0698
+            tb["platescale"] = 0.069777
             tb["FOV_cut"] = 30.0
         else:
             for tw in range(12):
@@ -1404,7 +1404,7 @@ def sim_nominal():
                 0.0,
             ]
             # 30 deg, 252 det/band
-            tb["platescale"] = 0.0700
+            tb["platescale"] = 0.070946
             tb["FOV_cut"] = 30.0
         tb["toast_hex_pos"] = stube_toasthex_pos[tindx]
         tubes[nm] = tb

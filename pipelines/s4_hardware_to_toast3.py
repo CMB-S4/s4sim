@@ -65,7 +65,7 @@ def main():
             raise RuntimeError("Must select a telescope if not providing a hardware file.")
         print(f"Simulating hardware for {args.telescope}...", end="", flush=True)
         hw = hardware.sim_nominal()
-        hw.data["detectors"] = hardware.sim_telescope_detectors(hw, args.telescope)
+        hardware.sim_telescope_detectors(hw, args.telescope)
     else:
         if args.telescope is not None:
             raise RuntimeError("Must not select a telescope if providing a hardware file.")
