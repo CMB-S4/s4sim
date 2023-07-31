@@ -1269,7 +1269,7 @@ def sim_nominal():
                         woff[ttyp] += 1
                         break
                     off += 1
-        tb["wafer_angle"] = [0.0 for tw in range(1)] # Degrees
+        tb["wafer_angle"] = [-90.0 for tw in range(1)] # Degrees
         if tindx < 170:
             # CHLAT platescale
             tb["platescale"] = 0.003964
