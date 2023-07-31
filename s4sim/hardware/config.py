@@ -1270,7 +1270,6 @@ def sim_nominal():
                         break
                     off += 1
         tb["wafer_angle"] = [0.0 for tw in range(1)] # Degrees
-        tb["platescale"] = 0.0047619
         if tindx < 170:
             # CHLAT platescale
             tb["platescale"] = 0.003964
@@ -1404,9 +1403,9 @@ def sim_nominal():
                 0.0,
                 0.0,
             ]
-            # 29.0/(490mm)
-            tb["platescale"] = 0.0592
-            tb["FOV_cut"] = 40.0
+            # 30 deg, 252 det/band
+            tb["platescale"] = 0.0700
+            tb["FOV_cut"] = 30.0
         tb["toast_hex_pos"] = stube_toasthex_pos[tindx]
         tubes[nm] = tb
 
