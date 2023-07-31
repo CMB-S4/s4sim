@@ -460,7 +460,7 @@ def sim_telescope_detectors(hw, tele, tubes=None):
             "",
             "",
             np.zeros(91, dtype=np.float64) * u.degree,
-            center=qa.rotation(ZAXIS, np.pi / 2),
+            center=None,
         )
 
         for tindx, tube in enumerate(tubes):
