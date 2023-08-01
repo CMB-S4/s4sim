@@ -1,4 +1,4 @@
-# Copyright (c) 2020-2020 CMB-S4 Collaboration.
+# Copyright (c) 2020-2023 CMB-S4 Collaboration.
 # Full license can be found in the top level "LICENSE" file.
 """Simulate the nominal hardware model.
 """
@@ -8,7 +8,7 @@ import argparse
 
 from collections import OrderedDict
 
-from ..hardware import get_example, sim_telescope_detectors
+from ..hardware import sim_nominal, sim_detectors_toast
 
 
 def main():
@@ -43,13 +43,11 @@ def main():
 
     args = parser.parse_args()
 
-    print("Getting example config...", flush=True)
-    hw = get_example()
-    hw.data["detectors"] = OrderedDict()
+    print("Getting nominal config...", flush=True)
+    hw = sim_nominal()
     for tele, teleprops in hw.data["telescopes"].items():
         print("Simulating detectors for telescope {}...".format(tele), flush=True)
-        dets = sim_telescope_detectors(hw, tele)
-        hw.data["detectors"].update(dets)
+        sim_detectors_toast(hw, tele)
 
     if args.plain:
         outpath = "{}.toml".format(args.out)

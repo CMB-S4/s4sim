@@ -159,10 +159,8 @@ class Hardware(object):
                                 "pixel": "02."})
 
         Args:
-            telescopes (str): A regex string to apply to telescope names or a
-                list of explicit names.
-            tubes (str): A regex string to apply to tube names or a list of
-                explicit names.
+            telescopes (str): A list of telescope names.
+            tubes (str): A list of tube names.
             match (dict): The dictionary of property names and their matching
                 expressions.
 
@@ -212,7 +210,10 @@ class Hardware(object):
         elif wselect is not None:
             # No pattern in the match dictionary, just our list from the
             # telescope / tube selection.
-            reg["wafer"] = re.compile(r"(^" + "$|^".join(wselect) + r"$)")
+            if wselect is None:
+                reg["wafer"] = re.compile(r".*")
+            else:
+                reg["wafer"] = re.compile(r"(^" + "$|^".join(wselect) + r"$)")
 
         for k, v in match.items():
             if k == "wafer":
@@ -269,15 +270,16 @@ class Hardware(object):
         return hw
 
 
-def get_example():
-    """Return an example Hardware config with the required sections.
+def sim_nominal():
+    """Return a simulated nominal hardware configuration.
 
-    The returned Hardware object has 4 fake detectors as an example.  These
-    detectors can be replaced by the results of other simulation functions.
+    This returns a simulated Hardware object with the nominal instrument
+    properties / metadata, but with an empty set of detector locations.
+    This can then be passed to one of the detector simulation functions
+    to build up the list of detectors.
 
     Returns:
-        (Hardware): Hardware object with example parameters.
-
+        (Hardware): Hardware object with nominal metadata.
     """
     cnf = OrderedDict()
 
@@ -288,104 +290,104 @@ def get_example():
     bnd["low"] = 17.5
     bnd["high"] = 22.5
     bnd["bandpass"] = ""
-    bnd["NET"] = 332.7
+    bnd["NET"] = 421.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
-    bnd["alpha"] = 3.5
-    bnd["A"] = 0.08386
-    bnd["C"] = 0.89063
-    bnd["NET_corr"] = 1.22
-    bnd["pwv_poly"] = 0.971399, 0.088721, 0.001181
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.05443
+    bnd["C"] = 0.92913
+    bnd["NET_corr"] = 1.23
+    bnd["pwv_poly"] = 0.989486, 0.032389, 0.001136
     bands["SPLAT_f020"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 25.75
+    bnd["center"] = 24.75
     bnd["low"] = 21.5
-    bnd["high"] = 30.0
+    bnd["high"] = 28.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 307.7
+    bnd["NET"] = 384.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
-    bnd["alpha"] = 3.5
-    bnd["A"] = 0.08426
-    bnd["C"] = 0.89010
-    bnd["NET_corr"] = 1.28
-    bnd["pwv_poly"] = 0.934479, 0.064763, 0.001228
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.06980
+    bnd["C"] =  0.90909
+    bnd["NET_corr"] = 1.30
+    bnd["pwv_poly"] = 0.956524, 0.042312, 0.001480
     bands["CHLAT_f030"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 38.75
-    bnd["low"] = 30.0
-    bnd["high"] = 47.5
+    bnd["center"] = 36.5
+    bnd["low"] = 28.0
+    bnd["high"] = 45.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 240.7
+    bnd["NET"] = 230.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
-    bnd["alpha"] = 3.5
-    bnd["A"] = 0.24749
-    bnd["C"] = 0.67744
-    bnd["NET_corr"] = 1.04
-    bnd["pwv_poly"] = 0.982523, 0.017230, 0.000373
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.17386
+    bnd["C"] = 0.77382
+    bnd["NET_corr"] = 1.14
+    bnd["pwv_poly"] = 0.987281, 0.012516, 0.000294
     bands["CHLAT_f040"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 25.75
+    bnd["center"] = 24.75
     bnd["low"] = 21.5
-    bnd["high"] = 30.0
+    bnd["high"] = 28.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 286.7
+    bnd["NET"] = 407.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
-    bnd["alpha"] = 3.5
-    bnd["A"] = 0.10372
-    bnd["C"] = 0.86476
-    bnd["NET_corr"] = 1.24
-    bnd["pwv_poly"] = 0.981351, 0.057846, 0.000779
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.06565
+    bnd["C"] = 0.91454
+    bnd["NET_corr"] = 1.27
+    bnd["pwv_poly"] = 0.990859, 0.028229, 0.000774
     bands["SPLAT_f030"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 38.75
-    bnd["low"] = 30.0
-    bnd["high"] = 47.5
+    bnd["center"] = 36.5
+    bnd["low"] = 28.0
+    bnd["high"] = 45.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 269.0
+    bnd["NET"] = 260.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
-    bnd["alpha"] = 3.5
-    bnd["A"] = 0.38043
-    bnd["C"] = 0.50426
-    bnd["NET_corr"] = 1.04
-    bnd["pwv_poly"] = 0.994233, 0.017840, 0.000388
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.26014
+    bnd["C"] = 0.66203
+    bnd["NET_corr"] = 1.17
+    bnd["pwv_poly"] = 0.995952, 0.012515, 0.000299
     bands["SPLAT_f040"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 25.75
+    bnd["center"] = 24.75
     bnd["low"] = 21.5
-    bnd["high"] = 30.0
+    bnd["high"] = 28.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 176.0
+    bnd["NET"] = 180.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
-    bnd["alpha"] = 3.5
-    bnd["A"] = 0.17752
-    bnd["C"] = 0.76850
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.20620
+    bnd["C"] = 0.73082
     bnd["NET_corr"] = 1.04
-    bnd["pwv_poly"] = 0.973260, 0.082784, 0.001613
+    bnd["pwv_poly"] = 0.965911, 0.105767, 0.001339
     bands["SAT_f030"] = bnd
 
     bnd = OrderedDict()
-    bnd["center"] = 38.75
-    bnd["low"] = 30.0
-    bnd["high"] = 47.5
+    bnd["center"] = 36.5
+    bnd["low"] = 28.0
+    bnd["high"] = 45.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 217.6
+    bnd["NET"] = 172.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
-    bnd["alpha"] = 3.5
-    bnd["A"] = 0.41275
-    bnd["C"] = 0.46189
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.38157
+    bnd["C"] = 0.50229
     bnd["NET_corr"] = 1.01
-    bnd["pwv_poly"] = 0.993708, 0.019467, 0.000420
+    bnd["pwv_poly"] = 0.993008, 0.021647, 0.000420
     bands["SAT_f040"] = bnd
 
     bnd = OrderedDict()
@@ -393,14 +395,14 @@ def get_example():
     bnd["low"] = 77.0
     bnd["high"] = 106.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 278.1
+    bnd["NET"] = 288.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
-    bnd["alpha"] = 3.5
-    bnd["A"] = 0.19264
-    bnd["C"] = 0.74873
-    bnd["NET_corr"] = 1.15
-    bnd["pwv_poly"] = 0.930223, 0.068510, 0.001771
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.17224
+    bnd["C"] = 0.77562
+    bnd["NET_corr"] = 1.18
+    bnd["pwv_poly"] = 0.950153, 0.048503, 0.001707
     bands["CHLAT_f090"] = bnd
 
     bnd = OrderedDict()
@@ -408,14 +410,14 @@ def get_example():
     bnd["low"] = 128.0
     bnd["high"] = 169.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 309.6
+    bnd["NET"] = 313.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
-    bnd["alpha"] = 3.5
-    bnd["A"] = 0.23072
-    bnd["C"] = 0.69900
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.21507
+    bnd["C"] = 0.71969
     bnd["NET_corr"] = 1.01
-    bnd["pwv_poly"] = 0.763643, 0.231453, 0.006616
+    bnd["pwv_poly"] = 0.804635, 0.188923, 0.007874
     bands["CHLAT_f150"] = bnd
 
     bnd = OrderedDict()
@@ -423,29 +425,29 @@ def get_example():
     bnd["low"] = 77.0
     bnd["high"] = 106.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 287.0
+    bnd["NET"] = 324.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
-    bnd["alpha"] = 3.5
-    bnd["A"] = 0.27837
-    bnd["C"] = 0.63703
-    bnd["NET_corr"] = 1.15
-    bnd["pwv_poly"] = 0.974286, 0.079438, 0.002080
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.23242
+    bnd["C"] = 0.69750
+    bnd["NET_corr"] = 1.18
+    bnd["pwv_poly"] = 0.983165, 0.051852, 0.001852
     bands["SPLAT_f090"] = bnd
-    
+
     bnd = OrderedDict()
     bnd["center"] = 148.5
     bnd["low"] = 128.0
     bnd["high"] = 169.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 268.8
+    bnd["NET"] = 297.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
-    bnd["alpha"] = 3.5
-    bnd["A"] = 0.22972
-    bnd["C"] = 0.70032
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.19995
+    bnd["C"] = 0.73946
     bnd["NET_corr"] = 1.01
-    bnd["pwv_poly"] = 0.892955, 0.330207, 0.010174
+    bnd["pwv_poly"] = 0.921211, 0.241889, 0.011086
     bands["SPLAT_f150"] = bnd
 
     bnd = OrderedDict()
@@ -453,14 +455,14 @@ def get_example():
     bnd["low"] = 74.8
     bnd["high"] = 95.2
     bnd["bandpass"] = ""
-    bnd["NET"] = 313.7
+    bnd["NET"] = 283.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
-    bnd["alpha"] = 3.5
-    bnd["A"] = 0.37419
-    bnd["C"] = 0.51222
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.42240
+    bnd["C"] = 0.44933
     bnd["NET_corr"] = 1.03
-    bnd["pwv_poly"] = 0.980092, 0.061447, 0.001782
+    bnd["pwv_poly"] = 0.980246, 0.060988, 0.001717
     bands["SAT_f085"] = bnd
 
     bnd = OrderedDict()
@@ -468,14 +470,14 @@ def get_example():
     bnd["low"] = 129.1
     bnd["high"] = 161.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 335.3
+    bnd["NET"] = 286.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
-    bnd["alpha"] = 3.5
-    bnd["A"] = 0.19900
-    bnd["C"] = 0.74041
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.23936
+    bnd["C"] = 0.68768
     bnd["NET_corr"] = 1.00
-    bnd["pwv_poly"] = 0.926762, 0.225619, 0.007903
+    bnd["pwv_poly"] = 0.921380, 0.242478, 0.007618
     bands["SAT_f145"] = bnd
 
     bnd = OrderedDict()
@@ -483,14 +485,14 @@ def get_example():
     bnd["low"] = 83.6
     bnd["high"] = 106.4
     bnd["bandpass"] = ""
-    bnd["NET"] = 274.9
+    bnd["NET"] = 244.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
-    bnd["alpha"] = 3.5
-    bnd["A"] = 0.29310
-    bnd["C"] = 0.61778
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.33734
+    bnd["C"] = 0.55996
     bnd["NET_corr"] = 1.02
-    bnd["pwv_poly"] = 0.972330, 0.085416, 0.002437
+    bnd["pwv_poly"] = 0.971560, 0.087835, 0.002376
     bands["SAT_f095"] = bnd
 
     bnd = OrderedDict()
@@ -498,29 +500,29 @@ def get_example():
     bnd["low"] = 138.0
     bnd["high"] = 172.1
     bnd["bandpass"] = ""
-    bnd["NET"] = 359.7
+    bnd["NET"] = 307.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
-    bnd["alpha"] = 3.5
-    bnd["A"] = 0.18843
-    bnd["C"] = 0.75417
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.22772
+    bnd["C"] = 0.70281
     bnd["NET_corr"] = 1.00
-    bnd["pwv_poly"] = 0.896329, 0.319420, 0.011034
+    bnd["pwv_poly"] = 0.888059, 0.345337, 0.010558
     bands["SAT_f155"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 227.0
-    bnd["low"] = 197.9
-    bnd["high"] = 256.1
+    bnd["low"] = 198.0
+    bnd["high"] = 256.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 683.2
+    bnd["NET"] = 670.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
-    bnd["alpha"] = 3.5
-    bnd["A"] = 0.33523
-    bnd["C"] = 0.56279
-    bnd["NET_corr"] = 1.01
-    bnd["pwv_poly"] = 0.639310, 0.344960, 0.018401
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.32681
+    bnd["C"] = 0.57429
+    bnd["NET_corr"] = 1.02
+    bnd["pwv_poly"] = 0.675399, 0.307360, 0.019666
     bands["CHLAT_f220"] = bnd
 
     bnd = OrderedDict()
@@ -528,59 +530,59 @@ def get_example():
     bnd["low"] = 256.0
     bnd["high"] = 315.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 1679.7
+    bnd["NET"] = 1615.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
-    bnd["alpha"] = 3.5
-    bnd["A"] = 0.40706
-    bnd["C"] = 0.46930
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.40724
+    bnd["C"] =  0.46986
     bnd["NET_corr"] = 1.01
-    bnd["pwv_poly"] = 0.553007, 0.419329, 0.031032
+    bnd["pwv_poly"] = 0.582919, 0.387797, 0.032451
     bands["CHLAT_f280"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 227.0
-    bnd["low"] = 197.9
-    bnd["high"] = 256.1
+    bnd["low"] = 198.0
+    bnd["high"] = 256.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 549.3
+    bnd["NET"] = 580.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
-    bnd["alpha"] = 3.5
-    bnd["A"] = 0.29109
-    bnd["C"] = 0.62028
-    bnd["NET_corr"] = 1.01
-    bnd["pwv_poly"] = 0.825060, 0.534043, 0.034081
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.27310
+    bnd["C"] = 0.64416
+    bnd["NET_corr"] = 1.02
+    bnd["pwv_poly"] = 0.854996, 0.441083, 0.033158
     bands["SPLAT_f220"] = bnd
-    
+
     bnd = OrderedDict()
     bnd["center"] = 285.5
     bnd["low"] = 256.0
     bnd["high"] = 315.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 1295.9
+    bnd["NET"] = 1327.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
-    bnd["alpha"] = 3.5
-    bnd["A"] = 0.33985
-    bnd["C"] = 0.55678
-    bnd["NET_corr"] = 1.01
-    bnd["pwv_poly"] = 0.776403, 0.676221, 0.063374
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.33182
+    bnd["C"] = 0.56786
+    bnd["NET_corr"] = 1.00
+    bnd["pwv_poly"] = 0.802794, 0.594632, 0.061426
     bands["SPLAT_f280"] = bnd
 
     bnd = OrderedDict()
     bnd["center"] = 227.0
-    bnd["low"] = 197.9
-    bnd["high"] = 256.1
+    bnd["low"] = 198.0
+    bnd["high"] = 256.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 726.9
+    bnd["NET"] = 626.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
-    bnd["alpha"] = 3.5
-    bnd["A"] = 0.22747
-    bnd["C"] = 0.70328
-    bnd["NET_corr"] = 1.00
-    bnd["pwv_poly"] = 0.867567, 0.403839, 0.027177
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.26877
+    bnd["C"] = 0.64938
+    bnd["NET_corr"] = 1.01
+    bnd["pwv_poly"] = 0.854979, 0.442977, 0.027418
     bands["SAT_f220"] = bnd
 
     bnd = OrderedDict()
@@ -588,14 +590,14 @@ def get_example():
     bnd["low"] = 256.0
     bnd["high"] = 315.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 1747.2
+    bnd["NET"] = 1511.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
-    bnd["alpha"] = 3.5
-    bnd["A"] = 0.26587
-    bnd["C"] = 0.65327
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.31260
+    bnd["C"] = 0.59246
     bnd["NET_corr"] = 1.00
-    bnd["pwv_poly"] = 0.830191, 0.512951, 0.050000
+    bnd["pwv_poly"] = 0.814634, 0.560931, 0.051506
     bands["SAT_f280"] = bnd
 
     cnf["bands"] = bands
@@ -603,19 +605,18 @@ def get_example():
     wafers = OrderedDict()
 
     wtypes = ["SPLAT_ULF", "CHLAT_LF", "SPLAT_LF", "SAT_LF", "CHLAT_MF", "SPLAT_MF", "SAT_MFL", "SAT_MFH", "CHLAT_HF", "SPLAT_HF", "SAT_HF"]
-    # partial wafers will be counted as individual wafers since we make a full wafer then kill pixels
     wcnt = {
         "SPLAT_ULF": 4,
         "CHLAT_LF": 8*2,
         "SPLAT_LF": 9,
-        "SAT_LF": (12) * 2,
+        "SAT_LF": (12) * 1,
         "CHLAT_MF": 54*2,
         "SPLAT_MF": 54,
-        "SAT_MFL": (12) * 6,
-        "SAT_MFH": (12) * 6,
+        "SAT_MFL": (12) * 3,
+        "SAT_MFH": (12) * 3,
         "CHLAT_HF": 23*2,
         "SPLAT_HF": 18,
-        "SAT_HF": (6 + 6) * 4,
+        "SAT_HF": (6 + 6) * 2,
     }
     wpac = {
         "SPLAT_ULF": "RP",
@@ -682,11 +683,25 @@ def get_example():
         "SPLAT_HF": ["SPLAT_f220", "SPLAT_f280"],
         "SAT_HF": ["SAT_f220", "SAT_f280"],
     }
+    #location positions of mechanical pin holes that kill pixels on the wafers
+    pins = {
+        "SPLAT_ULF": [],
+        "CHLAT_LF": [],
+        "SPLAT_LF": [],
+        "SAT_LF": [],
+        "CHLAT_MF": [210,220],
+        "SPLAT_MF": [210,220],
+        "SAT_MFL": [70,75],
+        "SAT_MFH": [0,91],
+        "CHLAT_HF": [0,331],
+        "SPLAT_HF": [0,331],
+        "SAT_HF": [0,331],
+    }
     windx = 0
     cardindx = 0
     for wt in wtypes:
         for ct in range(wcnt[wt]):
-            wn = "{:02d}".format(windx)
+            wn = "{:03d}".format(windx)
             wf = OrderedDict()
             wf["type"] = wt
             wf["packing"] = wpac[wt]
@@ -695,6 +710,7 @@ def get_example():
             wf["pixsize"] = wpixmm[wt]
             wf["bands"] = wbd[wt]
             wf["card"] = "{:02d}".format(cardindx)
+            wf["pins"] = pins[wt]
             cardindx += 1
             wafers[wn] = wf
             windx += 1
@@ -977,7 +993,8 @@ def get_example():
         "SPLAT_MF",
         "SPLAT_LF",
     ]
-    ltubepos = [
+    # TOAST hexagon layout positions in Xi/Eta coordinates
+    ltube_toasthex_pos = [
         0,
         1,
         2,
@@ -1242,7 +1259,7 @@ def get_example():
         tb["type"] = ttyp
         tb["waferspace"] = 124.
         tb["wafers"] = list()
-        # tw is the wafer number in the tube. Here we use 6 for the 3 full and 3 partial wafers/tube
+        # There is currently one wafer per tube.
         for tw in range(1):
             off = 0
             for w, props in cnf["wafers"].items():
@@ -1252,39 +1269,35 @@ def get_example():
                         woff[ttyp] += 1
                         break
                     off += 1
-        tb["platescale"] = 0.0047619
-        tb["location"] = ltubepos[tindx]
+        tb["wafer_angle"] = [-90.0 for tw in range(1)] # Degrees
+        if tindx < 170:
+            # CHLAT platescale
+            tb["platescale"] = 0.003964
+        else:
+            # SPLAT platescale
+            tb["platescale"] = 0.00429
+        tb["toast_hex_pos"] = ltube_toasthex_pos[tindx]
         tubes[nm] = tb
 
     stubes = [
-        "SAT_MFL",
+        "SAT_MFH",
         "SAT_MFH",
         "SAT_HF",
         "SAT_MFL",
         "SAT_MFH",
         "SAT_HF",
         "SAT_MFL",
-        "SAT_MFH",
-        "SAT_HF",
         "SAT_MFL",
-        "SAT_MFH",
-        "SAT_HF",
-        "SAT_MFL",
-        "SAT_MFH",
-        "SAT_LF",
-        "SAT_MFL",
-        "SAT_MFH",
         "SAT_LF",
     ]
-    stubepos = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    for tindx in range(18):
+    stube_toasthex_pos = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+    for tindx in range(9):
         nm = "ST{:d}".format(tindx)
         ttyp = stubes[tindx]
         tb = OrderedDict()
         tb["type"] = ttyp
-        tb["waferspace"] = 124.
+        tb["waferspace"] = 122.0
         tb["wafers"] = list()
-        # HF tubes have 8 full wafers + 2 partial, all others 11+2
         if ttyp == "SAT_HF":
             for tw in range(12):
                 off = 0
@@ -1295,9 +1308,23 @@ def get_example():
                             woff[ttyp] += 1
                             break
                         off += 1
-            # 29.0 deg/(422mm)
-            tb["platescale"] = 0.0687
-            tb["FOV_cut"] = 40.0
+            tb["wafer_angle"] = [ # Degrees
+                30.0,
+                30.0,
+                30.0,
+                -150.0,
+                -150.0,
+                30.0,
+                30.0,
+                30.0,
+                -30.0,
+                90.0,
+                30.0,
+                30.0,
+            ]
+            # 30 deg, 10008 detectors/band
+            tb["platescale"] = 0.069437
+            tb["FOV_cut"] = 30.0
         elif ttyp == "SAT_MFL":
             for tw in range(12):
                 off = 0
@@ -1308,10 +1335,23 @@ def get_example():
                             woff[ttyp] += 1
                             break
                         off += 1
-            # 29.4/(420mm)
-            tb["platescale"] = 0.070
-            tb["FOV_cut"] = 29.4
-            tb["waferspace"] = 122.16
+            tb["wafer_angle"] = [ # Degrees
+                0.0,
+                0.0,
+                0.0,
+                -60.0,
+                -60.0,
+                0.0,
+                0.0,
+                60.0,
+                60.0,
+                180.0,
+                180.0,
+                0.0,
+            ]
+            # 30 deg, 3048 detectors/band
+            tb["platescale"] = 0.0699
+            tb["FOV_cut"] = 30.0
         elif ttyp == "SAT_MFH":
             for tw in range(12):
                 off = 0
@@ -1322,10 +1362,23 @@ def get_example():
                             woff[ttyp] += 1
                             break
                         off += 1
-            # 29.4/(420mm)
-            tb["platescale"] = 0.0701
-            tb["FOV_cut"] = 29.4
-            tb["waferspace"] = 121.85
+            tb["wafer_angle"] = [ # Degrees
+                30.0,
+                30.0,
+                30.0,
+                -150.0,
+                -150.0,
+                30.0,
+                30.0,
+                30.0,
+                -30.0,
+                90.0,
+                30.0,
+                30.0,
+            ]
+            # 30 deg, 3552 det/band
+            tb["platescale"] = 0.069777
+            tb["FOV_cut"] = 30.0
         else:
             for tw in range(12):
                 off = 0
@@ -1336,10 +1389,24 @@ def get_example():
                             woff[ttyp] += 1
                             break
                         off += 1
-            # 29.0/(490mm)
-            tb["platescale"] = 0.0592
-            tb["FOV_cut"] = 40.0
-        tb["location"] = stubepos[tindx]
+            tb["wafer_angle"] = [ # Degrees
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+            ]
+            # 30 deg, 252 det/band
+            tb["platescale"] = 0.070946
+            tb["FOV_cut"] = 30.0
+        tb["toast_hex_pos"] = stube_toasthex_pos[tindx]
         tubes[nm] = tb
 
     cnf["tubes"] = tubes
@@ -1347,18 +1414,18 @@ def get_example():
     telescopes = OrderedDict()
 
     lfwhm = OrderedDict()
-    lfwhm["SPLAT_f020"] = 11.4
-    lfwhm["CHLAT_f030"] = 7.4
-    lfwhm["SPLAT_f030"] = 8.4
-    lfwhm["CHLAT_f040"] = 5.1
-    lfwhm["SPLAT_f040"] = 5.8
-    lfwhm["CHLAT_f090"] = 2.2
+    lfwhm["SPLAT_f020"] = 11.2
+    lfwhm["CHLAT_f030"] = 7.8
+    lfwhm["SPLAT_f030"] = 9.1
+    lfwhm["CHLAT_f040"] = 5.3
+    lfwhm["SPLAT_f040"] = 6.2
+    lfwhm["CHLAT_f090"] = 2.1
     lfwhm["SPLAT_f090"] = 2.5
-    lfwhm["CHLAT_f150"] = 1.4
-    lfwhm["SPLAT_f150"] = 1.6
-    lfwhm["CHLAT_f220"] = 1.0
+    lfwhm["CHLAT_f150"] = 1.3
+    lfwhm["SPLAT_f150"] = 1.5
+    lfwhm["CHLAT_f220"] = 0.95
     lfwhm["SPLAT_f220"] = 1.1
-    lfwhm["CHLAT_f280"] = 0.9
+    lfwhm["CHLAT_f280"] = 0.83
     lfwhm["SPLAT_f280"] = 1.0
 
     tele = OrderedDict()
@@ -1449,11 +1516,11 @@ def get_example():
         "LT83",
         "LT84"
     ]
-    tele["platescale"] = 0.0047619
-    # This tube spacing in mm corresponds to 0.83 degrees projected on
-    # the sky at a plate scale of 210 mm/deg or 0.0047619 deg/mm
-    # The physical tube spacing is actually 210 mm.
-    tele["tubespace"] =  174.3
+    tele["platescale"] = 0.003964
+    # This tube spacing in mm corresponds to 0.87 degrees projected on
+    # the sky at a plate scale of 0.003964 deg/mm
+    # The physical tube spacing may be different.
+    tele["tubespace"] =  0.87 / 0.003964
     tele["fwhm"] = lfwhm
     telescopes["LAT0"] = tele
 
@@ -1545,11 +1612,11 @@ def get_example():
         "LT168",
         "LT169"
     ]
-    tele["platescale"] =  0.0047619
-    # This tube spacing in mm corresponds to 0.83 degrees projected on
-    # the sky at a plate scale of 210 mm/deg or 0.0047619 deg/mm
-    # The physical tube spacing is actually 210 mm.
-    tele["tubespace"] =  174.3
+    tele["platescale"] =  0.003964
+    # This tube spacing in mm corresponds to 0.87 degrees projected on
+    # the sky at a plate scale of 0.003964 deg/mm
+    # The physical tube spacing may be different.
+    tele["tubespace"] =  0.87 / 0.003964
     tele["fwhm"] = lfwhm
     telescopes["LAT1"] = tele
 
@@ -1641,66 +1708,45 @@ def get_example():
         "LT253",
         "LT254"
     ]
-    tele["platescale"] = 0.0047619
-    # This tube spacing in mm corresponds to 0.83 degrees projected on
-    # the sky at a plate scale of 210 mm/deg or 0.0047619 deg/mm
-    # The physical tube spacing is actually 210 mm.
-    tele["tubespace"] =  174.3
+    tele["platescale"] = 0.00429
+    # This tube spacing in mm corresponds to 0.94 degrees projected on
+    # the sky at a plate scale of 0.00429 deg/mm
+    # The physical tube spacing may be different.
+    tele["tubespace"] =  0.94 / 0.00429
     tele["fwhm"] = lfwhm
     telescopes["LAT2"] = tele
 
     #from the DSR
     sfwhm = OrderedDict()
-    sfwhm["SAT_f030"] = 72.8
-    sfwhm["SAT_f040"] = 72.8
-    sfwhm["SAT_f085"] = 25.5
-    sfwhm["SAT_f145"] = 25.5
-    sfwhm["SAT_f095"] = 22.7
-    sfwhm["SAT_f155"] = 22.7
-    sfwhm["SAT_f220"] = 13.0
-    sfwhm["SAT_f280"] = 13.0
+    sfwhm["SAT_f030"] = 85.2
+    sfwhm["SAT_f040"] = 61.6
+    sfwhm["SAT_f085"] = 24.6
+    sfwhm["SAT_f145"] = 15.8
+    sfwhm["SAT_f095"] = 22.4
+    sfwhm["SAT_f155"] = 14.3
+    sfwhm["SAT_f220"] = 9.4
+    sfwhm["SAT_f280"] = 7.7
 
     tele = OrderedDict()
     tele["tubes"] = ["ST0", "ST1", "ST2"]
     tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
-    telescopes["SAT0"] = tele
+    telescopes["SAT1"] = tele
 
     tele = OrderedDict()
     tele["tubes"] = ["ST3", "ST4", "ST5"]
     tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
-    telescopes["SAT1"] = tele
+    telescopes["SAT2"] = tele
 
     tele = OrderedDict()
     tele["tubes"] = ["ST6", "ST7", "ST8"]
     tele["platescale"] = 0.056689
     tele["tubespace"] = 700.0
     tele["fwhm"] = sfwhm
-    telescopes["SAT2"] = tele
-
-    tele = OrderedDict()
-    tele["tubes"] = ["ST9", "ST10", "ST11"]
-    tele["platescale"] = 0.056689
-    tele["tubespace"] = 700.0
-    tele["fwhm"] = sfwhm
     telescopes["SAT3"] = tele
-
-    tele = OrderedDict()
-    tele["tubes"] = ["ST12", "ST13", "ST14"]
-    tele["platescale"] = 0.056689
-    tele["tubespace"] = 700.0
-    tele["fwhm"] = sfwhm
-    telescopes["SAT4"] = tele
-
-    tele = OrderedDict()
-    tele["tubes"] = ["ST15", "ST16", "ST17"]
-    tele["platescale"] = 0.056689
-    tele["tubespace"] = 700.0
-    tele["fwhm"] = sfwhm
-    telescopes["SAT5"] = tele
 
     cnf["telescopes"] = telescopes
 
@@ -1747,30 +1793,9 @@ def get_example():
     cnf["cards"] = cards
     cnf["crates"] = crates
 
-    pl = ["A", "B"]
-    hand = ["L", "R"]
-    bandarr=["CHLAT_f030","CHLAT_f040"]
-
-    dets = OrderedDict()
-    for d in range(4):
-        dprops = OrderedDict()
-        dprops["wafer"] = "07"
-        dprops["ID"] = d
-        dprops["pixel"] = "000"
-        bindx = d % 2
-        dprops["band"] = bandarr[bindx]
-        dprops["fwhm"] = 1.0
-        dprops["pol"] = pl[bindx]
-        dprops["handed"] = None
-        dprops["card"] = "07"
-        dprops["channel"] = d
-        dprops["coax"] = 0
-        dprops["bias"] = 0
-        dprops["quat"] = np.array([0.0, 0.0, 0.0, 1.0])
-        dname = "{}_{}_{}_{}".format("07", "000", dprops["band"], dprops["pol"])
-        dets[dname] = dprops
-
-    cnf["detectors"] = dets
+    # Add an empty set of detectors here, in case the user just wants access to
+    # the hardware metadata.
+    cnf["detectors"] = OrderedDict()
 
     hw = Hardware()
     hw.data = cnf

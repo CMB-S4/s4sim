@@ -1,155 +1,88 @@
-# Copyright (c) 2020-2020 CMB-S4 Collaboration.
+# Copyright (c) 2020-2023 CMB-S4 Collaboration.
 # Full license can be found in the top level "LICENSE" file.
 """Focalplane simulation tools.
 """
 
 import re
-
 from collections import OrderedDict
 
-from copy import deepcopy
-
+import astropy.units as u
 import numpy as np
+from toast.instrument_coords import xieta_to_quat, quat_to_xieta
+from toast.instrument_sim import (
+    hex_nring,
+    hex_xieta_row_col,
+    hex_layout,
+    rhomb_dim,
+    rhomb_xieta_row_col,
+    rhombus_hex_layout,
+)
+import toast.qarray as qa
 
-import quaternionarray as qa
 
-# FIXME:  much of this code is copy/pasted from the toast source, simply to
-# avoid a dependency.  Once we can "pip install toast", we should consider
-# just calling that package.
+XAXIS, YAXIS, ZAXIS = np.eye(3)
 
 
-def ang_to_quat(offsets):
-    """Convert cartesian angle offsets and rotation into quaternions.
+def sim_detectors_toast(hw, tele, tubes=None):
+    """Update hardware model with simulated detector positions.
 
-    Each offset contains two angles specifying the distance from the Z axis
-    in orthogonal directions (called "X" and "Y").  The third angle is the
-    rotation about the Z axis.  A quaternion is computed that first rotates
-    about the Z axis and then rotates this axis to the specified X/Y angle
-    location.
-
+    Given a Hardware model, generate all detector properties for the specified
+    telescope and optionally a subset of optics tube slots (for the LAT).  The
+    detector dictionary of the hardware model is updated in place.
+    This function requires the toast subpackage (and hence toast) to be
+    importable.
+    
     Args:
-        offsets (list of arrays):  Each item of the list has 3 elements for
-            the X / Y angle offsets in radians and the rotation in radians
-            about the Z axis.
+        hw (Hardware): The hardware object to update.
+        tele (str): The telescope name.
+        tubes (list, optional): The optional list of tube slots to include.
 
     Returns:
-        (list): List of quaternions, one for each item in the input list.
-
+        None
+    
     """
-    out = list()
-
-    zaxis = np.array([0, 0, 1], dtype=np.float64)
-
-    for off in offsets:
-        angrot = qa.rotation(zaxis, off[2])
-        wx = np.sin(off[0])
-        wy = np.sin(off[1])
-        wz = np.sqrt(1.0 - (wx * wx + wy * wy))
-        wdir = np.array([wx, wy, wz])
-        posrot = qa.from_vectors(zaxis, wdir)
-        out.append(qa.mult(posrot, angrot))
-
-    return out
+    sim_telescope_detectors(
+        hw, tele, tubes=tubes,
+    )
 
 
-def hex_nring(npos):
-    """Return the number of rings in a hexagonal layout.
+def sim_detectors_physical_optics(hw, tele, tubes=None):
+    """Update hardware model with simulated detector positions.
 
-    For a hexagonal layout with a given number of positions, return the
-    number of rings.
-
+    Given a Hardware model, generate all detector properties for the specified
+    telescope and optionally a subset of optics tube slots (for the LAT).  The
+    detector dictionary of the hardware model is updated in place.
+    This function uses information from physical optics simulations to estimate
+    the location of detectors.
+    
     Args:
-        npos (int): The number of positions.
+        hw (Hardware): The hardware object to update.
+        tele (str): The telescope name.
+        tubes (list, optional): The optional list of tube slots to include.
 
     Returns:
-        (int): The number of rings.
-
+        None
+    
     """
-    test = npos - 1
-    nrings = 1
-    while (test - 6 * nrings) >= 0:
-        test -= 6 * nrings
-        nrings += 1
-    if test != 0:
-        raise RuntimeError(
-            "{} is not a valid number of positions for a "
-            "hexagonal layout".format(npos)
-        )
-    return nrings
-
-
-def hex_row_col(npos, pos):
-    """Return the location of a given position.
-
-    For a hexagonal layout, indexed in a "spiral" scheme (see hex_layout),
-    this function returns the "row" and "column" of a single position.
-    The row is zero along the main vertex-vertex axis, and is positive
-    or negative above / below this line of positions.
-
-    Args:
-        npos (int): The number of positions.
-        pos (int): The position.
-
-    Returns:
-        (tuple): The (row, column) location of the position.
-
-    """
-    if pos >= npos:
-        raise ValueError("position value out of range")
-    test = npos - 1
-    nrings = 1
-    while (test - 6 * nrings) >= 0:
-        test -= 6 * nrings
-        nrings += 1
-    if pos == 0:
-        row = 0
-        col = nrings - 1
-    else:
-        test = pos - 1
-        ring = 1
-        while (test - 6 * ring) >= 0:
-            test -= 6 * ring
-            ring += 1
-        sector = int(test / ring)
-        steps = np.mod(test, ring)
-        coloff = nrings - ring - 1
-        if sector == 0:
-            row = steps
-            col = coloff + 2 * ring - steps
-        elif sector == 1:
-            row = ring
-            col = coloff + ring - steps
-        elif sector == 2:
-            row = ring - steps
-            col = coloff
-        elif sector == 3:
-            row = -steps
-            col = coloff
-        elif sector == 4:
-            row = -ring
-            col = coloff + steps
-        elif sector == 5:
-            row = -ring + steps
-            col = coloff + ring + steps
-    return (row, col)
+    raise NotImplementedError("Not yet implemented")
 
 
 def sector(npos, pos):
     """Return the sector of a given position.
         
-        For a hexagonal layout, indexed in a "spiral" scheme (see hex_layout),
-        this function returns the sector of a single position.
-        The row is zero along the main vertex-vertex axis, and is positive
-        or negative above / below this line of positions.
-        
-        Args:
+    For a hexagonal layout, indexed in a "spiral" scheme (see hex_layout),
+    this function returns the sector of a single position.
+    The row is zero along the main vertex-vertex axis, and is positive
+    or negative above / below this line of positions.
+    
+    Args:
         npos (int): The number of positions.
         pos (int): position number
-        
-        Returns:
+    
+    Returns:
         (integer): sector of the position
-        
-        """
+    
+    """
     test = npos - 1
     nrings = 1
     while (test - 6 * nrings) >= 0:
@@ -173,19 +106,19 @@ def sector(npos, pos):
 def sector2(npos, pos):
     """Return the sector of a given position.
         
-        For a hexagonal layout, indexed in a "spiral" scheme (see hex_layout),
-        this function returns the sector of a single position.
-        The row is zero along the main vertex-vertex axis, and is positive
-        or negative above / below this line of positions.
-        
-        Args:
+    For a hexagonal layout, indexed in a "spiral" scheme (see hex_layout),
+    this function returns the sector of a single position.
+    The row is zero along the main vertex-vertex axis, and is positive
+    or negative above / below this line of positions.
+    
+    Args:
         npos (int): The number of positions.
         pos (int): position number
-        
-        Returns:
+    
+    Returns:
         (integer): sector of the position
-        
-        """
+    
+    """
     test = npos - 1
     nrings = 1
     while (test - 6 * nrings) >= 0:
@@ -208,352 +141,6 @@ def sector2(npos, pos):
     return sector
 
 
-def hex_layout(npos, width, rotate=None, killpix=None):
-    """Compute positions in a hexagon layout.
-
-    Place the given number of positions in a hexagonal layout projected on
-    the sphere and centered at z axis.  The width specifies the angular
-    extent from vertex to vertex along the "X" axis.  For example::
-
-        Y ^             O O O
-        |              O O O O
-        |             O O + O O
-        +--> X         O O O O
-                        O O O
-
-    Each position is numbered 0..npos-1.  The first position is at the center,
-    and then the positions are numbered moving outward in rings.
-
-    Args:
-        npos (int): The number of positions packed onto wafer.
-        width (float): The angle (in degrees) subtended by the width along
-            the X axis.
-        rotate (array, optional): Optional array of rotation angles in degrees
-            to apply to each position.
-
-    Returns:
-        (array): Array of quaternions for the positions.
-
-    """
-    zaxis = np.array([0, 0, 1], dtype=np.float64)
-    nullquat = np.array([0, 0, 0, 1], dtype=np.float64)
-    sixty = np.pi / 3.0
-    thirty = np.pi / 6.0
-    rtthree = np.sqrt(3.0)
-    rtthreebytwo = 0.5 * rtthree
-
-    angdiameter = width * np.pi / 180.0
-
-    # find the angular packing size of one detector
-    nrings = hex_nring(npos)
-    posdiam = angdiameter / (2 * nrings - 2)
-    if killpix is None:
-        killpix = []
-    nkill = len(killpix)
-    result = np.zeros((npos - nkill, 4), dtype=np.float64)
-    off = 0
-    for pos in range(npos):
-        if pos == 0:
-            # center position has no offset
-            posrot = nullquat
-        else:
-            # Not at the center, find ring for this position
-            test = pos - 1
-            ring = 1
-            while (test - 6 * ring) >= 0:
-                test -= 6 * ring
-                ring += 1
-            sectors = int(test / ring)
-            sectorsteps = np.mod(test, ring)
-
-            # Convert angular steps around the ring into the angle and distance
-            # in polar coordinates.  Each "sector" of 60 degrees is essentially
-            # an equilateral triangle, and each step is equally spaced along
-            # the edge opposite the vertex:
-            #
-            #          O
-            #         O O (step 2)
-            #        O   O (step 1)
-            #       X O O O (step 0)
-            #
-            # For a given ring, "R" (center is R=0), there are R steps along
-            # the sector edge.  The line from the origin to the opposite edge
-            # that bisects this triangle has length R*sqrt(3)/2.  For each
-            # equally-spaced step, we use the right triangle formed with this
-            # bisection line to compute the angle and radius within this
-            # sector.
-
-            # The distance from the origin to the midpoint of the opposite
-            # side.
-            midline = rtthreebytwo * float(ring)
-
-            # the distance along the opposite edge from the midpoint (positive
-            # or negative)
-            edgedist = float(sectorsteps) - 0.5 * float(ring)
-
-            # the angle relative to the midpoint line (positive or negative)
-            relang = np.arctan2(edgedist, midline)
-
-            # total angle is based on number of sectors we have and the angle
-            # within the final sector.
-            posang = sectors * sixty + thirty + relang
-
-            posdist = rtthreebytwo * posdiam * float(ring) / np.cos(relang)
-
-            posx = np.sin(posdist) * np.cos(posang)
-            posy = np.sin(posdist) * np.sin(posang)
-            posz = np.cos(posdist)
-            posdir = np.array([posx, posy, posz], dtype=np.float64)
-            norm = np.sqrt(np.dot(posdir, posdir))
-            posdir /= norm
-
-            posrot = qa.from_vectors(zaxis, posdir)
-        if pos not in killpix:
-            if rotate is None:
-                result[off] = posrot
-            else:
-                prerot = qa.rotation(zaxis, rotate[pos] * np.pi / 180.0)
-                result[off] = qa.mult(posrot, prerot)
-            off += 1
-
-    return result
-
-
-def rhomb_dim(npos):
-    """Compute the dimensions of a rhombus.
-
-    For a rhombus with the specified number of positions, return the dimension
-    of one side.  This function is just a check around a sqrt.
-
-    Args:
-        npos (int): The number of positions.
-
-    Returns:
-        (int): The dimension of one side.
-
-    """
-    dim = int(np.sqrt(float(npos)))
-    if dim ** 2 != npos:
-        raise ValueError("The number of positions for a rhombus must " "be square")
-    return dim
-
-
-def rhomb_row_col(npos, pos):
-    """Return the location of a given position.
-
-    For a rhombus layout, indexed from top to bottom (see rhombus_layout),
-    this function returnes the "row" and "column" of a position.  The column
-    starts at zero on the left hand side of a row.
-
-    Args:
-        npos (int): The number of positions.
-        pos (int): The position.
-
-    Returns:
-        (tuple): The (row, column) location of the position.
-
-    """
-    if pos >= npos:
-        raise ValueError("position value out of range")
-    dim = rhomb_dim(npos)
-    col = pos
-    rowcnt = 1
-    row = 0
-    while (col - rowcnt) >= 0:
-        col -= rowcnt
-        row += 1
-        if row >= dim:
-            rowcnt -= 1
-        else:
-            rowcnt += 1
-    return (row, col)
-
-
-def triangle(npos, width, rotate=None):
-    """Compute positions in an equilateral triangle layout.
-        
-        Args:
-        npos (int): The number of positions packed onto wafer=3
-        width (float): distance between tubes in degrees
-        rotate (array, optional): Optional array of rotation angles in degrees
-        to apply to each position.
-        
-        Returns:
-        (array): Array of quaternions for the positions.
-        
-        """
-    zaxis = np.array([0, 0, 1], dtype=np.float64)
-    sixty = np.pi / 3.0
-    thirty = np.pi / 6.0
-    rtthree = np.sqrt(3.0)
-    rtthreebytwo = 0.5 * rtthree
-
-    tubedist = width * np.pi / 180.0
-    result = np.zeros((npos, 4), dtype=np.float64)
-    posangarr = np.array([sixty * 3.0 + thirty, -thirty, thirty * 3.0])
-    for pos in range(npos):
-        posang = posangarr[pos]
-        posdist = tubedist / rtthree
-
-        posx = np.sin(posdist) * np.cos(posang)
-        posy = np.sin(posdist) * np.sin(posang)
-        posz = np.cos(posdist)
-        posdir = np.array([posx, posy, posz], dtype=np.float64)
-        norm = np.sqrt(np.dot(posdir, posdir))
-        posdir /= norm
-        posrot = qa.from_vectors(zaxis, posdir)
-
-        if rotate is None:
-            result[pos] = posrot
-        else:
-            prerot = qa.rotation(zaxis, rotate[pos] * np.pi / 180.0)
-            result[pos] = qa.mult(posrot, prerot)
-
-    return result
-
-
-def rhombus_layout(npos, width, rotate=None):
-    """Compute positions in a hexagon layout.
-
-    This particular rhombus geometry is essentially a third of a
-    hexagon.  In other words the aspect ratio of the rhombus is
-    constrained to have the long dimension be sqrt(3) times the short
-    dimension.
-
-    The rhombus is projected on the sphere and centered on the Z axis.
-    The X axis is along the short direction.  The Y axis is along the longer
-    direction.  For example::
-
-                          O
-        Y ^              O O
-        |               O O O
-        |              O O O O
-        +--> X          O O O
-                         O O
-                          O
-
-    Each position is numbered 0..npos-1.  The first position is at the
-    "top", and then the positions are numbered moving downward and left to
-    right.
-
-    The extent of the rhombus is directly specified by the width parameter
-    which is the angular extent along the X direction.
-
-    Args:
-        npos (int): The number of positions in the rhombus.
-        width (float): The angle (in degrees) subtended by the width along
-            the X axis.
-        rotate (array, optional): Optional array of rotation angles in degrees
-            to apply to each position.
-
-    Returns:
-        (array): Array of quaternions for the positions.
-
-    """
-    zaxis = np.array([0, 0, 1], dtype=np.float64)
-    rtthree = np.sqrt(3.0)
-
-    angwidth = width * np.pi / 180.0
-    dim = rhomb_dim(npos)
-
-    # find the angular packing size of one detector
-    posdiam = angwidth / (dim - 1)
-
-    result = np.zeros((npos, 4), dtype=np.float64)
-
-    for pos in range(npos):
-        posrow, poscol = rhomb_row_col(npos, pos)
-
-        rowang = 0.5 * rtthree * ((dim - 1) - posrow) * posdiam
-        relrow = posrow
-        if posrow >= dim:
-            relrow = (2 * dim - 2) - posrow
-        colang = (float(poscol) - float(relrow) / 2.0) * posdiam
-        distang = np.sqrt(rowang ** 2 + colang ** 2)
-        zang = np.cos(distang)
-        posdir = np.array([colang, rowang, zang], dtype=np.float64)
-        norm = np.sqrt(np.dot(posdir, posdir))
-        posdir /= norm
-
-        posrot = qa.from_vectors(zaxis, posdir)
-
-        if rotate is None:
-            result[pos] = posrot
-        else:
-            prerot = qa.rotation(zaxis, rotate[pos] * np.pi / 180.0)
-            result[pos] = qa.mult(posrot, prerot)
-
-    return result
-
-
-def rhombus_hex_layout(
-    rhombus_npos, rhombus_width, gap, rhombus_rotate=None, killpix=None
-):
-    """
-    Construct a hexagon from 3 rhombi.
-
-    Args:
-        rhombus_npos (int): The number of positions in one rhombus.
-        rhombus_width (float): The angle (in degrees) subtended by the
-            width of one rhombus along the X axis.
-        gap (float): The gap between the edges of the rhombi, in degrees.
-        rhombus_rotate (array, optional): An additional angle rotation of
-            each position on each rhombus before the rhombus is rotated
-            into place.
-        killpix (list, optional): Pixel indices to remove for mechanical
-            reasons.
-
-    Returns:
-        (dict): Keys are the hexagon position and values are quaternions.
-
-    """
-    sixty = np.pi / 3.0
-    thirty = np.pi / 6.0
-
-    # rhombus dim
-    dim = rhomb_dim(rhombus_npos)
-
-    # width in radians
-    radwidth = rhombus_width * np.pi / 180.0
-
-    # First layout one rhombus
-    rquat = rhombus_layout(rhombus_npos, rhombus_width, rotate=rhombus_rotate)
-
-    # angular separation of rhombi
-    gap *= np.pi / 180.0
-
-    # half-width of rhombus in radians
-    halfwidth = 0.5 * radwidth
-
-    # width of one pixel
-    pixwidth = radwidth / (dim - 1)
-
-    # Compute the individual rhombus centers.  This is the shift of origin
-    # in the X direction for the "vertical" rhombus.
-    shift = halfwidth + (0.5 * pixwidth) + ((0.5 * gap) / np.cos(thirty))
-
-    centers = [
-        np.array([shift, 0.0, 0.0]),
-        np.array([-shift * np.cos(sixty), shift * np.sin(sixty), 2 * sixty]),
-        np.array([-shift * np.cos(sixty), -shift * np.sin(sixty), 4 * sixty]),
-    ]
-    qcenters = ang_to_quat(centers)
-
-    nkill = len(killpix)
-    result = np.zeros((3 * rhombus_npos - nkill, 4), dtype=np.float64)
-
-    off = 0
-    px = 0
-    for qc in qcenters:
-        for p in range(rhombus_npos):
-            if px not in killpix:
-                result[off] = qa.mult(qc, rquat[p])
-                off += 1
-            px += 1
-
-    return result
-
-
 def sim_wafer_detectors(
     hw,
     wafer,
@@ -561,13 +148,17 @@ def sim_wafer_detectors(
     fwhm,
     band=None,
     partial_type=None,
-    no_gap=None,
     center=np.array([0, 0, 0, 1], dtype=np.float64),
 ):
     """Generate detector properties for a wafer.
 
     Given a Hardware configuration, generate all detector properties for
     the specified wafer and optionally only the specified band.
+
+    By convention, polarization angle quantities are stored in degrees and
+    fwhm is stored in arcminutes.  These units are stripped to ease serialization
+    to TOML and JSON.  The units are restored when constructing focalplane tables
+    for TOAST.
 
     Args:
         hw (Hardware): The hardware properties.
@@ -584,39 +175,44 @@ def sim_wafer_detectors(
     """
     # The properties of this wafer
     wprops = hw.data["wafers"][wafer]
+
     # The readout card and its properties
     card = wprops["card"]
     cardprops = hw.data["cards"][card]
+    
     # The bands
     bands = wprops["bands"]
     if band is not None:
         if band in bands:
             bands = [band]
         else:
-            raise RuntimeError("band '{}' not valid for wafer '{}'".format(band, wafer))
+            msg = f"band '{band}' not valid for wafer '{wafer}'"
+            raise RuntimeError(msg)
 
     # Lay out the pixel locations depending on the wafer type.  Also
     # compute the polarization orientation rotation, as well as the A/B
     # handedness for the Sinuous detectors.
 
     npix = wprops["npixel"]
-    pixsep = platescale * wprops["pixsize"]
-    layout_A = None
-    layout_B = None
+    pixsep = platescale * wprops["pixsize"] * u.degree
     handed = None
     if wprops["packing"] == "RP":
         # Feedhorn (NIST style)
-        # Make gap zero for partial_arrays
-        if no_gap is None:
-            gap = platescale * wprops["rhombusgap"]
-        else:
-            gap = 0.0
+        # The "gap" is the **additional** space beyond the normal pixel
+        # separation.
+        gap = 0.0 * u.degree
+
+        # Orientation of the wafer with respect to the focalplane
+        wafer_rot_rad = 0.0
 
         nrhombus = npix // 3
+
         # This dim is also the number of pixels along the short axis.
         dim = rhomb_dim(nrhombus)
+        
         # This is the center-center distance along the short axis
         width = (dim - 1) * pixsep
+
         # The orientation within each rhombus alternates between zero and 45
         # degrees.  However there is an offset.  We choose this arbitrarily
         # for the nominal rhombus position, and then the rotation of the
@@ -626,53 +222,65 @@ def sim_wafer_detectors(
         poloff = 22.5
         for p in range(nrhombus):
             # get the row / col of the pixel
-            row, col = rhomb_row_col(nrhombus, p)
+            row, col = rhomb_xieta_row_col(nrhombus, p)
             if np.mod(row, 2) == 0:
-                pol_A[p] = 0.0 + poloff
+                pol_A[p] = 0 + poloff
             else:
-                pol_A[p] = 45.0 + poloff
-            pol_B[p] = 90.0 + pol_A[p]
-        # kill pixels in partial arrays
-        if partial_type is None:
-            kill = []
-        elif partial_type == "rhombus":
-            kill = np.linspace(dim ** 2, 3 * dim ** 2 - 1, 2 * dim ** 2, dtype=np.int)
-        elif partial_type == "half":
-            kill1 = np.linspace(
-                0, ((dim ** 2 - dim) // 2 - 1), (dim ** 2 - dim) // 2, dtype=np.int
-            )
-            kill2 = np.linspace(dim ** 2, 2 * dim ** 2 - 1, dim ** 2, dtype=np.int)
-            kill = np.append(kill1, kill2)
-        else:
-            kill = []
-        # We are going to remove 2 pixels for mechanical reasons
-        # kf = dim * (dim - 1) // 2
-        # kill = [kf, kf + dim - 2]
+                pol_A[p] = 45 + poloff
+            pol_B[p] = 90 + pol_A[p]
+        pol_A = u.Quantity(pol_A, u.degree)
+        pol_B = u.Quantity(pol_B, u.degree)
+
         layout_A = rhombus_hex_layout(
-            nrhombus, width, gap, rhombus_rotate=pol_A, killpix=kill
+            nrhombus, width, "", "", gap=gap, pol=pol_A
         )
         layout_B = rhombus_hex_layout(
-            nrhombus, width, gap, rhombus_rotate=pol_B, killpix=kill
+            nrhombus, width, "", "", gap=gap, pol=pol_B
         )
+
+        # kill pixels in partial arrays
+        if partial_type is None:
+            kill = wprops["pins"]
+        elif partial_type == "rhombus":
+            kill = np.linspace(dim**2, 3 * dim**2 - 1, 2 * dim**2, dtype=np.int32)
+        elif partial_type == "half":
+            kill1 = np.linspace(
+                0, ((dim**2 - dim) // 2 - 1), (dim**2 - dim) // 2, dtype=np.int32
+            )
+            kill2 = np.linspace(dim**2, 2 * dim**2 - 1, dim**2, dtype=np.int32)
+            kill = np.append(kill1, kill2)
+        else:
+            kill = wprops["pins"]
     elif wprops["packing"] == "HP":
         # Hex close-packed
         # This is the center-center distance along the vertex-vertex axis
         width = (2 * (hex_nring(npix) - 1)) * pixsep
+
+        # The orientation of the wafer with respect to the focalplane.
+        wafer_rot_rad = 0.0
+        hex_cent = qa.from_axisangle(ZAXIS, wafer_rot_rad)
+
         # The sinuous handedness is chosen so that A/B pairs of pixels have the
         # same nominal orientation but trail each other along the
         # vertex-vertex axis of the hexagon.  The polarization orientation
         # changes every other column
-        pol_A = np.zeros(npix, dtype=np.float64)
-        pol_B = np.zeros(npix, dtype=np.float64)
+        pol_A = np.zeros(npix, dtype=float)
+        pol_B = np.zeros(npix, dtype=float)
         for p in range(npix):
-            row, col = hex_row_col(npix, p)
+            row, col = hex_xieta_row_col(npix, p)
             if np.mod(col, 4) < 2:
                 pol_A[p] = 0.0
             else:
                 pol_A[p] = 45.0
-            pol_B[p] = 90.0 + pol_A[p]
+            pol_B[p] = 90 + pol_A[p]
+        pol_A = u.Quantity(pol_A, u.degree)
+        pol_B = u.Quantity(pol_B, u.degree)
+
+        layout_A = hex_layout(npix, width, "", "", pol_A, center=hex_cent)
+        layout_B = hex_layout(npix, width, "", "", pol_B, center=hex_cent)
+        
         if partial_type is None:
-            kill = []
+            kill = wprops["pins"]
         elif partial_type == "half":
             kill = []
             for ii in range(npix):
@@ -681,22 +289,13 @@ def sim_wafer_detectors(
         elif partial_type == "rhombus":
             kill = []
             for ii in range(npix):
-                if (
-                    (sector2(npix, ii) == 1)
-                    or (sector2(npix, ii) == 2)
-                    or (sector2(npix, ii) == 3)
-                    or (sector2(npix, ii) == 4)
-                ):
+                if (sector2(npix, ii) in [1, 2, 3, 4]):
                     kill.append(ii)
         else:
-            kill = []
-        layout_A = hex_layout(npix, width, rotate=pol_A, killpix=kill)
-        layout_B = hex_layout(npix, width, rotate=pol_B, killpix=kill)
-        # Do we need a kill pixel function here?
-        # kill pixels in partial arrays
-
+            kill = wprops["pins"]
     else:
-        raise RuntimeError("Unknown wafer packing '{}'".format(wprops["packing"]))
+        msg = f"Unknown wafer packing '{wprops['packing']}'"
+        raise RuntimeError(msg)
 
     # Now we go through each pixel and create the orthogonal detectors for
     # each band.
@@ -711,7 +310,11 @@ def sim_wafer_detectors(
     for px in range(npix):
         if px in kill:
             continue
-        pstr = "{:03d}".format(p)
+        pstr = f"{p:03}"
+        if npix < 100:
+            pxstr = f"{px:02d}"
+        else:
+            pxstr = f"{px:03d}"
         for b in bands:
             for pl, layout in zip(["A", "B"], [layout_A, layout_B]):
                 dprops = OrderedDict()
@@ -722,16 +325,33 @@ def sim_wafer_detectors(
                 dprops["fwhm"] = fwhm[b]
                 dprops["pol"] = pl
                 if handed is not None:
-                    dprops["handed"] = handed[p]
+                    dprops["handed"] = handed[px]
                 # Made-up assignment to readout channels
                 dprops["card"] = card
                 dprops["channel"] = doff
                 dprops["coax"] = doff // chan_per_coax
                 dprops["bias"] = doff // chan_per_bias
-                # Layout quaternion offset is from the origin.  Now we apply
-                # the rotation of the wafer center.
-                dprops["quat"] = qa.mult(center, layout[p]).flatten()
-                dname = "{}_{}_{}_{}".format(wafer, pstr, b, pl)
+
+                # Polarization angle in wafer basis.  This is the gamma angle
+                # returned by the layout functions above, less the rotation
+                # of the wafer.
+                wafer_gamma = layout[pxstr]["gamma"]
+                dprops["pol_ang_wafer"] = np.degrees(wafer_gamma - wafer_rot_rad)
+
+                # Polarization angle in focalplane basis.  This is, by
+                # definition, equal to the gamma angle computed by the layout
+                # functions.  However, we must also account for the extra rotation
+                # of the center offset passed to this function.
+                if center is not None:
+                    dprops["quat"] = qa.mult(center, layout[pxstr]["quat"]).flatten()
+                    _, _, temp_gamma = quat_to_xieta(dprops["quat"])
+                    dprops["gamma"] = np.degrees(temp_gamma)
+                else:
+                    dprops["quat"] = layout[pxstr]["quat"].flatten()
+                    dprops["gamma"] = np.degrees(wafer_gamma)
+                dprops["pol_ang"] = dprops["gamma"]
+
+                dname = f"{wafer}_{pstr}_{b}_{pl}"
                 dets[dname] = dprops
                 doff += 1
         p += 1
@@ -761,6 +381,9 @@ def sim_telescope_detectors(hw, tele, tubes=None):
     tele_platescale = teleprops["platescale"]
     fwhm = teleprops["fwhm"]
 
+    # Wafer props
+    wprops = hw.data["wafers"]
+
     # The tubes
     alltubes = teleprops["tubes"]
     ntube = len(alltubes)
@@ -769,148 +392,102 @@ def sim_telescope_detectors(hw, tele, tubes=None):
     else:
         for t in tubes:
             if t not in alltubes:
-                raise RuntimeError(
-                    "Invalid tube '{}' for telescope '{}'".format(t, tele)
-                )
+                msg = f"Invalid tube '{t}' for telescope '{tele}'"
+                raise RuntimeError(msg)
 
     alldets = OrderedDict()
     if ntube == 3:
-        # This is a SAT.  We have three tubes.
+        # This is a SAT.  We have three co-incident tubes.
         tubespace = teleprops["tubespace"]
-        #tuberot = 0.0 * np.ones(7, dtype=np.float64)
-        #tcenters = hex_layout(7, 2 * (tubespace * tele_platescale), rotate=tuberot)
-        # tuberot = 90.0 * np.ones(3, dtype=np.float64)
-        # tcenters = triangle(3, (tubespace * tele_platescale), rotate=tuberot)
 
-        tindx = 0
-        for tube in tubes:
+        for tindx, tube in enumerate(tubes):
             tubeprops = hw.data["tubes"][tube]
             waferspace = tubeprops["waferspace"]
             platescale = tubeprops["platescale"]
-            location = tubeprops["location"]
+            location = str(tubeprops["toast_hex_pos"])
+            wafer_ang_deg = np.array(tubeprops["wafer_angle"])
+            wafer_ang_rad = np.radians(wafer_ang_deg)
             type = tubeprops["type"]
-            if type == "SAT_HF":
-                tuberot = 90.0 * np.ones(7, dtype=np.float64)
-                tcenters = hex_layout(7, 2 * (tubespace * tele_platescale), rotate=tuberot)
-                srad = waferspace * platescale * np.pi / 180.0
-                wcenters = [
-                        np.array([-srad/(2.*np.cos(thirty)), 0.0, 0.0]),
-                        np.array([srad/(4.*np.cos(thirty)), -srad/2., 0.0]),
-                        np.array([srad/(4.*np.cos(thirty)), srad/2., 0.0]),
-                        np.array([srad/(np.cos(thirty)),0.0, 0.0]),
-                        np.array([srad/(np.cos(thirty)),srad,10 * thirty]),
-                        np.array([srad/(4.*np.cos(thirty)), srad/2. + srad, 0.0]),
-                        np.array([-srad/(2.*np.cos(thirty)), srad, 0.0]),
-                        np.array([-5.*srad/(4.*np.cos(thirty)), srad/2., 2 * thirty]),
-                        np.array([-5.*srad/(4.*np.cos(thirty)), -srad/2., 4 * thirty]),
-                        np.array([-srad/(2.*np.cos(thirty)), -srad, 0.0]),
-                        np.array([srad/(4.*np.cos(thirty)), -srad/2. - srad, 6 * thirty]),
-                        np.array([srad/(np.cos(thirty)),-srad, -4 * thirty]),
-                ]
-                qwcenters = ang_to_quat(wcenters)
-                centers = list()
-                for qwc in qwcenters:
-                    centers.append(qa.mult(tcenters[location], qwc))
 
-                windx = 0
-                for wafer in tubeprops["wafers"]:
-                    if windx == 4:
-                        partial_type = "half"
-                    elif windx == 5:
-                        partial_type = "half"
-                    elif windx == 7:
-                        partial_type = "half"
-                    elif windx == 8:
-                        partial_type = "half"
-                    elif windx == 10:
-                        partial_type = "half"
-                    elif windx == 11:
-                        partial_type = "half"
-                    else:
-                        partial_type = None
-                    dets = sim_wafer_detectors(
-                        hw,
-                        wafer,
-                        platescale,
-                        fwhm,
-                        center=centers[windx],
-                        partial_type=partial_type,
-                    )
-                    alldets.update(dets)
-                    windx += 1
-                tindx += 1
-            else:
-                tuberot = 0.0 * np.ones(7, dtype=np.float64)
-                tcenters = hex_layout(7, 2 * (tubespace * tele_platescale), rotate=tuberot)
-                shift = waferspace * platescale * np.pi / 180.0
-                wcenters = [
-                    np.array([-shift/(2.*np.cos(thirty)), 0.0, 0.0]),
-                    np.array([shift/(4.*np.cos(thirty)), -shift/2., 0.0]),
-                    np.array([shift/(4.*np.cos(thirty)), shift/2., 0.0]),
-                    np.array([shift/(np.cos(thirty)),0.0, 0.0]),
-                    np.array([shift/(np.cos(thirty)),shift,0.0]),
-                    np.array([shift/(4.*np.cos(thirty)), shift/2. + shift, 0.0]),
-                    np.array([-shift/(2.*np.cos(thirty)), shift, 0.0]),
-                    np.array([-5.*shift/(4.*np.cos(thirty)), shift/2., 0.0]),
-                    np.array([-5.*shift/(4.*np.cos(thirty)), -shift/2., 0.0]),
-                    np.array([-shift/(2.*np.cos(thirty)), -shift, 0.0]),
-                    np.array([shift/(4.*np.cos(thirty)), -shift/2. - shift, 0.0]),
-                    np.array([shift/(np.cos(thirty)),-shift, 0.0]),
-                ]
-                qwcenters = ang_to_quat(wcenters)
-                centers = list()
-                for qwc in qwcenters:
-                    centers.append(qa.mult(tcenters[location], qwc))
+            # We only want 12 wafers but we want to offset the
+            # default 19-wafer hexagonal layout by half a wafer
+            # and then drop the ones which are the furthest away
+            # from the new center.
+            nwafer = 19
 
-                windx = 0
-                for wafer in tubeprops["wafers"]:
-                    partial_type = None
-                    dets = sim_wafer_detectors(
-                        hw,
-                        wafer,
-                        platescale,
-                        fwhm,
-                        center=centers[windx],
-                        partial_type=partial_type,
-                    )
-                    alldets.update(dets)
-                    windx += 1
-                tindx += 1
-    else:
-        # This is the LAT.  Compute the tube centers.
-        # Rotate each tube by 90 degrees, so that it is pointed "down".
-        tubespace = teleprops["tubespace"]
-        tuberot = 90.0 * np.ones(91, dtype=np.float64)
-        tcenters = hex_layout(91, 10 * (tubespace * tele_platescale), rotate=tuberot)
+            # Simulate the offset layout
+            offset = qa.mult(
+                qa.rotation(XAXIS, -np.radians(waferspace * platescale / 2)),
+                qa.rotation(ZAXIS, -thirty),
+            )
+            wcenters = hex_layout(
+                nwafer,
+                4 * waferspace * platescale * u.degree,
+                "",
+                "",
+                np.zeros(nwafer, dtype=np.float64) * u.degree,
+                center=offset,
+            )
 
-        tindx = 0
-        for tube in tubes:
-            tubeprops = hw.data["tubes"][tube]
-            waferspace = tubeprops["waferspace"]
-            platescale = tubeprops["platescale"]
-            location = tubeprops["location"]
-
-            wradius = 0.5 * (waferspace * platescale * np.pi / 180.0)
-            # get centers and rotations for arrays
-            wcenters = [np.array([0.0, 0.0, 0.0])]
-            qwcenters = ang_to_quat(wcenters)
+            # Cut wafers outside the footprint
             centers = list()
-            for qwc in qwcenters:
-                centers.append(qa.mult(tcenters[location], qwc))
+            for p, q in wcenters.items():
+                vec = qa.rotate(q["quat"], ZAXIS)
+                dist = np.arccos(np.dot(vec, ZAXIS))
+                if dist > np.radians(2.0 * waferspace * platescale):
+                    continue
+                centers.append(q["quat"])
 
-            windx = 0
-            for wafer in tubeprops["wafers"]:
-                # For first three wafers, use whole wafers, then construct partial wafers
+            # Simulate each wafer, applying central rotation
+            for windx, (wafer, center) in enumerate(zip(tubeprops["wafers"], centers)):
+                wrot = qa.rotation(ZAXIS, wafer_ang_rad[windx])
+                cent = qa.mult(center, wrot)
                 dets = sim_wafer_detectors(
                     hw,
                     wafer,
                     platescale,
                     fwhm,
-                    center=centers[windx],
-                    partial_type=None,
-                    no_gap=None,
+                    center=cent,
                 )
                 alldets.update(dets)
-                #windx += 1
-            tindx += 1
-    return alldets
+    else:
+        # This is the LAT.  Compute the tube centers.
+        tubespace = teleprops["tubespace"]
+        tcenters = hex_layout(
+            91,
+            10 * tubespace * tele_platescale * u.degree,
+            "",
+            "",
+            np.zeros(91, dtype=np.float64) * u.degree,
+            center=None,
+        )
+
+        for tindx, tube in enumerate(tubes):
+            tubeprops = hw.data["tubes"][tube]
+            waferspace = tubeprops["waferspace"]
+            platescale = tubeprops["platescale"]
+            location = f"{tubeprops['toast_hex_pos']:02}"
+            wafer_ang_deg = tubeprops["wafer_angle"]
+            wafer_ang_rad = np.radians(wafer_ang_deg)
+
+            # NOTE:  If the CHLAT re-imaging optics are similar to SO LAT,
+            # we may need a coordinate flip here for each tube.
+
+            for windx, wafer in enumerate(tubeprops["wafers"]):
+                wcenter = qa.mult(
+                    tcenters[location]["quat"],
+                    qa.rotation(ZAXIS, wafer_ang_rad[windx]),
+                )
+                dets = sim_wafer_detectors(
+                    hw,
+                    wafer,
+                    platescale,
+                    fwhm,
+                    center=wcenter,
+                )
+                alldets.update(dets)
+
+    if "detectors" in hw.data:
+        hw.data["detectors"].update(alldets)
+    else:
+        hw.data["detectors"] = alldets
