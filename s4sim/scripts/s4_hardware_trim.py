@@ -50,16 +50,15 @@ def main():
         required=False,
         default=None,
         help="Select only detectors on these telescope (LAT, SAT0, SAT1, etc)\
-            .  This should be either a regex string or a comma-separated\
-            list of names.",
+            .  This should be a comma-separated list of names.",
     )
 
     parser.add_argument(
         "--tubes",
         required=False,
         default=None,
-        help="Select only detectors on these tubes.  This should be either a\
-            regex string or a comma-separated list of names.",
+        help="Select only detectors on these tubes.  This should be \
+            a comma-separated list of names.",
     )
 
     parser.add_argument(

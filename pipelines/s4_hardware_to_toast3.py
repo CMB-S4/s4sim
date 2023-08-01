@@ -38,7 +38,7 @@ def main():
 
     parser.add_argument(
         "--telescope",
-        required=True,
+        required=False,
         help="Input telescope (LAT0,...,LAT2, or SAT0,...,SAT5).  "
         "Not used if --hardware is provided.",
     )
@@ -65,7 +65,7 @@ def main():
             raise RuntimeError("Must select a telescope if not providing a hardware file.")
         print(f"Simulating hardware for {args.telescope}...", end="", flush=True)
         hw = hardware.sim_nominal()
-        hw.data["detectors"] = hardware.sim_telescope_detectors(hw, args.telescope)
+        hardware.sim_telescope_detectors(hw, args.telescope)
     else:
         if args.telescope is not None:
             raise RuntimeError("Must not select a telescope if providing a hardware file.")
@@ -87,6 +87,11 @@ def main():
         psi = np.degrees(qa.to_angles(angrot)[2]) % 180
         det_data["psi_pol"] = psi
         """
+        quat = qa.norm(det_data["quat"])
+        det_data["pol_angle"] = pol_angle = np.arctan2(
+            2 * quat[3] * quat[2],
+            quat[3]**2 - quat[2]**2
+        ) % np.pi
         if band not in bands:
             bands[band] = {"name" : []}
         bands[band]["name"].append(det_name)
@@ -202,12 +207,19 @@ def main():
                 continue
             if key == "fwhm":
                 unit = u.arcmin
-            columns.append(Column(name=key, data=np.array(value)[cut], unit=unit))
+            if key == "quat":
+                val = np.array(value)[cut, :]
+            else:
+                val = np.array(value)[cut]
+            columns.append(Column(name=key, data=val, unit=unit))
 
         det_table = QTable(columns)
 
         fp = Focalplane(detector_data=det_table, sample_rate=fsample * u.Hz)
-        fname = f"{args.out}_{args.telescope}_{band_name}.h5"
+        if args.telescope is None:
+            fname = f"{args.out}_{band_name}.h5"
+        else:
+            fname = f"{args.out}_{args.telescope}_{band_name}.h5"
         with toast.io.H5File(fname, "w", comm=None, force_serial=True) as f:
             fp.save_hdf5(f.handle)
         print(f"Wrote {fname}")

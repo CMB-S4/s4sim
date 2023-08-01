@@ -53,6 +53,11 @@ def main():
         help="Add pixel and polarization labels to the plot.",
     )
 
+    parser.add_argument(
+        "--show_centers", required=False, default=False, action="store_true",
+        help="Add labels with pixel center coordinates."
+    )
+
     args = parser.parse_args()
 
     outfile = args.out
@@ -79,6 +84,7 @@ def main():
         height=height,
         labels=args.labels,
         xieta=args.xieta,
+        show_centers=args.show_centers,
     )
 
     return
