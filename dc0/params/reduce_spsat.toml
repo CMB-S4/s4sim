@@ -249,7 +249,6 @@
     nside = 512 # The NSIDE resolution
     nside_submap = 16 # The NSIDE of the submap resolution
     pixels = "pixels" # Observation detdata key for output pixel indices
-    quats = "None" # Observation detdata key for output quaternions
     single_precision = false # If True, use 32bit int in output
     view = "None" # Use this view of the data in all observations
 

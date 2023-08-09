@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from mpi4py import MPI
 import numpy as np
 # Numba is not available for Python 3.11 ...
-from numba import jit
+#from numba import jit
 
 import toast
 from toast.ops import LoadHDF5
@@ -45,12 +45,14 @@ chile_schedule_lat.pruned.txt:
 ...
 """
 
-inroot = "/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim/outputs_rk/LAT0_CHLAT/f150/"
+#inroot = "/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim/outputs_rk/LAT0_CHLAT/f150/"
+inroot = "/pscratch/sd/k/keskital/s4sim/dc0/noise_sim/outputs/LAT0_CHLAT/f150/"
 indir = "SETTING_SCAN_40-156-12"
 inpath = os.path.join(inroot, indir)
 data = toast.Data(toast.mpi.Comm(world=MPI.COMM_SELF))
 
-nside = 512
+#nside = 512
+nside = 4096
 nest = False
 time_step = 5.0
 
@@ -92,7 +94,9 @@ def trim_data(data_in, ind):
         data_out.obs.append(obs_out)
     return data_out
 
-quat_pointing = toast.ops.PointingDetectorSimple()
+quat_pointing = toast.ops.PointingDetectorSimple(
+    shared_flag_mask=2,  # No turnarounds
+)
 pixel_pointing = toast.ops.PixelsHealpix(
     detector_pointing=quat_pointing, nside=nside, nest=nest
 )
@@ -101,7 +105,7 @@ obs = data.obs[0]
 times = obs.shared["times"]
 times -= times[0]
 
-@jit(nopython=True)
+#@jit(nopython=True)
 def bin_hits(hitmap, pixels):
     for pixel in pixels:
         hitmap[pixel] += 1
@@ -109,7 +113,7 @@ def bin_hits(hitmap, pixels):
 npix = 12 * nside**2
 hitmap = np.zeros(npix)
 
-print(f"Plotting hits", flush=True)
+print(f"Making a global hit map", flush=True)
 
 # First collect a total hit map so we know the hit range
 nframe = int(times[-1] / time_step)
@@ -128,8 +132,11 @@ for frame in range(nframe):
             bin_hits(hitmap, pixels[good].copy())
 hitmap_tot = np.zeros_like(hitmap)
 comm.Allreduce(hitmap, hitmap_tot, op=MPI.SUM)
-hit_max = np.amax(hitmap_tot)
+good = hitmap_tot > 0
+# hit_max = np.amax(hitmap_tot)
+hit_max = np.percentile(hitmap_tot[good], 95)
 
+print(f"Plotting hits", flush=True)
 
 tstart = times[0]
 framedir = f"frames_{indir}"
@@ -158,7 +165,13 @@ for frame in range(nframe):
         hitmap_plot = hitmap.copy()
         hitmap_plot[hitmap == 0] = hp.UNSEEN
         hp.mollview(
-            hitmap_plot, title=f"t = {tstart:5.0f} s", min=0, max=hit_max, cmap="magma"
+            hitmap_plot,
+            title=f"t = {tstart:5.0f} s",
+            min=0,
+            max=hit_max,
+            cmap="magma",
+            xsize=1600,
+            unit=f"Hits per NSide={nside} pixel",
         )
         del hitmap_plot
         plt.savefig(fname)

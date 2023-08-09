@@ -51,9 +51,6 @@ echo "           ngroup = ${ngroup}"
 telescope=chlat
 site=chile
 TELESCOPE=LAT0_CHLAT
-#bands=( f030 )
-#bands=(f030 f040)
-#bands=(f090 f150)
 bands=(f090 f150 f220 f280)
 
 echo "Listing schedules at" `date`
@@ -105,7 +102,7 @@ for band in ${bands[*]}; do
                  --mapmaker.name mapmaker_${rootname} \
                  --mapmaker.write_invcov \
                  --mapmaker.write_hits \
-                 --processing_mask.file ../foreground_sim/input_maps/mask15_mediumcomplexity.${telescope}.${band}.h5 \
+                 --processing_mask.file ../foreground_sim/input_maps/mask_mediumcomplexity.${telescope}.${band}.h5 \
                  --save_hdf5.enable \
                  --save_hdf5.volume $outdir \
                  --sim_ground.session_split_key tube \

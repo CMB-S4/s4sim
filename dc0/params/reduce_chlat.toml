@@ -118,12 +118,13 @@
     view = "None" # Use this view of the data in all observations
 
 [operators.polyfilter1D]
-    class = "toast.ops.polyfilter.PolyFilter"
+    class = "toast.ops.polyfilter.polyfilter.PolyFilter"
     API = 0 # Internal interface version for this operator
     det_data = "signal" # Observation detdata key apply filtering to
     det_flag_mask = 3 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     enabled = true # If True, this class instance is marked as enabled
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "polyfilter1D" # The 'name' of this class instance
     order = 1 # Polynomial order
     pattern = ".*" # Regex pattern to match against detector names. Only detectors that match the pattern are filtered.
@@ -133,13 +134,14 @@
     view = "scanning" # Use this view of the data in all observations
 
 [operators.polyfilter2D]
-    class = "toast.ops.polyfilter.PolyFilter2D"
+    class = "toast.ops.polyfilter.polyfilter.PolyFilter2D"
     API = 0 # Internal interface version for this operator
     det_data = "signal" # Observation detdata key apply filtering to
     det_flag_mask = 3 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     enabled = false # If True, this class instance is marked as enabled
     focalplane_key = "None" # Which focalplane key to match
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "polyfilter2D" # The 'name' of this class instance
     order = 1 # Polynomial order
     pattern = ".*" # Regex pattern to match against detector names. Only detectors that match the pattern are filtered.
@@ -147,17 +149,17 @@
     shared_flag_mask = 3 # Bit mask value for optional shared flagging
     shared_flags = "flags" # Observation shared key for telescope flags to use
     times = "times" # Observation shared key for timestamps
-    use_python = false # If True, use a pure python implementation for testing.
     view = "None" # Use this view of the data in all observations
 
 [operators.common_mode_filter]
-    class = "toast.ops.polyfilter.CommonModeFilter"
+    class = "toast.ops.polyfilter.polyfilter.CommonModeFilter"
     API = 0 # Internal interface version for this operator
     det_data = "signal" # Observation detdata key apply filtering to
     det_flag_mask = 3 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     enabled = true # If True, this class instance is marked as enabled
     focalplane_key = "tube" # Which focalplane key to match
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "common_mode_filter" # The 'name' of this class instance
     pattern = ".*" # Regex pattern to match against detector names. Only detectors that match the pattern are filtered.
     redistribute = false # If True, redistribute data before and after filtering for optimal data locality.
@@ -235,20 +237,19 @@
     write_rcond = false # If True, write the reciprocal condition numbers.
     write_solver_products = false # If True, write out equivalent solver products.
 
-[operators.pixels_radec_radec_final]
-    class = "toast.ops.pixels_healpix.PixelsHealpix"
+[operators.pixels_healpix_radec_final]
+    class = "toast.ops.pixels_healpix.pixels_healpix.PixelsHealpix"
     API = 0 # Internal interface version for this operator
     create_dist = "None" # Create the submap distribution for all detectors and store in the Data key specified
     detector_pointing = "None" # Operator that translates boresight pointing into detector frame
     enabled = false # If True, this class instance is marked as enabled
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "pixels_healpix_radec_final" # The 'name' of this class instance
     nest = true # If True, use NESTED ordering instead of RING
     nside = 4096 # The NSIDE resolution
     nside_submap = 16 # The NSIDE of the submap resolution
     pixels = "pixels" # Observation detdata key for output pixel indices
-    quats = "None" # Observation detdata key for output quaternions
     single_precision = false # If True, use 32bit int in output
-    use_python = false # If True, use python implementation
     view = "None" # Use this view of the data in all observations
 
 [operators.binner_final]
@@ -323,7 +324,7 @@
 
 [templates]
 [templates.baselines]
-    class = "toast.templates.offset.Offset"
+    class = "toast.templates.offset.offset.Offset"
     data = "None" # This must be an instance of a Data class (or None)
     det_data = "None" # Observation detdata key for the timestream data
     det_data_units = "unit K" # Desired units of detector data
@@ -331,12 +332,11 @@
     det_flags = "flags" # Observation detdata key for solver flags to use
     enabled = false # If True, this class instance is marked as enabled
     good_fraction = 0.5 # Fraction of unflagged samples needed to keep a given offset amplitude
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "baselines" # The 'name' of this class instance
     noise_model = "None" # Observation key containing the optional noise model
     precond_width = 20 # Preconditioner width in terms of offsets / baselines
     step_time = "1.00000000000000e+04 s" # Time per baseline step
     times = "times" # Observation shared key for timestamps
-    use_accel = false # If True, use the accelerator
     use_noise_prior = false # Use detector PSDs to build the noise prior and preconditioner
-    use_python = false # If True, use python implementation
     view = "None" # Use this view of the data in all observations

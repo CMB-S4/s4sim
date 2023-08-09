@@ -86,7 +86,7 @@ for band in ${bands[*]}; do
             echo "Writing $logfile at" `date`
             date > ${logfile}
 
-            # Generate this directory not to confure rsync.sh
+            # Generate this directory not to confuse rsync.sh
             outdir=outputs/${TELESCOPE}/${band}/${rootname}
             mkdir -p --mode=g+rXs-w $outdir
             chgrp -R cmbs4 $outdir
@@ -97,8 +97,8 @@ for band in ${bands[*]}; do
 
             srun -N $nnode_group -n $ntask_group -c $ncore --cpu_bind=cores \
                  toast_sim_ground.py \
-                 --config common.toml scanning_${telescope}.toml \
-                 atmosphere_${site}.toml reduce_${telescope}.toml \
+                 --config ../params/common.toml ../params/scanning_${telescope}.toml \
+                 ../params/atmosphere_${site}.toml ../params/reduce_${telescope}.toml \
                  --focalplane ../focalplanes/focalplane_${TELESCOPE}_${band}.h5 \
                  --telescope $TELESCOPE \
                  --schedule $schedule \
@@ -111,7 +111,7 @@ for band in ${bands[*]}; do
                  --mapmaker.name mapmaker_${rootname} \
                  --mapmaker.write_invcov \
                  --mapmaker.write_hits \
-                 --processing_mask.file ../foreground_sim/input_maps/mask15_mediumcomplexity.${telescope}.${band}.h5 \
+                 --processing_mask.file ../foreground_sim/input_maps/mask_mediumcomplexity.${telescope}.${band}.h5 \
                  --save_hdf5.enable \
                  --save_hdf5.volume $outdir \
                  --sim_ground.session_split_key tube \

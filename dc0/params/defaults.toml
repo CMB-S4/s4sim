@@ -1,5 +1,5 @@
 # TOAST config
-# Generated with version 3.0.0a9.dev4
+# Generated with version 3.0.0a17.dev11
 
 [operators]
 [operators.sim_ground]
@@ -31,6 +31,7 @@
     hwp_step = "None" # For stepped HWP, the angle of each step
     hwp_step_time = "None" # For stepped HWP, the time between steps
     invalid_mask = 1 # Bit mask to raise invalid flags with
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     leftright_mask = 8 # Bit mask to raise left-to-right flags with
     max_pwv = "None" # Maximum PWV for the simulated weather.
     median_weather = false # Use median weather parameters instead of sampling from the distributions
@@ -48,6 +49,7 @@
     scan_rightleft_interval = "scan_rightleft" # Interval name for right to left scans
     scanning_interval = "scanning" # Interval name for scanning
     schedule = "None" # Instance of a GroundSchedule
+    session_split_key = "None" # Focalplane key for splitting into observations
     shared_flags = "flags" # Observation shared key for common flags
     sun_angle_min = "9.00000000000000e+01 deg" # Minimum angular distance for the scan and the Sun
     sun_close_distance = "4.50000000000000e+01 deg" # 'Sun close' flagging distance
@@ -72,6 +74,7 @@
     class = "toast.ops.noise_model.DefaultNoiseModel"
     API = 0 # Internal interface version for this operator
     enabled = true # If True, this class instance is marked as enabled
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "default_model" # The 'name' of this class instance
     noise_model = "noise_model" # The observation key for storing the noise model
 
@@ -81,6 +84,7 @@
     detector_pointing = "None" # Operator that translates boresight Az / El pointing into detector frame
     enabled = true # If True, this class instance is marked as enabled
     extra_factor = "None" # Extra multiplier to the NET scaling
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     modulate_pwv = false # If True, modulate the NET based on PWV
     name = "elevation_model" # The 'name' of this class instance
     noise_a = "None" # Parameter 'a' in (a / sin(el) + c).  If not set, look for one in the Focalplane.
@@ -94,57 +98,76 @@
     view = "None" # Use this view of the data in all observations.  Use 'middle' if the middle 10 seconds of each observation is enough to determine the effective observing elevation
 
 [operators.det_pointing_azel]
-    class = "toast.ops.pointing_detector.PointingDetectorSimple"
+    class = "toast.ops.pointing_detector.pointing_detector.PointingDetectorSimple"
     API = 0 # Internal interface version for this operator
     boresight = "boresight_radec" # Observation shared key for boresight
     coord_in = "None" # The input boresight coordinate system ('C', 'E', 'G')
     coord_out = "None" # The output coordinate system ('C', 'E', 'G')
     enabled = true # If True, this class instance is marked as enabled
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "det_pointing_azel" # The 'name' of this class instance
     quats = "quats_azel" # Observation detdata key for output quaternions
     shared_flag_mask = 1 # Bit mask value for optional flagging
     shared_flags = "flags" # Observation shared key for telescope flags to use
-    use_python = false # If True, use python implementation
     view = "None" # Use this view of the data in all observations
 
 [operators.weights_azel]
-    class = "toast.ops.stokes_weights.StokesWeights"
+    class = "toast.ops.stokes_weights.stokes_weights.StokesWeights"
     API = 0 # Internal interface version for this operator
     IAU = false # If True, use the IAU convention rather than COSMO
     cal = "None" # The observation key with a dictionary of pointing weight calibration for each det
     detector_pointing = "None" # Operator that translates boresight pointing into detector frame
     enabled = true # If True, this class instance is marked as enabled
+    fp_gamma = "gamma" # Focalplane key for detector gamma offset angle
     hwp_angle = "None" # Observation shared key for HWP angle
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     mode = "IQU" # The Stokes weights to generate (I or IQU)
     name = "weights_azel" # The 'name' of this class instance
     quats = "None" # Observation detdata key for output quaternions
     single_precision = false # If True, use 32bit float in output
-    use_python = false # If True, use python implementation
     view = "None" # Use this view of the data in all observations
     weights = "weights_azel" # Observation detdata key for output weights
 
 [operators.det_pointing_radec]
-    class = "toast.ops.pointing_detector.PointingDetectorSimple"
+    class = "toast.ops.pointing_detector.pointing_detector.PointingDetectorSimple"
     API = 0 # Internal interface version for this operator
     boresight = "boresight_radec" # Observation shared key for boresight
     coord_in = "None" # The input boresight coordinate system ('C', 'E', 'G')
     coord_out = "None" # The output coordinate system ('C', 'E', 'G')
     enabled = true # If True, this class instance is marked as enabled
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "det_pointing_radec" # The 'name' of this class instance
     quats = "quats_radec" # Observation detdata key for output quaternions
     shared_flag_mask = 1 # Bit mask value for optional flagging
     shared_flags = "flags" # Observation shared key for telescope flags to use
-    use_python = false # If True, use python implementation
     view = "None" # Use this view of the data in all observations
 
-[operators.scan_map]
+[operators.scan_healpix_map]
     class = "toast.ops.scan_healpix.ScanHealpixMap"
+    API = 0 # Internal interface version for this operator
+    det_data = "signal" # Observation detdata key for accumulating output.  Use ';' if different files are applied to different flavors
+    det_data_units = "unit K" # Output units if creating detector data
+    enabled = false # If True, this class instance is marked as enabled
+    file = "None" # Path to healpix FITS file.  Use ';' if providing multiple files
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
+    name = "scan_healpix_map" # The 'name' of this class instance
+    pixel_dist = "pixel_dist" # The Data key where the PixelDistribution object is located
+    pixel_pointing = "None" # This must be an instance of a pixel pointing operator
+    save_map = false # If True, do not delete map during finalize
+    save_pointing = false # If True, do not clear detector pointing matrices if we generate the pixel distribution
+    stokes_weights = "None" # This must be an instance of a Stokes weights operator
+    subtract = false # If True, subtract the map timestream instead of accumulating
+    zero = false # If True, zero the data before accumulating / subtracting
+
+[operators.scan_wcs_map]
+    class = "toast.ops.scan_wcs.ScanWCSMap"
     API = 0 # Internal interface version for this operator
     det_data = "signal" # Observation detdata key for accumulating output
     det_data_units = "unit K" # Output units if creating detector data
     enabled = false # If True, this class instance is marked as enabled
-    file = "None" # Path to healpix FITS file
-    name = "scan_map" # The 'name' of this class instance
+    file = "None" # Path to FITS file
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
+    name = "scan_wcs_map" # The 'name' of this class instance
     pixel_dist = "pixel_dist" # The Data key where the PixelDistribution object is located
     pixel_pointing = "None" # This must be an instance of a pixel pointing operator
     save_map = false # If True, do not delete map during finalize
@@ -174,6 +197,7 @@
     fade_time = "6.00000000000000e+01 s" # Fade in/out time to avoid a step at wind break.
     field_of_view = "None" # Override the focalplane field of view
     gain = 1e-05 # Scaling applied to the simulated TOD
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     lmax_center = "1.00000000000000e+01 m" # Kolmogorov turbulence injection scale center
     lmax_sigma = "1.00000000000000e+01 m" # Kolmogorov turbulence injection scale sigma
     lmin_center = "1.00000000000000e-02 m" # Kolmogorov turbulence dissipation scale center
@@ -208,6 +232,7 @@
     detector_pointing = "None" # Operator that translates boresight Az/El pointing into detector frame
     enabled = false # If True, this class instance is marked as enabled
     fwhm = "1.00000000000000e+01 arcmin" # ground map smoothing scale
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     lmax = 256 # ground map expansion order
     name = "sim_sss" # The 'name' of this class instance
     nside = 128 # ground map healpix resolution
@@ -222,24 +247,43 @@
     deconvolve = false # Deconvolve the time constant instead.
     det_data = "signal" # Observation detdata key apply filtering to
     enabled = false # If True, this class instance is marked as enabled
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "convolve_time_constant" # The 'name' of this class instance
     realization = 0 # Realization ID, only used if tau_sigma is nonzero
     tau = "None" # Time constant to apply to all detectors.  Overrides `tau_name`
     tau_name = "None" # Key to use to find time constants in the Focalplane.
     tau_sigma = "None" # Randomized fractional error to add to each time constant.
 
+[operators.gain_scrambler]
+    class = "toast.ops.gainscrambler.GainScrambler"
+    API = 0 # Internal interface version for this operator
+    center = 1.0 # Gain distribution center
+    component = 0 # Component index for this simulation
+    det_data = "signal" # Observation detdata key to apply the gain error to
+    enabled = false # If True, this class instance is marked as enabled
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
+    name = "gain_scrambler" # The 'name' of this class instance
+    pattern = ".*" # Regex pattern to match against detector names. Only detectors that match the pattern are scrambled.
+    realization = 0 # Realization index
+    sigma = 0.001 # Gain distribution width
+
 [operators.save_hdf5]
     class = "toast.ops.save_hdf5.SaveHDF5"
     API = 0 # Internal interface version for this operator
+    compress_detdata = false # If True, use FLAC to compress detector signal
+    compress_precision = "None" # Number of significant digits to retain in detdata compression
     detdata = [] # Only save this list of detdata objects
     detdata_float32 = false # If True, convert any float64 detector data to float32 on write.
+    detdata_in_place = false # If True, all compressed detector data will be decompressed and written over the input data.
     enabled = false # If True, this class instance is marked as enabled
     force_serial = false # Use serial HDF5 operations, even if parallel support available
     intervals = [] # Only save this list of intervals objects
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     meta = [] # Only save this list of meta objects
     name = "save_hdf5" # The 'name' of this class instance
     shared = [] # Only save this list of shared objects
     times = "times" # Observation shared key for timestamps
+    verify = false # If True, immediately load data back in and verify
     volume = "toast_out_hdf5" # Top-level directory for the data volume
 
     [operators.save_hdf5.config] # Write this job config to the file
@@ -251,41 +295,84 @@
     det_data = "signal" # Observation detdata key for accumulating noise timestreams
     det_data_units = "unit K" # Output units if creating detector data
     enabled = true # If True, this class instance is marked as enabled
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "sim_noise" # The 'name' of this class instance
     noise_model = "noise_model" # Observation key containing the noise model
     realization = 0 # The noise realization index
     serial = true # Use legacy serial implementation instead of batched
     times = "times" # Observation shared key for timestamps
 
-[operators.pixels_radec]
-    class = "toast.ops.pixels_healpix.PixelsHealpix"
+[operators.pixels_healpix_radec]
+    class = "toast.ops.pixels_healpix.pixels_healpix.PixelsHealpix"
     API = 0 # Internal interface version for this operator
     create_dist = "None" # Create the submap distribution for all detectors and store in the Data key specified
     detector_pointing = "None" # Operator that translates boresight pointing into detector frame
     enabled = true # If True, this class instance is marked as enabled
-    name = "pixels_radec" # The 'name' of this class instance
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
+    name = "pixels_healpix_radec" # The 'name' of this class instance
     nest = true # If True, use NESTED ordering instead of RING
     nside = 64 # The NSIDE resolution
     nside_submap = 16 # The NSIDE of the submap resolution
     pixels = "pixels" # Observation detdata key for output pixel indices
-    quats = "None" # Observation detdata key for output quaternions
     single_precision = false # If True, use 32bit int in output
-    use_python = false # If True, use python implementation
+    view = "None" # Use this view of the data in all observations
+
+[operators.pixels_wcs_radec]
+    class = "toast.ops.pixels_wcs.PixelsWCS"
+    API = 0 # Internal interface version for this operator
+    auto_bounds = true # If True, set the bounding box based on boresight and field of view
+    bounds = [] # The (lon_min, lon_max, lat_min, lat_max) values (Quantities)
+    center = ["1.80000000000000e+02 deg", "0.00000000000000e+00 deg"] # The center Lon/Lat coordinates (Quantities) of the projection
+    center_offset = "None" # Optional name of shared field with lon, lat offset in degrees
+    create_dist = "None" # Create the submap distribution for all detectors and store in the Data key specified
+    detector_pointing = "None" # Operator that translates boresight pointing into detector frame
+    dimensions = ["710", "350"] # The Lon/Lat pixel dimensions of the projection
+    enabled = false # If True, this class instance is marked as enabled
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
+    name = "pixels_wcs_radec" # The 'name' of this class instance
+    pixels = "pixels" # Observation detdata key for output pixel indices
+    projection = "CAR" # Supported values are CAR, CEA, MER, ZEA, TAN
+    resolution = ["5.00000000000000e-03 deg", "5.00000000000000e-03 deg"] # The Lon/Lat projection resolution (Quantities) along the 2 axes
+    single_precision = false # If True, use 32bit int in output
+    submaps = 10 # Number of submaps to use
+    use_astropy = true # If True, use astropy for world to pix conversion
+    view = "None" # Use this view of the data in all observations
+
+[operators.pixels_wcs_azel]
+    class = "toast.ops.pixels_wcs.PixelsWCS"
+    API = 0 # Internal interface version for this operator
+    auto_bounds = true # If True, set the bounding box based on boresight and field of view
+    bounds = [] # The (lon_min, lon_max, lat_min, lat_max) values (Quantities)
+    center = ["1.80000000000000e+02 deg", "0.00000000000000e+00 deg"] # The center Lon/Lat coordinates (Quantities) of the projection
+    center_offset = "None" # Optional name of shared field with lon, lat offset in degrees
+    create_dist = "None" # Create the submap distribution for all detectors and store in the Data key specified
+    detector_pointing = "None" # Operator that translates boresight pointing into detector frame
+    dimensions = ["710", "350"] # The Lon/Lat pixel dimensions of the projection
+    enabled = false # If True, this class instance is marked as enabled
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
+    name = "pixels_wcs_azel" # The 'name' of this class instance
+    pixels = "pixels" # Observation detdata key for output pixel indices
+    projection = "CAR" # Supported values are CAR, CEA, MER, ZEA, TAN
+    resolution = ["5.00000000000000e-03 deg", "5.00000000000000e-03 deg"] # The Lon/Lat projection resolution (Quantities) along the 2 axes
+    single_precision = false # If True, use 32bit int in output
+    submaps = 10 # Number of submaps to use
+    use_astropy = true # If True, use astropy for world to pix conversion
     view = "None" # Use this view of the data in all observations
 
 [operators.weights_radec]
-    class = "toast.ops.stokes_weights.StokesWeights"
+    class = "toast.ops.stokes_weights.stokes_weights.StokesWeights"
     API = 0 # Internal interface version for this operator
     IAU = false # If True, use the IAU convention rather than COSMO
     cal = "None" # The observation key with a dictionary of pointing weight calibration for each det
     detector_pointing = "None" # Operator that translates boresight pointing into detector frame
     enabled = true # If True, this class instance is marked as enabled
+    fp_gamma = "gamma" # Focalplane key for detector gamma offset angle
     hwp_angle = "None" # Observation shared key for HWP angle
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     mode = "IQU" # The Stokes weights to generate (I or IQU)
     name = "weights_radec" # The 'name' of this class instance
     quats = "None" # Observation detdata key for output quaternions
     single_precision = false # If True, use 32bit float in output
-    use_python = false # If True, use python implementation
     view = "None" # Use this view of the data in all observations
     weights = "weights" # Observation detdata key for output weights
 
@@ -298,8 +385,24 @@
     fixed = false # If True, detector cuts do not change between observations and realizations
     focalplane_key = "pixel" # Which focalplane key to use for randomization.  Detectors that share the key value are flagged together
     keep_frac = 0.9 # Fraction of detectors to keep
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "yield_cut" # The 'name' of this class instance
     realization = 0 # The realization index
+
+[operators.processing_mask]
+    class = "toast.ops.scan_healpix.ScanHealpixMask"
+    API = 0 # Internal interface version for this operator
+    det_flags = "flags" # Observation detdata key for flags to use
+    det_flags_value = 2 # The detector flag value to set where the mask result is non-zero
+    enabled = false # If True, this class instance is marked as enabled
+    file = "None" # Path to healpix FITS file
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
+    mask_bits = 255 # The number to bitwise-and with each mask value to form the result
+    name = "processing_mask" # The 'name' of this class instance
+    pixel_dist = "pixel_dist" # The Data key where the PixelDistribution object is located
+    pixel_pointing = "None" # This must be an instance of a pixel pointing operator
+    save_mask = false # If True, do not delete mask during finalize
+    save_pointing = false # If True, do not clear detector pointing matrices if we generate the pixel distribution
 
 [operators.flag_sso]
     class = "toast.ops.flag_sso.FlagSSO"
@@ -308,6 +411,7 @@
     det_flags = "flags" # Observation detdata key for flags to use
     detector_pointing = "None" # Operator that translates boresight Az/El pointing into detector frame
     enabled = false # If True, this class instance is marked as enabled
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "flag_sso" # The 'name' of this class instance
     sso_names = [] # Names of the SSOs, must be recognized by pyEphem
     sso_radii = [] # Radii around the sources to flag
@@ -319,6 +423,7 @@
     det_flag_mask = 1 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     enabled = false # If True, this class instance is marked as enabled
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "cadence_map" # The 'name' of this class instance
     output_dir = "." # Write output data products to this directory
     pixel_dist = "None" # The Data key containing the submap distribution
@@ -335,6 +440,7 @@
     det_flag_mask = 1 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     enabled = false # If True, this class instance is marked as enabled
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "crosslinking" # The 'name' of this class instance
     output_dir = "." # Write output data products to this directory
     pixel_dist = "pixel_dist" # The Data key where the PixelDist object should be stored
@@ -351,6 +457,7 @@
     det_flag_mask = 1 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     enabled = false # If True, this class instance is marked as enabled
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "raw_statistics" # The 'name' of this class instance
     output_dir = "None" # If specified, write output data products to this directory
     shared_flag_mask = 1 # Bit mask value for optional shared flagging
@@ -363,6 +470,7 @@
     deconvolve = true # Deconvolve the time constant instead.
     det_data = "signal" # Observation detdata key apply filtering to
     enabled = false # If True, this class instance is marked as enabled
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "deconvolve_time_constant" # The 'name' of this class instance
     realization = 0 # Realization ID, only used if tau_sigma is nonzero
     tau = "None" # Time constant to apply to all detectors.  Overrides `tau_name`
@@ -373,13 +481,14 @@
     class = "toast.ops.hwpfilter.HWPFilter"
     API = 0 # Internal interface version for this operator
     det_data = "signal" # Observation detdata key
-    det_flag_mask = 1 # Bit mask value for optional detector flagging
+    det_flag_mask = 3 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     detrend = false # Subtract the fitted trend along with the ground template
     enabled = false # If True, this class instance is marked as enabled
     filter_order = 5 # Order of a Fourier expansion to fit as a function of HWP angle.
     hwp_angle = "hwp_angle" # Observation shared key for HWP angle
     hwp_flag_mask = 1 # Bit mask to use when adding flags based on HWP filter failures.
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "hwpfilter" # The 'name' of this class instance
     shared_flag_mask = 1 # Bit mask value for optional shared flagging
     shared_flags = "flags" # Observation shared key for telescope flags to use
@@ -392,12 +501,13 @@
     azimuth = "azimuth" # Observation shared key for Azimuth
     boresight_azel = "boresight_azel" # Observation shared key for boresight Az/El
     det_data = "signal" # Observation detdata key
-    det_flag_mask = 1 # Bit mask value for optional detector flagging
+    det_flag_mask = 3 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     detrend = false # Subtract the fitted trend along with the ground template
     enabled = false # If True, this class instance is marked as enabled
     filter_order = 5 # Order of a Legendre polynomial to fit as a function of azimuth.
     ground_flag_mask = 1 # Bit mask to use when adding flags based on ground filter failures.
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     leftright_mask = 8 # Bit mask value for left-to-right scans
     name = "groundfilter" # The 'name' of this class instance
     rightleft_mask = 16 # Bit mask value for right-to-left scans
@@ -408,12 +518,13 @@
     view = "None" # Use this view of the data in all observations
 
 [operators.polyfilter1D]
-    class = "toast.ops.polyfilter.PolyFilter"
+    class = "toast.ops.polyfilter.polyfilter.PolyFilter"
     API = 0 # Internal interface version for this operator
     det_data = "signal" # Observation detdata key apply filtering to
-    det_flag_mask = 1 # Bit mask value for optional detector flagging
+    det_flag_mask = 3 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     enabled = true # If True, this class instance is marked as enabled
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "polyfilter1D" # The 'name' of this class instance
     order = 1 # Polynomial order
     pattern = ".*" # Regex pattern to match against detector names. Only detectors that match the pattern are filtered.
@@ -423,13 +534,14 @@
     view = "throw" # Use this view of the data in all observations
 
 [operators.polyfilter2D]
-    class = "toast.ops.polyfilter.PolyFilter2D"
+    class = "toast.ops.polyfilter.polyfilter.PolyFilter2D"
     API = 0 # Internal interface version for this operator
     det_data = "signal" # Observation detdata key apply filtering to
-    det_flag_mask = 1 # Bit mask value for optional detector flagging
+    det_flag_mask = 3 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     enabled = false # If True, this class instance is marked as enabled
     focalplane_key = "None" # Which focalplane key to match
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "polyfilter2D" # The 'name' of this class instance
     order = 1 # Polynomial order
     pattern = ".*" # Regex pattern to match against detector names. Only detectors that match the pattern are filtered.
@@ -437,17 +549,17 @@
     shared_flag_mask = 1 # Bit mask value for optional shared flagging
     shared_flags = "flags" # Observation shared key for telescope flags to use
     times = "times" # Observation shared key for timestamps
-    use_python = false # If True, use a pure python implementation for testing.
     view = "None" # Use this view of the data in all observations
 
 [operators.common_mode_filter]
-    class = "toast.ops.polyfilter.CommonModeFilter"
+    class = "toast.ops.polyfilter.polyfilter.CommonModeFilter"
     API = 0 # Internal interface version for this operator
     det_data = "signal" # Observation detdata key apply filtering to
-    det_flag_mask = 1 # Bit mask value for optional detector flagging
+    det_flag_mask = 3 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     enabled = false # If True, this class instance is marked as enabled
     focalplane_key = "None" # Which focalplane key to match
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "common_mode_filter" # The 'name' of this class instance
     pattern = ".*" # Regex pattern to match against detector names. Only detectors that match the pattern are filtered.
     redistribute = false # If True, redistribute data before and after filtering for optimal data locality.
@@ -462,6 +574,7 @@
     det_flag_mask = 1 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     enabled = false # If True, this class instance is marked as enabled
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "filtered_statistics" # The 'name' of this class instance
     output_dir = "None" # If specified, write output data products to this directory
     shared_flag_mask = 1 # Bit mask value for optional shared flagging
@@ -479,6 +592,7 @@
     det_flags = "flags" # Observation detdata key for flags to use
     enabled = true # If True, this class instance is marked as enabled
     full_pointing = false # If True, expand pointing for all detectors and save
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "binner" # The 'name' of this class instance
     noise_model = "noise_model" # Observation key containing the noise model
     noiseweighted = "None" # The Data key where the noiseweighted map should be stored
@@ -501,6 +615,7 @@
     iter_min = 3 # Minimum number of iterations
     keep_final_products = false # If True, keep the map domain products in data after write
     keep_solver_products = false # If True, keep the map domain solver products in data
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     map_binning = "None" # Binning operator for final map making.  Default is same as solver
     map_rcond_threshold = 1e-08 # For final map, minimum value for inverse pixel condition number cut.
     mask = "None" # Data key for pixel mask to use in solving.  First bit of pixel values is tested
@@ -525,20 +640,61 @@
     write_rcond = true # If True, write the reciprocal condition numbers.
     write_solver_products = false # If True, write out equivalent solver products.
 
-[operators.pixels_radec_final]
-    class = "toast.ops.pixels_healpix.PixelsHealpix"
+[operators.pixels_healpix_radec_final]
+    class = "toast.ops.pixels_healpix.pixels_healpix.PixelsHealpix"
     API = 0 # Internal interface version for this operator
     create_dist = "None" # Create the submap distribution for all detectors and store in the Data key specified
     detector_pointing = "None" # Operator that translates boresight pointing into detector frame
     enabled = false # If True, this class instance is marked as enabled
-    name = "pixels_radec_final" # The 'name' of this class instance
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
+    name = "pixels_healpix_radec_final" # The 'name' of this class instance
     nest = true # If True, use NESTED ordering instead of RING
     nside = 64 # The NSIDE resolution
     nside_submap = 16 # The NSIDE of the submap resolution
     pixels = "pixels" # Observation detdata key for output pixel indices
-    quats = "None" # Observation detdata key for output quaternions
     single_precision = false # If True, use 32bit int in output
-    use_python = false # If True, use python implementation
+    view = "None" # Use this view of the data in all observations
+
+[operators.pixels_wcs_radec_final]
+    class = "toast.ops.pixels_wcs.PixelsWCS"
+    API = 0 # Internal interface version for this operator
+    auto_bounds = false # If True, set the bounding box based on boresight and field of view
+    bounds = [] # The (lon_min, lon_max, lat_min, lat_max) values (Quantities)
+    center = ["1.80000000000000e+02 deg", "0.00000000000000e+00 deg"] # The center Lon/Lat coordinates (Quantities) of the projection
+    center_offset = "None" # Optional name of shared field with lon, lat offset in degrees
+    create_dist = "None" # Create the submap distribution for all detectors and store in the Data key specified
+    detector_pointing = "None" # Operator that translates boresight pointing into detector frame
+    dimensions = ["710", "350"] # The Lon/Lat pixel dimensions of the projection
+    enabled = false # If True, this class instance is marked as enabled
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
+    name = "pixels_wcs_radec_final" # The 'name' of this class instance
+    pixels = "pixels" # Observation detdata key for output pixel indices
+    projection = "CAR" # Supported values are CAR, CEA, MER, ZEA, TAN
+    resolution = ["5.00000000000000e-01 deg", "5.00000000000000e-01 deg"] # The Lon/Lat projection resolution (Quantities) along the 2 axes
+    single_precision = false # If True, use 32bit int in output
+    submaps = 10 # Number of submaps to use
+    use_astropy = true # If True, use astropy for world to pix conversion
+    view = "None" # Use this view of the data in all observations
+
+[operators.pixels_wcs_azel_final]
+    class = "toast.ops.pixels_wcs.PixelsWCS"
+    API = 0 # Internal interface version for this operator
+    auto_bounds = false # If True, set the bounding box based on boresight and field of view
+    bounds = [] # The (lon_min, lon_max, lat_min, lat_max) values (Quantities)
+    center = ["1.80000000000000e+02 deg", "0.00000000000000e+00 deg"] # The center Lon/Lat coordinates (Quantities) of the projection
+    center_offset = "None" # Optional name of shared field with lon, lat offset in degrees
+    create_dist = "None" # Create the submap distribution for all detectors and store in the Data key specified
+    detector_pointing = "None" # Operator that translates boresight pointing into detector frame
+    dimensions = ["710", "350"] # The Lon/Lat pixel dimensions of the projection
+    enabled = false # If True, this class instance is marked as enabled
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
+    name = "pixels_wcs_azel_final" # The 'name' of this class instance
+    pixels = "pixels" # Observation detdata key for output pixel indices
+    projection = "CAR" # Supported values are CAR, CEA, MER, ZEA, TAN
+    resolution = ["5.00000000000000e-01 deg", "5.00000000000000e-01 deg"] # The Lon/Lat projection resolution (Quantities) along the 2 axes
+    single_precision = false # If True, use 32bit int in output
+    submaps = 10 # Number of submaps to use
+    use_astropy = true # If True, use astropy for world to pix conversion
     view = "None" # Use this view of the data in all observations
 
 [operators.binner_final]
@@ -552,6 +708,7 @@
     det_flags = "flags" # Observation detdata key for flags to use
     enabled = false # If True, this class instance is marked as enabled
     full_pointing = false # If True, expand pointing for all detectors and save
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "binner_final" # The 'name' of this class instance
     noise_model = "noise_model" # Observation key containing the noise model
     noiseweighted = "None" # The Data key where the noiseweighted map should be stored
@@ -573,16 +730,21 @@
     deproject_nnz = 1 # Number of deprojection templates to regress.  Must be less than or equal to number of columns in `deproject_map`.
     deproject_pattern = ".*" # Regular expression to test detector names with.  Only matching detectors will be deprojected.  Used to identify differenced TOD.
     det_data = "signal" # Observation detdata key for the timestream data
-    det_flag_mask = 1 # Bit mask value for optional detector flagging
+    det_flag_mask = 3 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
     enabled = false # If True, this class instance is marked as enabled
     filter_flag_mask = 1 # Bit mask value for flagging samples that fail filtering
     ground_filter_order = 5 # Order of a Legendre polynomial to fit as a function of azimuth.
     hwp_angle = "hwp_angle" # Observation shared key for HWP angle
     hwp_filter_order = "None" # Order of HWP-synchronous signal filter.
+    keep_final_products = false # If True, keep the map domain products in data after write
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     leftright_mask = 8 # Bit mask value for left-to-right scans
     maskfile = "None" # Optional processing mask
+    mc_index = "None" # The Monte-Carlo index
+    mc_mode = false # If True, re-use solver flags, sparse covariances, etc
     name = "filterbin" # The 'name' of this class instance
+    noiseweight_obs_matrix = false # If True, observation matrix should match noise-weighted maps
     output_dir = "." # Write output data products to this directory
     poly_filter_order = 1 # Polynomial order
     poly_filter_view = "throw" # Intervals for polynomial filtering
@@ -607,13 +769,13 @@
     class = "toast.ops.memory_counter.MemoryCounter"
     API = 0 # Internal interface version for this operator
     enabled = false # If True, this class instance is marked as enabled
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "mem_count" # The 'name' of this class instance
     prefix = "" # Prefix for log messages
     silent = false # If True, return the memory used but do not log the result
 
-[templates]
 [templates.baselines]
-    class = "toast.templates.offset.Offset"
+    class = "toast.templates.offset.offset.Offset"
     data = "None" # This must be an instance of a Data class (or None)
     det_data = "signal" # Observation detdata key for the timestream data
     det_data_units = "unit K" # Desired units of detector data
@@ -621,12 +783,11 @@
     det_flags = "flags" # Observation detdata key for solver flags to use
     enabled = true # If True, this class instance is marked as enabled
     good_fraction = 0.5 # Fraction of unflagged samples needed to keep a given offset amplitude
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "baselines" # The 'name' of this class instance
     noise_model = "None" # Observation key containing the optional noise model
     precond_width = 20 # Preconditioner width in terms of offsets / baselines
     step_time = "1.00000000000000e+04 s" # Time per baseline step
     times = "times" # Observation shared key for timestamps
-    use_accel = false # If True, use the accelerator
     use_noise_prior = false # Use detector PSDs to build the noise prior and preconditioner
-    use_python = false # If True, use python implementation
     view = "None" # Use this view of the data in all observations

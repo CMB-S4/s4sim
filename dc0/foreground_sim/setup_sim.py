@@ -22,6 +22,7 @@ snr_limits_fg = {"CHLAT" : 1000, "SPLAT" : 20000, "SAT" : 50000}
 snr_limits_radio = {"CHLAT" : 30, "SPLAT" : 1000, "SAT" : 10000}
 mask_fwhm = np.radians(1)
 mask_lmax = 512
+gal_mask_frac = 0.1
 
 measurement_requirements = {
     #  measurement requirement in uK.arcmin, PBDR, Table 2-1, 2-2, 2-3
@@ -55,6 +56,39 @@ measurement_requirements = {
 }
 
 for TELESCOPE, (telescope, nside, freqs) in bands.items():
+    # Start by assembling a joint Galactic mask for this telescope
+    gal_mask = None
+    for freq in freqs:
+        fname_in = os.path.join(
+            inroot,
+            f"combined_foregrounds_{complexity}complexity",
+            f"cmbs4_combined_foregrounds_mediumcomplexity_uKCMB_{TELESCOPE}_f{freq:03}_nside{nside}.fits",
+        )
+        if not os.path.isfile(fname_in):
+            raise RuntimeError(f"Input file does not exist: {fname_in}")
+        print(f"Reading {fname_in}")
+        m = hp.read_map(
+            fname_in,
+            0,
+            nest=True,
+            verbose=False,
+            dtype=np.float32,
+        )
+        limit = np.percentile(m, 100 * (1 - gal_mask_frac))
+        freq_mask = m > limit
+        fname_out = f"{outdir}/galmask_{freq:03}_{int(gal_mask_frac * 100):02}pc.fits"
+        write_healpix(fname_out, freq_mask, coord="C", nest=True, overwrite=True)
+        print(f"Wrote {fname_out}")
+        if gal_mask is None:
+            gal_mask = freq_mask
+        else:
+            gal_mask[freq_mask] = True
+
+    gal_mask = hp.smoothing(gal_mask, lmax=mask_lmax, fwhm=mask_fwhm, nest=True) > 0.25
+    fname_out = f"{outdir}/galmask_{int(gal_mask_frac * 100):02}pc.fits"
+    write_healpix(fname_out, gal_mask, coord="C", nest=True, overwrite=True)
+    print(f"Wrote {fname_out}")
+
     for freq in freqs:
         fname_out = os.path.join(outdir, f"foreground_mediumcomplexity.{telescope}.f{freq:03}.h5")
         if os.path.isfile(fname_out) and False:
@@ -79,18 +113,15 @@ for TELESCOPE, (telescope, nside, freqs) in bands.items():
         print(f"Wrote {fname_out}")
 
         # Build processing masks
-        m = m[0]
-        mr_T, mr_P = measurement_requirements[TELESCOPE][freq]
         pixarea = hp.nside2pixarea(nside, degrees=True)
+        mr_T, mr_P = measurement_requirements[TELESCOPE][freq]
         if TELESCOPE == "SAT":
             requirement = np.sqrt(2) * max(mr_T, mr_P)
         else:
             requirement = mr_T
         sdev = requirement / 60 / np.sqrt(pixarea)  # Translate to pixel RMS
-        snr_fg = ((m - np.median(m)) / sdev)**2
-        mask = snr_fg > snr_limits_fg[TELESCOPE]
+        mask = gal_mask.copy()
         print(f"  Mask fraction after fg : {np.sum(mask)/mask.size:.3f}")
-        mask = hp.smoothing(mask, lmax=mask_lmax, fwhm=mask_fwhm, nest=True) > 0.25
         # mask radio sources separately
         fname_radio = os.path.join(
             inroot,

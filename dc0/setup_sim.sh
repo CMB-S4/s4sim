@@ -1,5 +1,18 @@
 #!/bin/bash
 
+# Generate TOAST focalplane files
+
+mkdir -p focalplanes
+cd focalplanes
+s4_hardware_to_toast3.py --telescope LAT0
+s4_hardware_to_toast3.py --telescope LAT1
+s4_hardware_to_toast3.py --telescope LAT2
+s4_hardware_to_toast3.py --telescope SAT1
+s4_hardware_to_toast3.py --telescope SAT2
+s4_hardware_to_toast3.py --telescope SAT3
+
+exit
+
 # Split schedules for batch processing
 
 for suffix in .upto2mm .over2mm; do
@@ -56,20 +69,3 @@ for suffix in .upto2mm .over2mm; do
         done
     done
 done
-
-exit
-
-# Generate TOAST focalplane files
-
-s4_hardware_to_toast3.py --telescope LAT0
-s4_hardware_to_toast3.py --telescope LAT1
-s4_hardware_to_toast3.py --telescope LAT2
-s4_hardware_to_toast3.py --telescope SAT0
-s4_hardware_to_toast3.py --telescope SAT1
-s4_hardware_to_toast3.py --telescope SAT2
-s4_hardware_to_toast3.py --telescope SAT3
-s4_hardware_to_toast3.py --telescope SAT4
-s4_hardware_to_toast3.py --telescope SAT5
-
-mkdir -p focalplanes
-mv focalplane*h5 focalplanes/
