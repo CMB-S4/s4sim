@@ -5,7 +5,7 @@
 #SBATCH --qos=debug
 #SBATCH --time=00:30:00
 #SBATCH --nodes=8
-#SBATCH --job-name=CMBS4_DC0_mfhf_noise
+#SBATCH --job-name=CMBS4_DC0_mfhf_noise_CFS
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -85,7 +85,12 @@ for band in ${bands[*]}; do
             echo "Writing $logfile at" `date`
             date > ${logfile}
 
+            # Generate this directory not to confuse rsync.sh
             outdir=outputs/${TELESCOPE}/${band}/${rootname}
+            mkdir -p --mode=g+rXs-w $outdir
+            chgrp -R cmbs4 $outdir
+            # But actual outputs go here
+            outdir=/global/cfs/cdirs/cmbs4/dc/dc0/staging/noise_sim/outputs_rk/${TELESCOPE}/${band}/${rootname}
             mkdir -p --mode=g+rXs-w $outdir
             chgrp -R cmbs4 $outdir
 
