@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --qos=preempt
-#SBATCH --time=12:00:00
+#SBATCH --time=24:00:00
 #SBATCH --nodes=4
 #SBATCH --job-name=CMBS4_DC0_lf_noise_CFS
 #SBATCH --licenses=SCRATCH
@@ -22,7 +22,7 @@ export HDF5_USE_FILE_LOCKING=FALSE
 export TOAST_FUNCTIME=1
 
 # Parallelization
-export OMP_NUM_THREADS=2
+export OMP_NUM_THREADS=8
 export OMP_PLACES=threads
 export OMP_PROC_BIND=spread
 let nnode=$SLURM_JOB_NUM_NODES
@@ -34,7 +34,7 @@ let ncore=$OMP_NUM_THREADS
 let nnode_group=1
 let ntask_group=$nnode_group*$ntask_node
 #let groupsize=nnode_group*ntask_node
-let groupsize=ntask_node
+let groupsize=16
 let ngroup=$nnode/$nnode_group
 
 echo "Start: " `date`
@@ -51,11 +51,7 @@ echo "           ngroup = ${ngroup}"
 telescope=chlat
 site=chile
 TELESCOPE=LAT0_CHLAT
-#bands=( f030 )
 bands=(f030 f040)
-#bands=(f090 f150)
-#bands=(f090 f150)
-#bands=(f090 f150 f220 f280)
 
 echo "Listing schedules at" `date`
 
@@ -91,7 +87,7 @@ for band in ${bands[*]}; do
             mkdir -p --mode=g+rXs-w $outdir
             chgrp -R cmbs4 $outdir
             # But actual outputs go here
-            outdir=/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim/outputs_rk/${TELESCOPE}/${band}/${rootname}
+            outdir=/global/cfs/cdirs/cmbs4/dc/dc0/staging/noise_sim/outputs_rk/${TELESCOPE}/${band}/${rootname}
             mkdir -p --mode=g+rXs-w $outdir
             chgrp -R cmbs4 $outdir
 
@@ -110,11 +106,9 @@ for band in ${bands[*]}; do
                  --mapmaker.report_memory \
                  --mapmaker.name mapmaker_${rootname} \
                  --mapmaker.write_invcov \
-                 --mapmaker.write_hits \
                  --processing_mask.file ../foreground_sim/input_maps/mask_mediumcomplexity.${telescope}.${band}.h5 \
                  --save_hdf5.enable \
                  --save_hdf5.volume $outdir \
-                 --sim_ground.session_split_key tube \
                  >> ${logfile} 2>&1 &
             sleep 1
             # Wait until the srun process has time to spawn another one

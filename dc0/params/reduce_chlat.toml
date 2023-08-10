@@ -230,7 +230,7 @@
     write_cov = false # If True, write the white noise covariance matrices.
     write_hdf5 = true # If True, outputs are in HDF5 rather than FITS format.
     write_hdf5_serial = true # If True, force serial HDF5 write of output maps.
-    write_hits = false # If True, write the hits map
+    write_hits = true # If True, write the hits map
     write_invcov = false # If True, write the inverse white noise covariance matrices.
     write_map = false # If True, write the projected map
     write_noiseweighted_map = true # If True, write the noise-weighted map

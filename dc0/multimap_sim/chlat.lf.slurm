@@ -1,8 +1,6 @@
 #!/bin/bash
 #SBATCH --qos=preempt
-#SBATCH --time=02:00:00
-##SBATCH --qos=debug
-##SBATCH --time=00:30:00
+#SBATCH --time=24:00:00
 #SBATCH --nodes=4
 #SBATCH --job-name=CMBS4_DC0_lf_multimap
 #SBATCH --licenses=SCRATCH
@@ -35,7 +33,8 @@ let ncore=$OMP_NUM_THREADS
 # Make sure nnode is divisible by nnode_group
 let nnode_group=1
 let ntask_group=$nnode_group*$ntask_node
-let groupsize=nnode_group*ntask_node
+#let groupsize=nnode_group*ntask_node
+let groupsize=16
 let ngroup=$nnode/$nnode_group
 
 echo "Start: " `date`
@@ -52,11 +51,7 @@ echo "           ngroup = ${ngroup}"
 telescope=chlat
 site=chile
 TELESCOPE=LAT0_CHLAT
-# cannot have more than 384 MPI tasks in a group to process 30 and 40GHz
-bands=( f040 )
-#bands=(f030 f040)
-#bands=(f090 f150)
-#bands=(f090 f150 f220 f280)
+bands=(f030 f040)
 
 echo "Listing schedules at" `date`
 
@@ -75,9 +70,9 @@ for band in ${bands[*]}; do
     mkdir -p $logdir
 done
 
-for schedule in ${fnames[*]}; do
-    rootname=`basename $schedule .txt`
-    for band in ${bands[*]}; do
+for band in ${bands[*]}; do
+    for schedule in ${fnames[*]}; do
+        rootname=`basename $schedule .txt`
         logdir=logs/${TELESCOPE}/${band}
         logfile=$logdir/${rootname}_${band}.log
         logfile2=cleared_$logfile
@@ -85,20 +80,24 @@ for schedule in ${fnames[*]}; do
             echo "Writing $logfile at" `date`
             date > ${logfile}
 
+            # Generate this directory not to confuse rsync.sh
             outdir=outputs/${TELESCOPE}/${band}/${rootname}
+            mkdir -p --mode=g+rXs-w $outdir
+            chgrp -R cmbs4 $outdir
+            # But actual outputs go here
+            outdir=/global/cfs/cdirs/cmbs4/dc/dc0/staging/multimap_sim/outputs_rk/${TELESCOPE}/${band}/${rootname}
             mkdir -p --mode=g+rXs-w $outdir
             chgrp -R cmbs4 $outdir
 
             srun -N $nnode_group -n $ntask_group -c $ncore --cpu_bind=cores \
                  toast_sim_ground.py \
-                 --config ../params/common.new.toml ../params/scanning_${telescope}.toml \
-                 ../params/atmosphere_${site}.toml ../params/reduce_${telescope}.new.toml \
+                 --config ../params/common.toml ../params/scanning_${telescope}.toml \
+                 ../params/atmosphere_${site}.toml ../params/reduce_${telescope}.toml \
                  --focalplane ../focalplanes/focalplane_${TELESCOPE}_${band}.h5 \
                  --telescope $TELESCOPE \
                  --schedule $schedule \
                  --out $outdir \
                  --job_group_size ${groupsize} \
-                 --obsmaps \
                  --mem_count.enable \
                  --scan_healpix_map.enable \
                  --scan_healpix_map.det_data "unlensed_cmb;cmb_lensing;foreground" \
@@ -108,8 +107,8 @@ for schedule in ${fnames[*]}; do
                  --raw_statistics.disable \
                  --filtered_statistics.disable \
                  --mapmaker.report_memory \
-                 --processing_mask.file ../foreground_sim/input_maps/mask_snr_fg_1000_mediumcomplexity_snr_ps_030.${telescope}.${band}.h5 \
-                 --mapmaker.write_invcov \
+                 --processing_mask.file ../foreground_sim/input_maps/mask_mediumcomplexity.${telescope}.${band}.h5 \
+                 --mapmaker.no_write_hits \
                  --save_hdf5.disable \
                  >> ${logfile} 2>&1 &
             sleep 1

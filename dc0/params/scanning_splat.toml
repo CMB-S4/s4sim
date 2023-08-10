@@ -45,6 +45,7 @@
     scan_rightleft_interval = "scan_rightleft" # Interval name for right to left scans
     scanning_interval = "scanning" # Interval name for scanning
     schedule = "None" # Instance of a GroundSchedule
+    session_split_key = "tube" # Focalplane key for splitting into observations
     shared_flags = "flags" # Observation shared key for common flags
     sun_angle_min = "90 deg" # Minimum angular distance for the scan and the Sun
     sun_close_distance = "45 deg" # 'Sun close' flagging distance

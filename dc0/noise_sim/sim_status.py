@@ -22,7 +22,7 @@ for suffix in "",:
 
     for subset in "upto2mm", "over2mm":
         print(f"\nsubset = {subset}\n")
-        fnames_in = sorted(glob(f"split_schedules_1_{subset}/{tele}/*.txt"))
+        fnames_in = sorted(glob(f"../split_schedules_1_{subset}/{tele}/*.txt"))
         #fnames_done = glob(f"split_schedules/{tele}/done/split_schedule_*.txt")
         #nsplit = len(fnames) + len(fnames_done)
         nsplit = len(fnames_in)

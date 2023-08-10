@@ -1,7 +1,10 @@
 #!/bin/bash
-#SBATCH --qos=preempt
-#SBATCH --time=12:00:00
-#SBATCH --nodes=24
+##SBATCH --qos=preempt
+##SBATCH --time=24:00:00
+##SBATCH --nodes=24
+#SBATCH --qos=debug
+#SBATCH --time=00:30:00
+#SBATCH --nodes=8
 #SBATCH --job-name=CMBS4_DC0_mfhf_noise
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
@@ -101,11 +104,9 @@ for band in ${bands[*]}; do
                  --mapmaker.report_memory \
                  --mapmaker.name mapmaker_${rootname} \
                  --mapmaker.write_invcov \
-                 --mapmaker.write_hits \
                  --processing_mask.file ../foreground_sim/input_maps/mask_mediumcomplexity.${telescope}.${band}.h5 \
                  --save_hdf5.enable \
                  --save_hdf5.volume $outdir \
-                 --sim_ground.session_split_key tube \
                  >> ${logfile} 2>&1 &
             sleep 1
             # Wait until the srun process has time to spawn another one
