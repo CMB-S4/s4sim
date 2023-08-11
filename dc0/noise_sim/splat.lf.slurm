@@ -1,8 +1,11 @@
 #!/bin/bash
-#SBATCH --qos=preempt
-#SBATCH --time=24:00:00
-#SBATCH --nodes=4
-#SBATCH --job-name=CMBS4_DC0_lf_noise
+##SBATCH --qos=preempt
+##SBATCH --time=24:00:00
+##SBATCH --nodes=4
+#SBATCH --qos=debug
+#SBATCH --time=00:30:00
+#SBATCH --nodes=1
+#SBATCH --job-name=CMBS4_DC0_splat_lf_noise
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -48,10 +51,10 @@ echo "      ntask_group = ${ntask_group}"
 echo "        groupsize = ${groupsize}"
 echo "           ngroup = ${ngroup}"
 
-telescope=chlat
-site=chile
-TELESCOPE=LAT0_CHLAT
-bands=(f030 f040)
+telescope=splat
+site=pole
+TELESCOPE=LAT2_SPLAT
+bands=(f020 f030 f040)
 
 echo "Listing schedules at" `date`
 
@@ -77,7 +80,8 @@ for band in ${bands[*]}; do
         mkdir -p $logdir
         logfile=$logdir/${rootname}.log
         logfile2=cleared_$logdir/${rootname}.log
-        if [[ ! -e $logfile && ! -e $logfile2 ]]; then
+        logfile3=staged_$logdir/${rootname}.log
+        if [[ ! -e $logfile && ! -e $logfile2 && ! -e $logfile3 ]]; then
             echo "Writing $logfile at" `date`
             date > ${logfile}
 
@@ -102,6 +106,7 @@ for band in ${bands[*]}; do
                  --mem_count.enable \
                  --scan_healpix_map.disable \
                  --sim_atmosphere.cache_dir atm_cache_${TELESCOPE} \
+                 --sim_atmosphere.field_of_view "10 deg" \
                  --mapmaker.report_memory \
                  --mapmaker.name mapmaker_${rootname} \
                  --mapmaker.write_invcov \

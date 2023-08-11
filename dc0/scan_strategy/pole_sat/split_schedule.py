@@ -49,7 +49,7 @@ with open(fname_in, "r") as schedule_in:
         if weather is None:
             weather = toast.weather.SimWeather(
                 time=mid_time,
-                name="atacama",
+                name="south_pole",
                 site_uid=site_uid,
                 realization=realization,
             )

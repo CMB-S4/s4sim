@@ -67,6 +67,8 @@
     turn_rightleft_interval = "turn_rightleft" # Interval name for turnarounds after right to left scans
     turnaround_interval = "turnaround" # Interval name for turnarounds
     turnaround_mask = 3 # Bit mask to raise turnaround flags with
+    use_ephem = true # Use PyEphem to convert between horizontal and equatorial systems
+    use_qpoint = false # Use qpoint to convert between horizontal and equatorial systems
     velocity = "velocity" # Observation shared key for velocity
     weather = "atacama" # Name of built-in weather site (e.g. 'atacama', 'south_pole') or path to HDF5 file
 
@@ -755,13 +757,15 @@
     shared_flag_mask = 1 # Bit mask value for optional telescope flagging
     shared_flags = "flags" # Observation shared key for telescope flags to use
     split_ground_template = false # Apply a different template for left and right scans
+    write_binmap = false # If True, write the unfiltered map
     write_cov = true # If True, write the white noise covariance matrices.
     write_hdf5 = false # If True, output maps are in HDF5 rather than FITS format.
     write_hdf5_serial = false # If True, force serial HDF5 write of output maps.
     write_hits = true # If True, write the hits map
     write_invcov = false # If True, write the inverse white noise covariance matrices.
-    write_map = true # If True, write the projected map
-    write_noiseweighted_map = false # If True, write the noise-weighted map
+    write_map = true # If True, write the filtered map
+    write_noiseweighted_binmap = false # If True, write the noise-weighted unfiltered map
+    write_noiseweighted_map = false # If True, write the noise-weighted filtered map
     write_obs_matrix = false # Write the observation matrix
     write_rcond = true # If True, write the reciprocal condition numbers.
 

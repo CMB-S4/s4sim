@@ -1,15 +1,14 @@
 #!/bin/bash
-#SBATCH --qos=regular
-#SBATCH --time=02:00:00
+#SBATCH --qos=preempt
+#SBATCH --time=01:00:00
 #SBATCH --nodes=4
-#SBATCH --job-name=CMBS4_DC1_coadd
+#SBATCH --job-name=CMBS4_DC0_coadd_32
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
 
-# Scale the noise maps to match 7-year 2-LAT sensitivity
-
-scale=$(echo "1 / sqrt(2 * 7)" | bc -l)
+# This script produces the 32-way split maps from
+# single observation maps
 
 # Perlmutter-specific fixes
 export FI_CXI_OPTIMIZED_MRS="false"
@@ -41,42 +40,73 @@ echo "  OMP_NUM_THREADS = ${OMP_NUM_THREADS}"
 echo "       ntask_node = ${ntask_node}"
 echo "            ntask = ${ntask}"
 
-indir_root=/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim
-indir1=${indir_root}/outputs_rk
-#indir1=outputs
-indir2=${indir_root}/outputs_DUMMY1
-indir3=${indir_root}/outputs_DUMMY2
+indir=/global/cfs/cdirs/cmbs4/dc/dc0/staging/noise_sim/outputs_rk
 let nsplit=32
 
 # Random wait time to reduce clashes
 sleep $((RANDOM % 15))
 
 for telescope in LAT0_CHLAT; do
-    outdir=outputs/coadd/${telescope}
-    for band in f030 f040 f090 f150 f220 f280; do
-    #for band in f150; do
-        case $band in
-            f030|f040|f090|f150)
-                schedule_dir=split_schedules_1_upto3mm_with_break
-                ;;
-            f220|f280)
-                schedule_dir=split_schedules_1_upto2mm_with_break
-                ;;
-            *)
-                echo "Unknown frequency band: $band"
-                exit
-                ;;
-        esac
+    case $telescope in
+        LAT0_CHLAT)
+            tele=chlat
+            ;;
+        LAT2_SPLAT)
+            tele=splat
+            ;;
+        *)
+            echo "Unknown telescope: $telescope"
+            ;;
+    esac
+    outdir=${indir}/coadd/${telescope}
+    # Determine the appropriate scaling to match nominal sensitivity
+    case $telescope in
+        LAT0_CHLAT)
+            # Scale the noise maps to match 7-year 2-LAT sensitivity
+            scale=$(echo "1 / sqrt(2 * 7)" | bc -l)
+            ;;
+        LAT2_SPLAT)
+            # Scale the noise maps to match 7-year sensitivity
+            scale=$(echo "1 / sqrt(1 * 7)" | bc -l)
+            ;;
+        *)
+            echo "Unknown telescope: $telescope"
+            ;;
+    esac
+    #for band in f030 f040 f090 f150 f220 f280; do
+    for band in f030 f040; do
+        if [[ $telescope == "LAT0_CHLAT" ]]; then
+            # For CHLAT we simulated observations across the year but
+            # only want to co-add the good weather nominal season
+            case $band in
+                f030|f040|f090|f150)
+                    schedule_dir=../split_schedules_1_upto3mm_with_break
+                    ;;
+                f220|f280)
+                    schedule_dir=../split_schedules_1_upto2mm_with_break
+                    ;;
+                *)
+                    echo "Unknown frequency band: $band"
+                    exit
+                    ;;
+            esac
+        else
+            # For SPSAT and SPLAT we only simulated the nominal season and all
+            # simulated observations make the cut
+            schedule_dir=../split_schedules_1_upto2mm
+        fi
         for isplit in `seq 1 $nsplit`; do
             echo ${telescope} ${band}GHz $isplit
-            splitroot=`printf "_%03iof%03i" ${isplit} ${nsplit}`
-            outroot=$outdir/coadd_${telescope}_${band}${splitroot}
+            splitroot=`printf "%03iof%03i" ${isplit} ${nsplit}`
+            outroot=$outdir/coadd_${telescope}_${band}_${splitroot}
             outmap=${outroot}_map.fits
             if [[ -e $outmap ]]; then
                 echo "$outmap already exists, skipping..."
                 continue
             fi
-            logfile=coadd_${telescope}_${band}${splitroot}.log
+            logdir=coadd_logs
+            mkdir -p $logdir
+            logfile=${logdir}/coadd_${telescope}_${band}_${splitroot}.log
             if [[ -e $logfile ]]; then
                 echo "$logfile already exists, skipping..."
                 continue
@@ -86,9 +116,11 @@ for telescope in LAT0_CHLAT; do
             let ntotal=0
             let nfail=0
             let nfound=0
-            fname_maps="coadd_maps_${band}${splitroot}.txt"
+            listdir=map_lists
+            mkdir -p $listdir
+            fname_maps=${listdir}/coadd_maps_${band}_${splitroot}.txt
             rm -f $fname_maps
-            for schedule in $schedule_dir/chlat/*txt; do
+            for schedule in $schedule_dir/$tele/*txt; do
                 if [[ $nsplit -gt 1 ]]; then
                     # Use the Julian date for splitting
                     let testsplit=`awk "{if (NR == 4) print (int(\\$5) % $nsplit) + 1}" $schedule`
@@ -96,13 +128,8 @@ for telescope in LAT0_CHLAT; do
                 fi
 
                 obs=`basename --suffix=.txt $schedule`
-                fname1="${indir1}/$telescope/${band}/${obs}/mapmaker_${obs}_noiseweighted_map.h5"
-                fname2="${indir2}/$telescope/${band}/${obs}/mapmaker_${obs}_noiseweighted_map.h5"
-                fname3="${indir3}/$telescope/${band}/${obs}/mapmaker_${obs}_noiseweighted_map.h5"
-                for fname in $fname1 $fname2 $fname3 FAILED; do
-                    [[ -e $fname ]] && break
-                done
-                if [[ $fname == FAILED ]]; then
+                fname="${indir}/$telescope/${band}/${obs}/mapmaker_${obs}_noiseweighted_map.h5"
+                if [[ ! -e $fname ]]; then
                     echo "No input map for $band $obs" >> $logfile
                     let nfail++
                 else
@@ -110,7 +137,7 @@ for telescope in LAT0_CHLAT; do
                     let nfound++
                 fi
                 let ntotal++
-             done
+            done
             echo "Found a total of ${nfound} / ${ntotal} maps. ${nfail} maps were missing." >> $logfile
 
             mkdir -p $outdir
@@ -126,45 +153,6 @@ for telescope in LAT0_CHLAT; do
                  $fname_maps \
                  >> $logfile 2>&1
             date >> $logfile
-        done
-
-        # Stop at this level for now.  There has to be a more efficient way to
-        # combine just two maps
-        continue
-        
-        let nsplit_in=$nsplit
-        while [[ $nsplit_in -gt 1 ]]; do
-            let nsplit_out=$nsplit_in/2
-            for isplit in `seq 1 $nsplit_out`; do
-                splitroot=`printf "_%03iof%03i" ${isplit} ${nsplit_out}`
-                outroot=$outdir/coadd_${telescope}_${band}${splitroot}
-                outmap=${outroot}_map.fits
-                if [[ -e $outmap ]]; then
-                    echo "$outmap already exists, skipping..."
-                    continue
-                fi
-                let isplit_in1=$isplit
-                let isplit_in2=$isplit+$nsplit_out
-                splitroot1=`printf "_%03iof%03i" ${isplit_in1} ${nsplit_in}`
-                splitroot2=`printf "_%03iof%03i" ${isplit_in2} ${nsplit_in}`
-                inroot1=$outdir/coadd_${telescope}_${band}${splitroot1}
-                inroot2=$outdir/coadd_${telescope}_${band}${splitroot2}
-                logfile=coadd_${telescope}_${band}${splitroot}.log
-                date > $logfile
-                echo "Writing $logfile"
-                date >> $logfile
-                srun -N 1 -n 2 --cpu_bind=cores toast_healpix_coadd \
-                     --outmap ${outmap} \
-                     --rcond ${outroot}_rcond.fits \
-                     --rcond_limit 1e-3 \
-                     --invcov ${outroot}_invcov.fits \
-                     --cov ${outroot}_cov.fits \
-                     ${inroot1}_map.fits \
-                     ${inroot2}_map.fits \
-                     >> $logfile 2>&1 &
-            done
-            wait
-            let nsplit_in=$nsplit_out
         done
     done
 done

@@ -1,8 +1,11 @@
 #!/bin/bash
-#SBATCH --qos=preempt
-#SBATCH --time=24:00:00
-#SBATCH --nodes=4
-#SBATCH --job-name=CMBS4_DC0_lf_noise
+##SBATCH --qos=preempt
+##SBATCH --time=24:00:00
+##SBATCH --nodes=24
+#SBATCH --qos=debug
+#SBATCH --time=00:30:00
+#SBATCH --nodes=8
+#SBATCH --job-name=CMBS4_DC0_splat_mfhf_noise
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -22,7 +25,7 @@ export HDF5_USE_FILE_LOCKING=FALSE
 export TOAST_FUNCTIME=1
 
 # Parallelization
-export OMP_NUM_THREADS=8
+export OMP_NUM_THREADS=4
 export OMP_PLACES=threads
 export OMP_PROC_BIND=spread
 let nnode=$SLURM_JOB_NUM_NODES
@@ -31,10 +34,10 @@ let ntask_node=256/$OMP_NUM_THREADS
 let ntask=$nnode*$ntask_node
 let ncore=$OMP_NUM_THREADS
 # Make sure nnode is divisible by nnode_group
-let nnode_group=1
+let nnode_group=8
 let ntask_group=$nnode_group*$ntask_node
 #let groupsize=nnode_group*ntask_node
-let groupsize=16
+let groupsize=ntask_node
 let ngroup=$nnode/$nnode_group
 
 echo "Start: " `date`
@@ -48,10 +51,10 @@ echo "      ntask_group = ${ntask_group}"
 echo "        groupsize = ${groupsize}"
 echo "           ngroup = ${ngroup}"
 
-telescope=chlat
-site=chile
-TELESCOPE=LAT0_CHLAT
-bands=(f030 f040)
+telescope=splat
+site=pole
+TELESCOPE=LAT2_SPLAT
+bands=(f090 f150 f220 f280)
 
 echo "Listing schedules at" `date`
 
@@ -77,7 +80,8 @@ for band in ${bands[*]}; do
         mkdir -p $logdir
         logfile=$logdir/${rootname}.log
         logfile2=cleared_$logdir/${rootname}.log
-        if [[ ! -e $logfile && ! -e $logfile2 ]]; then
+        logfile3=staged_$logdir/${rootname}.log
+        if [[ ! -e $logfile && ! -e $logfile2 && ! -e $logfile3 ]]; then
             echo "Writing $logfile at" `date`
             date > ${logfile}
 
@@ -102,6 +106,7 @@ for band in ${bands[*]}; do
                  --mem_count.enable \
                  --scan_healpix_map.disable \
                  --sim_atmosphere.cache_dir atm_cache_${TELESCOPE} \
+                 --sim_atmosphere.field_of_view "10 deg" \
                  --mapmaker.report_memory \
                  --mapmaker.name mapmaker_${rootname} \
                  --mapmaker.write_invcov \

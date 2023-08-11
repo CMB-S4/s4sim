@@ -5,7 +5,7 @@
 #SBATCH --qos=debug
 #SBATCH --time=00:30:00
 #SBATCH --nodes=8
-#SBATCH --job-name=CMBS4_DC0_mfhf_noise_CFS
+#SBATCH --job-name=CMBS4_DC0_mfhf_noise
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -80,8 +80,7 @@ for band in ${bands[*]}; do
         mkdir -p $logdir
         logfile=$logdir/${rootname}.log
         logfile2=cleared_$logdir/${rootname}.log
-        logfile3=staged_$logdir/${rootname}.log
-        if [[ ! -e $logfile && ! -e $logfile2 && ! -e $logfile3 ]]; then
+        if [[ ! -e $logfile && ! -e $logfile2 ]]; then
             echo "Writing $logfile at" `date`
             date > ${logfile}
 

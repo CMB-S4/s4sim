@@ -6,10 +6,14 @@
 # OOM: 24
 # Success: 48, 36, 30
 #SBATCH --cpus-per-task=26
-#SBATCH --job-name=CMBS4_DC1_coadd
+#SBATCH --job-name=CMBS4_DC0_coadd_16
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
+
+# Run this script *after* the 32-way splits have been produced with
+# coadd_maps.slurm
+# This script generates the 16/8/4/2/1 splits
 
 # Perlmutter-specific fixes
 export FI_CXI_OPTIMIZED_MRS="false"
@@ -33,39 +37,21 @@ export OMP_PROC_BIND=spread
 echo "Running with"
 echo "  OMP_NUM_THREADS = ${OMP_NUM_THREADS}"
 
-#indir_root=/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim
-indir_root=.
-indir1=${indir_root}/outputs_rk
-#indir1=outputs
-indir2=${indir_root}/outputs_DUMMY1
-indir3=${indir_root}/outputs_DUMMY2
+indir=/global/cfs/cdirs/cmbs4/dc/dc0/staging/noise_sim/outputs_rk
 let nsplit=32
 
 # Random wait time to reduce clashes
 # sleep $((RANDOM % 15))
 
 for telescope in LAT0_CHLAT; do
-    outdir=outputs/coadd/${telescope}
+    outdir=${indir}/coadd/${telescope}
     #for band in f030 f040 f090 f150 f220 f280; do
-    #for band in f280; do
-        case $band in
-            f030|f040|f090|f150)
-                schedule_dir=split_schedules_1_upto3mm_with_break
-                ;;
-            f220|f280)
-                schedule_dir=split_schedules_1_upto2mm_with_break
-                ;;
-            *)
-                echo "Unknown frequency band: $band"
-                exit
-                ;;
-        esac
-
+    for band in f030 f040; do
         # Check that all the input maps are in place
         for isplit in `seq 1 $nsplit`; do
             echo ${telescope} ${band}GHz $isplit
-            splitroot=`printf "_%03iof%03i" ${isplit} ${nsplit}`
-            outroot=$outdir/coadd_${telescope}_${band}${splitroot}
+            splitroot=`printf "%03iof%03i" ${isplit} ${nsplit}`
+            outroot=$outdir/coadd_${telescope}_${band}_${splitroot}
             outmap=${outroot}_map.fits
             if [[ ! -e $outmap ]]; then
                 echo "$outmap does not exist!"
@@ -78,20 +64,26 @@ for telescope in LAT0_CHLAT; do
         while [[ $nsplit_in -gt 1 ]]; do
             let nsplit_out=$nsplit_in/2
             for isplit in `seq 1 $nsplit_out`; do
-                splitroot=`printf "_%03iof%03i" ${isplit} ${nsplit_out}`
-                outroot=$outdir/coadd_${telescope}_${band}${splitroot}
+                splitroot=`printf "%03iof%03i" ${isplit} ${nsplit_out}`
+                outroot=$outdir/coadd_${telescope}_${band}_${splitroot}
                 outmap=${outroot}_map.fits
                 if [[ -e $outmap ]]; then
                     echo "$outmap already exists, skipping..."
                     continue
                 fi
+                logdir=coadd_logs
+                mkdir -p $logdir
+                logfile=${logdir}/coadd_${telescope}_${band}_${splitroot}.log
+                if [[ -e $logfile ]]; then
+                    echo "$logfile already exists, skipping..."
+                    continue
+                fi
                 let isplit_in1=$isplit
                 let isplit_in2=$isplit+$nsplit_out
-                splitroot1=`printf "_%03iof%03i" ${isplit_in1} ${nsplit_in}`
-                splitroot2=`printf "_%03iof%03i" ${isplit_in2} ${nsplit_in}`
-                inroot1=$outdir/coadd_${telescope}_${band}${splitroot1}
-                inroot2=$outdir/coadd_${telescope}_${band}${splitroot2}
-                logfile=coadd_${telescope}_${band}${splitroot}.log
+                splitroot1=`printf "%03iof%03i" ${isplit_in1} ${nsplit_in}`
+                splitroot2=`printf "%03iof%03i" ${isplit_in2} ${nsplit_in}`
+                inroot1=$outdir/coadd_${telescope}_${band}_${splitroot1}
+                inroot2=$outdir/coadd_${telescope}_${band}_${splitroot2}
                 echo "Writing $logfile"
                 date > $logfile
                 toast_healpix_coadd \

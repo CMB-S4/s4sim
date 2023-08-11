@@ -291,9 +291,14 @@
     ground_filter_order = 10 # Order of a Legendre polynomial to fit as a function of azimuth.
     hwp_angle = "hwp_angle" # Observation shared key for HWP angle
     hwp_filter_order = "None" # Order of HWP-synchronous signal filter.
+    keep_final_products = false # If True, keep the map domain products in data after write
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     leftright_mask = 8 # Bit mask value for left-to-right scans
     maskfile = "None" # Optional processing mask
+    mc_index = "None" # The Monte-Carlo index
+    mc_mode = false # If True, re-use solver flags, sparse covariances, etc
     name = "filterbin" # The 'name' of this class instance
+    noiseweight_obs_matrix = false # If True, observation matrix should match noise-weighted maps
     output_dir = "." # Write output data products to this directory
     poly_filter_order = 3 # Polynomial order
     poly_filter_view = "scanning" # Intervals for polynomial filtering
@@ -304,13 +309,15 @@
     shared_flag_mask = 3 # Bit mask value for optional telescope flagging
     shared_flags = "flags" # Observation shared key for telescope flags to use
     split_ground_template = false # Apply a different template for left and right scans
+    write_binmap = false # If True, write the unfiltered map
     write_cov = false # If True, write the white noise covariance matrices.
     write_hdf5 = true # If True, output maps are in HDF5 rather than FITS format.
-    write_hdf5_serial = false # If True, force serial HDF5 write of output maps.
+    write_hdf5_serial = true # If True, force serial HDF5 write of output maps.
     write_hits = true # If True, write the hits map
-    write_invcov = true # If True, write the inverse white noise covariance matrices.
-    write_map = false # If True, write the projected map
-    write_noiseweighted_map = true # If True, write the noise-weighted map
+    write_invcov = false # If True, write the inverse white noise covariance matrices.
+    write_map = false # If True, write the filtered map
+    write_noiseweighted_binmap = false # If True, write the noise-weighted unfiltered map
+    write_noiseweighted_map = true # If True, write the noise-weighted filtered map
     write_obs_matrix = false # Write the observation matrix
     write_rcond = false # If True, write the reciprocal condition numbers.
 
@@ -318,6 +325,7 @@
     class = "toast.ops.memory_counter.MemoryCounter"
     API = 0 # Internal interface version for this operator
     enabled = false # If True, this class instance is marked as enabled
+    kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "mem_count" # The 'name' of this class instance
     prefix = "" # Prefix for log messages
     silent = false # If True, return the memory used but do not log the result

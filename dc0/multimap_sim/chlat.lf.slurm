@@ -107,6 +107,7 @@ for band in ${bands[*]}; do
                  --raw_statistics.disable \
                  --filtered_statistics.disable \
                  --mapmaker.report_memory \
+                 --mapmaker.name mapmaker_${rootname} \
                  --processing_mask.file ../foreground_sim/input_maps/mask_mediumcomplexity.${telescope}.${band}.h5 \
                  --mapmaker.no_write_hits \
                  --save_hdf5.disable \

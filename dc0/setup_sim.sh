@@ -2,6 +2,8 @@
 
 # Generate TOAST focalplane files
 
+if [[ 1 -eq 0 ]]; then
+
 mkdir -p focalplanes
 cd focalplanes
 s4_hardware_to_toast3.py --telescope LAT0
@@ -11,15 +13,15 @@ s4_hardware_to_toast3.py --telescope SAT1
 s4_hardware_to_toast3.py --telescope SAT2
 s4_hardware_to_toast3.py --telescope SAT3
 
-exit
+fi
 
 # Split schedules for batch processing
 
 for suffix in .upto2mm .over2mm; do
 #for suffix in .upto2mm_with_break .upto3mm_with_break; do
     for nline in 1; do
-        for telescope in chlat splat spsat; do
-        #for telescope in chlat; do
+        # for telescope in chlat splat spsat; do
+        for telescope in splat spsat; do
             case $telescope in
                 chlat)
                     schedule_in=scan_strategy/chile_lat/schedules/chile_schedule_lat.pruned${suffix}.txt
@@ -35,15 +37,20 @@ for suffix in .upto2mm .over2mm; do
             if [[ ! -e $schedule_in ]]; then
                 echo "No such schedule: $schedule_in"
                 continue
+            else
+                echo "Splitting $schedule_in"
             fi
 
             outdir=split_schedules_${nline}${suffix/./_}/${telescope}
+            echo "Writing to $outdir"
             mkdir -p ${outdir}
             rm -rf ${outdir}/*
 
             schedule_out="${outdir}/split_schedule_"
             let nces=`wc -l ${schedule_in} | awk '{print $1 - 3}'`
             echo "NCES = ${nces}"
+            [[ $nces -eq 0 ]] && continue
+
             head -n 3 $schedule_in > header.txt
             awk '{if (NR > 3) print}' $schedule_in | \
                 split --lines=${nline} --numeric-suffixes \
