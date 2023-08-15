@@ -1,10 +1,8 @@
 #!/bin/bash
-##SBATCH --qos=preempt
-##SBATCH --time=24:00:00
-#SBATCH --qos=debug
-#SBATCH --time=00:30:00
+#SBATCH --qos=preempt
+#SBATCH --time=24:00:00
 #SBATCH --nodes=8
-#SBATCH --job-name=CMBS4_DC0_mfhf_multimap
+#SBATCH --job-name=CMBS4_DC0_chlat_mfhf_multimap
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -67,15 +65,11 @@ sleep $((RANDOM % 15))
 echo "Looking for schedule at" `date`
 
 for band in ${bands[*]}; do
-    logdir=logs/${TELESCOPE}/${band}
-    mkdir -p $logdir
-done
-
-for band in ${bands[*]}; do
     for schedule in ${fnames[*]}; do
         rootname=`basename $schedule .txt`
         logdir=logs/${TELESCOPE}/${band}
-        logfile=$logdir/${rootname}_${band}.log
+        mkdir -p $logdir
+        logfile=$logdir/${rootname}.log
         logfile2=cleared_$logfile
         if [[ ! -e $logfile && ! -e $logfile2 ]]; then
             echo "Writing $logfile at" `date`

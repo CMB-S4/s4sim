@@ -1,8 +1,11 @@
 #!/bin/bash
-#SBATCH --qos=preempt
-#SBATCH --time=24:00:00
-#SBATCH --nodes=4
-#SBATCH --job-name=CMBS4_DC0_chlat_lf_noise
+##SBATCH --qos=preempt
+##SBATCH --time=24:00:00
+##SBATCH --nodes=4
+#SBATCH --qos=debug
+#SBATCH --time=00:30:00
+#SBATCH --nodes=1
+#SBATCH --job-name=CMBS4_DC0_splat_lf_multimap
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -48,10 +51,10 @@ echo "      ntask_group = ${ntask_group}"
 echo "        groupsize = ${groupsize}"
 echo "           ngroup = ${ngroup}"
 
-telescope=chlat
-site=chile
-TELESCOPE=LAT0_CHLAT
-bands=(f030 f040)
+telescope=splat
+site=pole
+TELESCOPE=LAT2_SPLAT
+bands=(f020 f030 f040)
 
 echo "Listing schedules at" `date`
 
@@ -71,7 +74,7 @@ for band in ${bands[*]}; do
         logdir=logs/${TELESCOPE}/${band}
         mkdir -p $logdir
         logfile=$logdir/${rootname}.log
-        logfile2=cleared_$logdir/${rootname}.log
+        logfile2=cleared_$logfile
         if [[ ! -e $logfile && ! -e $logfile2 ]]; then
             echo "Writing $logfile at" `date`
             date > ${logfile}
@@ -81,7 +84,7 @@ for band in ${bands[*]}; do
             mkdir -p --mode=g+rXs-w $outdir
             chgrp -R cmbs4 $outdir
             # But actual outputs go here
-            outdir=/global/cfs/cdirs/cmbs4/dc/dc0/staging/noise_sim/outputs_rk/${TELESCOPE}/${band}/${rootname}
+            outdir=/global/cfs/cdirs/cmbs4/dc/dc0/staging/multimap_sim/outputs_rk/${TELESCOPE}/${band}/${rootname}
             mkdir -p --mode=g+rXs-w $outdir
             chgrp -R cmbs4 $outdir
 
@@ -95,14 +98,18 @@ for band in ${bands[*]}; do
                  --out $outdir \
                  --job_group_size ${groupsize} \
                  --mem_count.enable \
-                 --scan_healpix_map.disable \
-                 --sim_atmosphere.cache_dir atm_cache_${TELESCOPE} \
+                 --scan_healpix_map.enable \
+                 --scan_healpix_map.det_data "unlensed_cmb;cmb_lensing;foreground" \
+                 --scan_healpix_map.file "../cmb_sim/input_maps/cmb.${telescope}.${band}.h5;../cmb_lensing_sim/input_maps/cmb_lensing.${telescope}.${band}.h5;../foreground_sim/input_maps/foreground_mediumcomplexity.${telescope}.${band}.h5" \
+                 --sim_noise.disable \
+                 --sim_atmosphere.disable \
+                 --raw_statistics.disable \
+                 --filtered_statistics.disable \
                  --mapmaker.report_memory \
                  --mapmaker.name mapmaker_${rootname} \
-                 --mapmaker.write_invcov \
                  --processing_mask.file ../foreground_sim/input_maps/mask_mediumcomplexity.${telescope}.${band}.h5 \
-                 --save_hdf5.enable \
-                 --save_hdf5.volume $outdir \
+                 --mapmaker.no_write_hits \
+                 --save_hdf5.disable \
                  >> ${logfile} 2>&1 &
             sleep 1
             # Wait until the srun process has time to spawn another one

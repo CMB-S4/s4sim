@@ -4,7 +4,7 @@
 for suffix in ""; do
     echo "suffix = ${suffix}"
 
-    fnames=(`grep -lR --include '*.log' -e '^TOAST INFO: Workflow completed in' logs${suffix}/LAT0_CHLAT`)
+    fnames=(`grep -lR --include '*.log' -e '^TOAST INFO: Workflow completed in' logs${suffix}`)
     echo "Moving ${#fnames[@]} successful logs"
     for fname in ${fnames[*]}; do
         echo "Moving $fname"
@@ -17,8 +17,8 @@ for suffix in ""; do
     done
     echo "Moved ${#fnames[@]} successful logs"
 
-    #fnames=(`grep -lR --include '*.log' -e 'DUE TO TIME LIMIT' logs/LAT0_CHLAT`)
-    fnames=(`find -L logs${suffix} -mmin +60 -name '*.log'`)
+    # fnames=(`find -L logs${suffix} -mmin +60 -name '*.log'`)
+    fnames=(`find -L logs${suffix} -mmin +15 -name '*.log'`)
     echo "Removing ${#fnames[@]} stalled logs"
     for fname in ${fnames[*]}; do
         echo "Removing $fname"

@@ -69,19 +69,13 @@ sleep $((RANDOM % 15))
 echo "Looking for schedule at" `date`
 
 for band in ${bands[*]}; do
-    logdir=logs/${TELESCOPE}/${band}
-    mkdir -p $logdir
-done
-
-for band in ${bands[*]}; do
     for schedule in ${fnames[*]}; do
         rootname=`basename $schedule .txt`
         logdir=logs/${TELESCOPE}/${band}
         mkdir -p $logdir
         logfile=$logdir/${rootname}.log
-        logfile2=cleared_$logdir/${rootname}.log
-        logfile3=staged_$logdir/${rootname}.log
-        if [[ ! -e $logfile && ! -e $logfile2 && ! -e $logfile3 ]]; then
+        logfile2=cleared_$logfile
+        if [[ ! -e $logfile && ! -e $logfile2 ]]; then
             echo "Writing $logfile at" `date`
             date > ${logfile}
 

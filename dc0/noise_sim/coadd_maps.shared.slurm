@@ -45,8 +45,8 @@ let nsplit=32
 
 for telescope in LAT0_CHLAT; do
     outdir=${indir}/coadd/${telescope}
-    #for band in f030 f040 f090 f150 f220 f280; do
-    for band in f030 f040; do
+    # for band in f030 f040 f090 f150 f220 f280; do
+    for band in f280; do
         # Check that all the input maps are in place
         for isplit in `seq 1 $nsplit`; do
             echo ${telescope} ${band}GHz $isplit

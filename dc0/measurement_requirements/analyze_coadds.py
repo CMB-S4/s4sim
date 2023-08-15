@@ -25,12 +25,13 @@ nseason = 1
 rootdir = "/global/cfs/cdirs/cmbs4/dc/dc0/staging/noise_sim/outputs_rk"
 #rootdir = "outputs"
 
-#for band in 90, 150:
-for band in 30, 40, 90, 150, 220, 280,:
+#for band in 30, 40, 90, 150, 220, 280,:
+for band in 30, 40:
     tele = "chlat"
     TELE = "LAT0_CHLAT"
 
     fname_map = f"{rootdir}/coadd/{TELE}/coadd_{TELE}_f{band:03}_001of001_map.fits"
+    fname_mask = f"/global/cfs/cdirs/cmbs4/dc/dc0/masks/mask_mediumcomplexity.{tele}.f{band:03}.fits"
     fname_cov = f"{rootdir}/coadd/{TELE}/coadd_{TELE}_f{band:03}_001of001_cov.fits"
     fname_cl = f"outputs/cl/coadd_{TELE}_f{band:03}_001of001_cl.fits"
 
@@ -52,14 +53,21 @@ for band in 30, 40, 90, 150, 220, 280,:
         os.makedirs(outroot, exist_ok=True)
         print(f"Loading {fname_map}")
         m = hp.read_map(fname_map, None)
+
+        # Read and invert the processing mask
+        print(f"Loading {fname_mask}")
+        mask = np.logical_not(hp.read_map(fname_mask, dtype=bool))
+
+        # Discard 1% of the noisiest pixels
         print(f"Loading {fname_cov}")
         w = hp.read_map(fname_cov)
-        # Discard 1% of the noisiest pixels
         good = w > 0
         sorted_w = np.sort(w[good])
         ngood = sorted_w.size
         lim = sorted_w[int(.99 * ngood)]
-        mask = np.logical_and(w > 0, w < lim)
+        mask[w == 0] = False
+        mask[w > lim] = False
+
         print("Measuring C_ell")
         m[0] = hp.remove_dipole(m[0] * mask, bad=0)
         cl = hp.anafast(m * mask, lmax=lmax, iter=0)

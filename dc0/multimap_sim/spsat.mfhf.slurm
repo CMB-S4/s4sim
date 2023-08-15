@@ -5,7 +5,7 @@
 #SBATCH --qos=debug
 #SBATCH --time=00:30:00
 #SBATCH --nodes=1
-#SBATCH --job-name=CMBS4_DC0_spsat_mfhf_noise
+#SBATCH --job-name=CMBS4_DC0_spsat_mfhf_multimap
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -89,7 +89,7 @@ for TELESCOPE in SAT1_SAT SAT2_SAT SAT3_SAT; do
             logdir=logs/${TELESCOPE}/${band}
             mkdir -p $logdir
             logfile=$logdir/${rootname}.log
-            logfile2=cleared_$logfile
+            logfile2=cleared_$logdir/${rootname}.log
             if [[ ! -e $logfile && ! -e $logfile2 ]]; then
                 echo "Writing $logfile at" `date`
                 date > ${logfile}
@@ -99,7 +99,7 @@ for TELESCOPE in SAT1_SAT SAT2_SAT SAT3_SAT; do
                 mkdir -p --mode=g+rXs-w $outdir
                 chgrp -R cmbs4 $outdir
                 # But actual outputs go here
-                outdir=/global/cfs/cdirs/cmbs4/dc/dc0/staging/noise_sim/outputs_rk/${TELESCOPE}/${band}/${rootname}
+                outdir=/global/cfs/cdirs/cmbs4/dc/dc0/staging/multimap_sim/outputs_rk/${TELESCOPE}/${band}/${rootname}
                 mkdir -p --mode=g+rXs-w $outdir
                 chgrp -R cmbs4 $outdir
 
@@ -113,16 +113,19 @@ for TELESCOPE in SAT1_SAT SAT2_SAT SAT3_SAT; do
                      --out $outdir \
                      --job_group_size ${groupsize} \
                      --mem_count.enable \
-                     --scan_healpix_map.disable \
+                     --scan_healpix_map.enable \
+                     --scan_healpix_map.det_data "unlensed_cmb;cmb_lensing;foreground" \
+                     --scan_healpix_map.file "../cmb_sim/input_maps/cmb.${telescope}.${band}.h5;../cmb_lensing_sim/input_maps/cmb_lensing.${telescope}.${band}.h5;../foreground_sim/input_maps/foreground_mediumcomplexity.${telescope}.${band}.h5" \
                      --pixels_healpix_radec.nside 512 \
-                     --sim_atmosphere.cache_dir atm_cache_${TELESCOPE} \
-                     --sim_atmosphere.field_of_view "30 deg" \
+                     --sim_noise.disable \
+                     --sim_atmosphere.disable \
+                     --raw_statistics.disable \
+                     --filtered_statistics.disable \
                      --filterbin.report_memory \
                      --filterbin.name filterbin_${rootname} \
-                     --filterbin.write_invcov \
                      --processing_mask.file ../foreground_sim/input_maps/mask_mediumcomplexity.${telescope}.${band}.h5 \
-                     --save_hdf5.enable \
-                     --save_hdf5.volume $outdir \
+                     --filterbin.no_write_hits \
+                     --save_hdf5.disable \
                      >> ${logfile} 2>&1 &
                 sleep 1
                 # Wait until the srun process has time to spawn another one

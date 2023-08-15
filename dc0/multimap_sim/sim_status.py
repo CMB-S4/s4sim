@@ -6,41 +6,64 @@ import sys
 
 import numpy as np
 
+telescopes = {
+    "chlat" : "LAT0_CHLAT",
+    "splat" : "LAT2_SPLAT",
+    "spsat1" : "SAT1_SAT",
+    "spsat2" : "SAT2_SAT",
+    "spsat3" : "SAT3_SAT",
+}
 
-tele = "chlat"
-TELE = "LAT0_CHLAT"
+for tele, TELE in telescopes.items():
+    if tele == "splat":
+        freqs = [20, 30, 40, 90, 150, 220, 280]
+    elif tele == "chlat":
+        freqs = [30, 40, 90, 150, 220, 280]
+    elif tele == "spsat1":
+        freqs = [95, 155, 220, 280]
+    elif tele == "spsat2":
+        freqs = [85, 95, 145, 155, 220, 280]
+    elif tele == "spsat3":
+        freqs = [30, 40, 85, 145]
+    else:
+        raise RuntimeError(f"Unknown tele: {tele}")
 
-# logs/LAT0_CHLAT/f090/LAT0_CHLAT_split_schedule_0000_f090.log
+    print(f"\ntelescope = {tele}, TELESCOPE = {TELE}")
 
-#for suffix in "", "_lowcomplexity", "_highcomplexity":
-for suffix in "",:
-    print(f"\nsuffix = {suffix}\n")
+    tele_type = tele[:5]
 
-    hits_tot = 0
-    nsplit_tot = 0
+    #for suffix in "", "_lowcomplexity", "_highcomplexity":
+    for suffix in "",:
+        #print(f"\nsuffix = {suffix}\n")
 
-    for subset in "upto2mm", "over2mm":
-        print(f"\nsubset = {subset}\n")
-        fnames_in = sorted(glob(f"../split_schedules_1_{subset}/{tele}/*.txt"))
+        hits_tot = 0
+        hits_tot_staged = 0
+        nsplit_tot = 0
+
+        fnames_in = []
+        for subset in "upto2mm", "over2mm":
+            fnames_in += sorted(glob(f"../split_schedules_1_{subset}/{tele_type}/*.txt"))
+
         nsplit = len(fnames_in)
+        if nsplit == 0:
+            continue
+        #print(f"\nsubset = {subset}\n")
         print(f"Found {nsplit} split schedule files")
         obs = set()
         for fname in fnames_in:
             obs.add(os.path.basename(fname).replace(".txt",""))
 
-        for freq in 30, 40, 90, 150, 220, 280:
-            freq_obs = set()
-            fnames = sorted(glob(f"cleared_logs{suffix}/{TELE}/f{freq:03}/*.log"))
-            for fname in fnames:
-                freq_obs.add(os.path.basename(fname).replace(f"_f{freq:03}.log", ""))
-            hits = 0
-            for ob in freq_obs:
+        for freq in freqs:
+            freq_obs_cleared = set()
+            for fname in sorted(glob(f"cleared_logs{suffix}/{TELE}/f{freq:03}/*.log")):
+                freq_obs_cleared.add(os.path.basename(fname).replace(".log", ""))
+            hits_cleared = 0
+            for ob in freq_obs_cleared:
                 if ob in obs:
-                    hits += 1
-            print(f"{freq:3} GHz is {hits:5} / {nsplit:5} = {hits / nsplit * 100:6.3f}% complete")
+                    hits_cleared += 1
+            hits = hits_cleared
+            print(f"{freq:3} GHz is {hits:5} / {nsplit:5} = {hits / nsplit * 100:7.3f}% complete")
             nsplit_tot += nsplit
             hits_tot += hits
 
-    print(f"\nTOTAL {hits_tot:5} / {nsplit_tot:5} = {hits_tot / nsplit_tot * 100:6.3f}% complete")
-    nsplit_tot += nsplit
-    hits_tot += hits
+        print(f"TOTAL {hits_tot:5} / {nsplit_tot:5} = {hits_tot / nsplit_tot * 100:7.3f}% complete")

@@ -59,8 +59,8 @@ for telescope in LAT0_CHLAT; do
             ;;
     esac
     outdir=$indir/coadd/${telescope}
-    #for band in f030 f040 f090 f150 f220 f280; do
-    for band in f030 f040; do
+    for band in f030 f040 f090 f150 f220 f280; do
+    #for band in f280; do
         if [[ $telescope == "LAT0_CHLAT" ]]; then
             # For CHLAT we simulated observations across the year but
             # only want to co-add the good weather nominal season
@@ -85,6 +85,7 @@ for telescope in LAT0_CHLAT; do
             echo ${telescope} ${band}GHz $isplit
             splitroot=`printf "%03iof%03i" ${isplit} ${nsplit}`
             for flavor in unlensed_cmb cmb_lensing foreground; do
+            #for flavor in foreground; do
                 outroot=$outdir/coadd_${telescope}_${band}_${flavor}_${splitroot}
                 outmap=${outroot}_map.fits
                 if [[ -e $outmap ]]; then

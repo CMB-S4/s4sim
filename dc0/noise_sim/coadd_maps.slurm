@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --qos=preempt
+#SBATCH --qos=regular
 #SBATCH --time=01:00:00
 #SBATCH --nodes=4
 #SBATCH --job-name=CMBS4_DC0_coadd_32
@@ -73,8 +73,8 @@ for telescope in LAT0_CHLAT; do
             echo "Unknown telescope: $telescope"
             ;;
     esac
-    #for band in f030 f040 f090 f150 f220 f280; do
-    for band in f030 f040; do
+    for band in f030 f040 f090 f150 f220 f280; do
+    #for band in f030 f040; do
         if [[ $telescope == "LAT0_CHLAT" ]]; then
             # For CHLAT we simulated observations across the year but
             # only want to co-add the good weather nominal season
