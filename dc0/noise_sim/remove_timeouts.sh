@@ -16,7 +16,7 @@ for suffix in ""; do
     done
     echo "Moved ${#fnames[@]} successful logs"
 
-    fnames=(`find -L logs${suffix} -mmin +60 -name '*.log'`)
+    fnames=(`find -L logs${suffix} -mmin +30 -name '*.log'`)
     echo "Removing ${#fnames[@]} stalled logs"
     for fname in ${fnames[*]}; do
         indir=`dirname $fname`

@@ -25,8 +25,8 @@ nseason = 1
 rootdir = "/global/cfs/cdirs/cmbs4/dc/dc0/staging/noise_sim/outputs_rk"
 #rootdir = "outputs"
 
-#for band in 30, 40, 90, 150, 220, 280,:
-for band in 30, 40:
+for band in 30, 40, 90, 150, 220, 280,:
+#for band in 30, 40:
     tele = "chlat"
     TELE = "LAT0_CHLAT"
 
@@ -35,8 +35,8 @@ for band in 30, 40:
     fname_cov = f"{rootdir}/coadd/{TELE}/coadd_{TELE}_f{band:03}_001of001_cov.fits"
     fname_cl = f"outputs/cl/coadd_{TELE}_f{band:03}_001of001_cl.fits"
 
-    fname_cl_cmb_in = f"../cmb_sim/outputs/cl/{TELE}/input_{TELE}_f{band:03}_cl.fits"
-    fname_cl_cmb_out = f"../cmb_sim/outputs/cl/{TELE}/coadd_{TELE}_f{band:03}_cl.fits"
+    fname_cl_cmb_in = f"../multimap_sim/outputs/cl/{TELE}/input_cmb_{TELE}_f{band:03}_cl.fits"
+    fname_cl_cmb_out = f"../multimap_sim/outputs/cl/{TELE}/coadd_cmb_{TELE}_f{band:03}_cl.fits"
     print(f"Loading {fname_cl_cmb_in}", flush=True)
     cl_in = hp.read_cl(fname_cl_cmb_in)
     print(f"Loading {fname_cl_cmb_out}", flush=True)

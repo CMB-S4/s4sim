@@ -4,9 +4,9 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 # OOM: 24
-# Success: 48, 36, 30
+# Success: 48, 36, 30, 26
 #SBATCH --cpus-per-task=26
-#SBATCH --job-name=CMBS4_DC0_coadd_16
+#SBATCH --job-name=CMBS4_DC0_coadd_noise_16
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -43,10 +43,37 @@ let nsplit=32
 # Random wait time to reduce clashes
 # sleep $((RANDOM % 15))
 
-for telescope in LAT0_CHLAT; do
+#for TELESCOPE in LAT0_CHLAT; do
+for TELESCOPE in SAT3_SAT; do
+    case $TELESCOPE in
+        LAT0_CHLAT)
+            telescope=chlat
+            bands=(f030 f040 f090 f150 f220 f280)
+            ;;
+        LAT2_SPLAT)
+            telescope=splat
+            bands=(f030 f040 f090 f150 f220 f280)
+            ;;
+        SAT1_SAT)
+            telescope=spsat
+            bands=(f095 f155 f220 f280)
+            ;;
+        SAT2_SAT)
+            telescope=spsat
+            bands=(f085 f095 f145 f155 f220 f280)
+            ;;
+        SAT3_SAT)
+            telescope=spsat
+            # bands=(f030 f040 f085 f145)
+            bands=(f030 f040)
+            ;;
+        *)
+            echo "Unknown TELESCOPE: $TELESCOPE"
+            ;;
+    esac
+
     outdir=${indir}/coadd/${telescope}
-    # for band in f030 f040 f090 f150 f220 f280; do
-    for band in f280; do
+    for band in ${bands[*]}; do
         # Check that all the input maps are in place
         for isplit in `seq 1 $nsplit`; do
             echo ${telescope} ${band}GHz $isplit

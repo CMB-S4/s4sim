@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --qos=regular
+#SBATCH --qos=preempt
 #SBATCH --time=01:00:00
 #SBATCH --nodes=4
-#SBATCH --job-name=CMBS4_DC0_coadd_32
+#SBATCH --job-name=CMBS4_DC0_coadd_noise_32
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -46,36 +46,49 @@ let nsplit=32
 # Random wait time to reduce clashes
 sleep $((RANDOM % 15))
 
-for telescope in LAT0_CHLAT; do
-    case $telescope in
+#for TELESCOPE in LAT0_CHLAT; do
+for TELESCOPE in SAT3_SAT; do
+    case $TELESCOPE in
         LAT0_CHLAT)
-            tele=chlat
+            telescope=chlat
+            bands=(f030 f040 f090 f150 f220 f280)
             ;;
         LAT2_SPLAT)
-            tele=splat
+            telescope=splat
+            bands=(f030 f040 f090 f150 f220 f280)
+            ;;
+        SAT1_SAT)
+            telescope=spsat
+            bands=(f095 f155 f220 f280)
+            ;;
+        SAT2_SAT)
+            telescope=spsat
+            bands=(f085 f095 f145 f155 f220 f280)
+            ;;
+        SAT3_SAT)
+            telescope=spsat
+            # bands=(f030 f040 f085 f145)
+            bands=(f030 f040)
             ;;
         *)
-            echo "Unknown telescope: $telescope"
+            echo "Unknown TELESCOPE: $TELESCOPE"
             ;;
     esac
-    outdir=${indir}/coadd/${telescope}
+
+    outdir=${indir}/coadd/${TELESCOPE}
     # Determine the appropriate scaling to match nominal sensitivity
-    case $telescope in
+    case $TELESCOPE in
         LAT0_CHLAT)
             # Scale the noise maps to match 7-year 2-LAT sensitivity
             scale=$(echo "1 / sqrt(2 * 7)" | bc -l)
             ;;
-        LAT2_SPLAT)
+        *)
             # Scale the noise maps to match 7-year sensitivity
             scale=$(echo "1 / sqrt(1 * 7)" | bc -l)
             ;;
-        *)
-            echo "Unknown telescope: $telescope"
-            ;;
     esac
-    for band in f030 f040 f090 f150 f220 f280; do
-    #for band in f030 f040; do
-        if [[ $telescope == "LAT0_CHLAT" ]]; then
+    for band in ${bands[*]}; do
+        if [[ $TELESCOPE == "LAT0_CHLAT" ]]; then
             # For CHLAT we simulated observations across the year but
             # only want to co-add the good weather nominal season
             case $band in
@@ -96,9 +109,9 @@ for telescope in LAT0_CHLAT; do
             schedule_dir=../split_schedules_1_upto2mm
         fi
         for isplit in `seq 1 $nsplit`; do
-            echo ${telescope} ${band}GHz $isplit
+            echo ${TELESCOPE} ${band}GHz $isplit
             splitroot=`printf "%03iof%03i" ${isplit} ${nsplit}`
-            outroot=$outdir/coadd_${telescope}_${band}_${splitroot}
+            outroot=$outdir/coadd_${TELESCOPE}_${band}_${splitroot}
             outmap=${outroot}_map.fits
             if [[ -e $outmap ]]; then
                 echo "$outmap already exists, skipping..."
@@ -106,7 +119,7 @@ for telescope in LAT0_CHLAT; do
             fi
             logdir=coadd_logs
             mkdir -p $logdir
-            logfile=${logdir}/coadd_${telescope}_${band}_${splitroot}.log
+            logfile=${logdir}/coadd_${TELESCOPE}_${band}_${splitroot}.log
             if [[ -e $logfile ]]; then
                 echo "$logfile already exists, skipping..."
                 continue
@@ -120,7 +133,7 @@ for telescope in LAT0_CHLAT; do
             mkdir -p $listdir
             fname_maps=${listdir}/coadd_maps_${band}_${splitroot}.txt
             rm -f $fname_maps
-            for schedule in $schedule_dir/$tele/*txt; do
+            for schedule in $schedule_dir/$telescope/*txt; do
                 if [[ $nsplit -gt 1 ]]; then
                     # Use the Julian date for splitting
                     let testsplit=`awk "{if (NR == 4) print (int(\\$5) % $nsplit) + 1}" $schedule`
@@ -128,9 +141,16 @@ for telescope in LAT0_CHLAT; do
                 fi
 
                 obs=`basename --suffix=.txt $schedule`
-                fname="${indir}/$telescope/${band}/${obs}/mapmaker_${obs}_noiseweighted_map.h5"
+                if [[ $TELESCOPE == SAT* ]]; then
+                    fname="${indir}/${TELESCOPE}/${band}/${obs}/filterbin_${obs}_noiseweighted_filtered_map.h5"
+                    [[ ! -e $fname ]] && fname="${indir}/${TELESCOPE}/${band}/${obs}/filterbin_noiseweighted_filtered_map.h5"
+                else
+                    fname="${indir}/${TELESCOPE}/${band}/${obs}/mapmaker_${obs}_noiseweighted_map.h5"
+                fi
                 if [[ ! -e $fname ]]; then
-                    echo "No input map for $band $obs" >> $logfile
+                    echo "Not found: $fname"
+                    echo "Not found: $fname" >> $logfile
+                    exit
                     let nfail++
                 else
                     echo $fname >> $fname_maps
