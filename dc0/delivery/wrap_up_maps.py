@@ -28,7 +28,7 @@ alternate_names = {
     "150" : "f150",
     "230" : "f220",
     "280" : "f280",
-    "cmb" : "unlensed CMB",
+    "unlensed_cmb" : "unlensed CMB",
     "cmb_lensing" : "lensing perturbation",
     "foreground" : "extragalactic + galactic foregrounds",
     "noise" : "atmosphere + noise",
@@ -42,7 +42,7 @@ i_wafer_split = 1
 wafer_split_name = f"w{n_wafer_split:02}.{i_wafer_split:02}"
 realization = 0
 realization_name = f"r{realization:03}"
-components = ["noise", "foreground", "cmb_lensing", "cmb"]
+components = ["noise", "foreground", "cmb_lensing", "unlensed_cmb"]
 # four-digit mask identifying signal content.  The position of each
 # digit matches an entry in `components`
 complements = ["0001", "0010", "0100", "1000", "1111"]
@@ -175,24 +175,25 @@ for telescope, bands in telescopes_to_bands.items():
                             alt_component = alternate_names[component]
                             if product == "map02":
                                 # Filter-and-bin map
-                                fname_in = os.path.join(
-                                    rootdir,
-                                    f"{component}_sim/outputs_rk/coadd/{alt_telescope}",
-                                    f"coadd_{alt_telescope}_{alt_band}_"
-                                    f"{i_time_split:03}of{n_time_split:03}_map.fits",
-                                )
+                                if component == "noise":
+                                    fname_in = os.path.join(
+                                        rootdir,
+                                        f"noise_sim/outputs_rk/coadd/{alt_telescope}",
+                                        f"coadd_{alt_telescope}_{alt_band}_"
+                                        f"{i_time_split:03}of{n_time_split:03}_map.fits",
+                                    )
+                                else:
+                                    fname_in = os.path.join(
+                                        rootdir,
+                                        f"multimap_sim/outputs_rk/coadd/{alt_telescope}",
+                                        f"coadd_{alt_telescope}_{alt_band}_{component}_"
+                                        f"{i_time_split:03}of{n_time_split:03}_map.fits",
+                                    )
                             else:
                                 msg = f"Don't know how to assemble signal product: {product}"
                                 raise RuntimeError(msg)
                             print(f"Loading {fname_in}", flush=True)
                             m = hp.read_map(fname_in, None)
-                            if component == "foreground":
-                                # Foreground maps had the CMB included
-                                # but we want it out
-                                fname_cmb = fname_in.replace("foreground", "cmb")
-                                print(f"Loading and subtracting {fname_cmb}")
-                                cmb = hp.read_map(fname_cmb, None)
-                                m -= cmb
                             if total is None:
                                 total = m
                                 component_names = f"{alt_component}"

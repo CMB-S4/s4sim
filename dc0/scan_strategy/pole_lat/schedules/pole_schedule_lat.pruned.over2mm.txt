@@ -1,3 +1,3 @@
 #Site            Telescope        Latitude [deg] Longitude [deg]   Elevation [m]
  SOUTH_POLE      polescope               -89.991         -44.650          2843.0
-#      Start time UTC        Stop time UTC Rotation Patch name                            Az min   Az max       El  Pass Sub
+#      Start time UTC        Stop time UTC      Start MJD       Stop MJD Rotation Patch name                            Az min   Az max       El   R/S  Sun el1  Sun az1  Sun el2  Sun az2 Moon el1 Moon az1 Moon el2 Moon az2 Phase  Pass Sub    CTime

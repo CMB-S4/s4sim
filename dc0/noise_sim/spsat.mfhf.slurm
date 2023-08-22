@@ -1,14 +1,13 @@
 #!/bin/bash
-##SBATCH --qos=preempt
-##SBATCH --time=24:00:00
-##SBATCH --nodes=4
-#SBATCH --qos=debug
-#SBATCH --time=00:30:00
-#SBATCH --nodes=1
+#SBATCH --qos=preempt
+#SBATCH --time=01:00:00
+#SBATCH --nodes=4
 #SBATCH --job-name=CMBS4_DC0_spsat_mfhf_noise
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
+
+export TOAST_LOGLEVEL=DEBUG
 
 # Perlmutter-specific fixes
 export FI_CXI_OPTIMIZED_MRS="false"
@@ -116,7 +115,7 @@ for TELESCOPE in SAT1_SAT SAT2_SAT SAT3_SAT; do
                      --scan_healpix_map.disable \
                      --pixels_healpix_radec.nside 512 \
                      --sim_atmosphere.cache_dir atm_cache_${TELESCOPE} \
-                     --sim_atmosphere.field_of_view "30 deg" \
+                     --sim_atmosphere.field_of_view "35 deg" \
                      --filterbin.report_memory \
                      --filterbin.name filterbin_${rootname} \
                      --filterbin.write_invcov \

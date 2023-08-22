@@ -47,7 +47,7 @@ let nsplit=32
 sleep $((RANDOM % 15))
 
 #for TELESCOPE in LAT0_CHLAT; do
-for TELESCOPE in SAT3_SAT; do
+for TELESCOPE in SAT1_SAT SAT2_SAT SAT3_SAT; do
     case $TELESCOPE in
         LAT0_CHLAT)
             telescope=chlat
@@ -67,8 +67,8 @@ for TELESCOPE in SAT3_SAT; do
             ;;
         SAT3_SAT)
             telescope=spsat
-            # bands=(f030 f040 f085 f145)
-            bands=(f030 f040)
+            bands=(f030 f040 f085 f145)
+            # bands=(f030 f040)
             ;;
         *)
             echo "Unknown TELESCOPE: $TELESCOPE"
@@ -135,7 +135,7 @@ for TELESCOPE in SAT3_SAT; do
             rm -f $fname_maps
             for schedule in $schedule_dir/$telescope/*txt; do
                 if [[ $nsplit -gt 1 ]]; then
-                    # Use the Julian date for splitting
+                    # Use the Julian date for splitting.
                     let testsplit=`awk "{if (NR == 4) print (int(\\$5) % $nsplit) + 1}" $schedule`
                     [[ ! $testsplit -eq $isplit ]] && continue
                 fi
@@ -143,7 +143,7 @@ for TELESCOPE in SAT3_SAT; do
                 obs=`basename --suffix=.txt $schedule`
                 if [[ $TELESCOPE == SAT* ]]; then
                     fname="${indir}/${TELESCOPE}/${band}/${obs}/filterbin_${obs}_noiseweighted_filtered_map.h5"
-                    [[ ! -e $fname ]] && fname="${indir}/${TELESCOPE}/${band}/${obs}/filterbin_noiseweighted_filtered_map.h5"
+                    # [[ ! -e $fname ]] && fname="${indir}/${TELESCOPE}/${band}/${obs}/filterbin_noiseweighted_filtered_map.h5"
                 else
                     fname="${indir}/${TELESCOPE}/${band}/${obs}/mapmaker_${obs}_noiseweighted_map.h5"
                 fi
@@ -158,6 +158,10 @@ for TELESCOPE in SAT3_SAT; do
                 fi
                 let ntotal++
             done
+            if [[ ! -e $fname_maps ]]; then
+                echo "ERROR: $fname_maps was not created."
+                continue
+            fi
             echo "Found a total of ${nfound} / ${ntotal} maps. ${nfail} maps were missing." >> $logfile
 
             mkdir -p $outdir

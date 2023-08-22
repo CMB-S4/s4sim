@@ -64,21 +64,20 @@ for TELESCOPE in SAT3_SAT; do
             ;;
         SAT3_SAT)
             telescope=spsat
-            # bands=(f030 f040 f085 f145)
-            bands=(f030 f040)
+            bands=(f030 f040 f085 f145)
             ;;
         *)
             echo "Unknown TELESCOPE: $TELESCOPE"
             ;;
     esac
 
-    outdir=${indir}/coadd/${telescope}
+    outdir=${indir}/coadd/${TELESCOPE}
     for band in ${bands[*]}; do
         # Check that all the input maps are in place
         for isplit in `seq 1 $nsplit`; do
-            echo ${telescope} ${band}GHz $isplit
+            echo ${TELESCOPE} ${band}GHz $isplit
             splitroot=`printf "%03iof%03i" ${isplit} ${nsplit}`
-            outroot=$outdir/coadd_${telescope}_${band}_${splitroot}
+            outroot=$outdir/coadd_${TELESCOPE}_${band}_${splitroot}
             outmap=${outroot}_map.fits
             if [[ ! -e $outmap ]]; then
                 echo "$outmap does not exist!"
@@ -92,7 +91,7 @@ for TELESCOPE in SAT3_SAT; do
             let nsplit_out=$nsplit_in/2
             for isplit in `seq 1 $nsplit_out`; do
                 splitroot=`printf "%03iof%03i" ${isplit} ${nsplit_out}`
-                outroot=$outdir/coadd_${telescope}_${band}_${splitroot}
+                outroot=$outdir/coadd_${TELESCOPE}_${band}_${splitroot}
                 outmap=${outroot}_map.fits
                 if [[ -e $outmap ]]; then
                     echo "$outmap already exists, skipping..."
@@ -100,7 +99,7 @@ for TELESCOPE in SAT3_SAT; do
                 fi
                 logdir=coadd_logs
                 mkdir -p $logdir
-                logfile=${logdir}/coadd_${telescope}_${band}_${splitroot}.log
+                logfile=${logdir}/coadd_${TELESCOPE}_${band}_${splitroot}.log
                 if [[ -e $logfile ]]; then
                     echo "$logfile already exists, skipping..."
                     continue
@@ -109,8 +108,8 @@ for TELESCOPE in SAT3_SAT; do
                 let isplit_in2=$isplit+$nsplit_out
                 splitroot1=`printf "%03iof%03i" ${isplit_in1} ${nsplit_in}`
                 splitroot2=`printf "%03iof%03i" ${isplit_in2} ${nsplit_in}`
-                inroot1=$outdir/coadd_${telescope}_${band}_${splitroot1}
-                inroot2=$outdir/coadd_${telescope}_${band}_${splitroot2}
+                inroot1=$outdir/coadd_${TELESCOPE}_${band}_${splitroot1}
+                inroot2=$outdir/coadd_${TELESCOPE}_${band}_${splitroot2}
                 echo "Writing $logfile"
                 date > $logfile
                 toast_healpix_coadd \

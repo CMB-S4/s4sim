@@ -6,7 +6,7 @@
 # OOM: 24
 # Success: 48, 36, 30, 26
 #SBATCH --cpus-per-task=32
-#SBATCH --job-name=CMBS4_DC0_coadd_16
+#SBATCH --job-name=CMBS4_DC0_coadd_signal_16
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
@@ -43,16 +43,44 @@ let nsplit=32
 # Random wait time to reduce clashes
 sleep $((RANDOM % 15))
 
-for telescope in LAT0_CHLAT; do
-    outdir=$indir/coadd/${telescope}
-    #for band in f030 f040 f090 f150 f220 f280; do
-    for band in f280; do
+#for TELESCOPE in LAT0_CHLAT; do
+for TELESCOPE in SAT3_SAT; do
+    case $TELESCOPE in
+        LAT0_CHLAT)
+            telescope=chlat
+            bands=(f030 f040 f090 f150 f220 f280)
+            ;;
+        LAT2_SPLAT)
+            telescope=splat
+            bands=(f030 f040 f090 f150 f220 f280)
+            ;;
+        SAT1_SAT)
+            telescope=spsat
+            bands=(f095 f155 f220 f280)
+            ;;
+        SAT2_SAT)
+            telescope=spsat
+            bands=(f085 f095 f145 f155 f220 f280)
+            ;;
+        SAT3_SAT)
+            telescope=spsat
+            # bands=(f030 f040 f085 f145)
+            bands=(f030 f040)
+            ;;
+        *)
+            echo "Unknown TELESCOPE: $TELESCOPE"
+            ;;
+    esac
+
+    outdir=$indir/coadd/${TELESCOPE}
+    for band in ${bands[*]}; do
         # Check that all the input maps are in place
         for flavor in unlensed_cmb cmb_lensing foreground; do
+        #for flavor in foreground; do
             for isplit in `seq 1 $nsplit`; do
-                echo ${telescope} ${band}GHz $isplit
+                echo ${TELESCOPE} ${band}GHz $isplit
                 splitroot=`printf "%03iof%03i" ${isplit} ${nsplit}`
-                outroot=$outdir/coadd_${telescope}_${band}_${flavor}_${splitroot}
+                outroot=$outdir/coadd_${TELESCOPE}_${band}_${flavor}_${splitroot}
                 outmap=${outroot}_map.fits
                 if [[ ! -e $outmap ]]; then
                     echo "$outmap does not exist!"
@@ -66,7 +94,7 @@ for telescope in LAT0_CHLAT; do
                 let nsplit_out=$nsplit_in/2
                 for isplit in `seq 1 $nsplit_out`; do
                     splitroot=`printf "%03iof%03i" ${isplit} ${nsplit_out}`
-                    outroot=$outdir/coadd_${telescope}_${band}_${flavor}_${splitroot}
+                    outroot=$outdir/coadd_${TELESCOPE}_${band}_${flavor}_${splitroot}
                     outmap=${outroot}_map.fits
                     if [[ -e $outmap ]]; then
                         echo "$outmap already exists, skipping..."
@@ -74,7 +102,7 @@ for telescope in LAT0_CHLAT; do
                     fi
                     logdir=coadd_logs
                     mkdir -p $logdir
-                    logfile=${logdir}/coadd_${telescope}_${band}_${flavor}_${splitroot}.log
+                    logfile=${logdir}/coadd_${TELESCOPE}_${band}_${flavor}_${splitroot}.log
                     if [[ -e $logfile ]]; then
                         echo "$logfile already exists, skipping..."
                         continue
@@ -83,11 +111,11 @@ for telescope in LAT0_CHLAT; do
                     let isplit_in2=$isplit+$nsplit_out
                     splitroot1=`printf "%03iof%03i" ${isplit_in1} ${nsplit_in}`
                     splitroot2=`printf "%03iof%03i" ${isplit_in2} ${nsplit_in}`
-                    inroot1=$outdir/coadd_${telescope}_${band}_${flavor}_${splitroot1}
-                    inroot2=$outdir/coadd_${telescope}_${band}_${flavor}_${splitroot2}
+                    inroot1=$outdir/coadd_${TELESCOPE}_${band}_${flavor}_${splitroot1}
+                    inroot2=$outdir/coadd_${TELESCOPE}_${band}_${flavor}_${splitroot2}
                     # Link the inverse covariance from noise_sim
-                    invcov1_in=${outdir/multimap_sim/noise_sim}/coadd_${telescope}_${band}_${splitroot1}_invcov.fits
-                    invcov2_in=${outdir/multimap_sim/noise_sim}/coadd_${telescope}_${band}_${splitroot2}_invcov.fits
+                    invcov1_in=${outdir/multimap_sim/noise_sim}/coadd_${TELESCOPE}_${band}_${splitroot1}_invcov.fits
+                    invcov2_in=${outdir/multimap_sim/noise_sim}/coadd_${TELESCOPE}_${band}_${splitroot2}_invcov.fits
                     invcov1_out=${inroot1}_invcov.fits
                     invcov2_out=${inroot2}_invcov.fits
                     ln -s $invcov1_in $invcov1_out
@@ -105,4 +133,4 @@ for telescope in LAT0_CHLAT; do
             done # nsplit
         done # flavor
     done # band
-done # telescope
+done # TELESCOPE

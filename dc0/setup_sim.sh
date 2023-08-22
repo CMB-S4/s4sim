@@ -58,11 +58,11 @@ for suffix in .upto2mm .over2mm; do
                       $schedule_out
             for fname_in in ${schedule_out}*; do
                 mv ${fname_in} temp.txt
-                if [[ $telescope == "chlat" ]]; then
-                    fname_out=`awk '{print $8 "-" $22 "-" $23}' temp.txt`
-                else
-                    fname_out=`awk '{print $6 "-" $10 "-" $11}' temp.txt`
-                fi
+                # if [[ $telescope == "chlat" ]]; then
+                fname_out=`awk '{print $8 "-" $22 "-" $23}' temp.txt`
+                #else
+                #fname_out=`awk '{print $6 "-" $10 "-" $11}' temp.txt`
+                #fi
                 if [[ $fname_out == CALIBRATION_BREAK* ]]; then
                     # We don't simulate calibration breaks
                     continue

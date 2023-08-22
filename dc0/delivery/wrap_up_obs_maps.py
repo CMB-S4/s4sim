@@ -1,9 +1,11 @@
+from dateutil import parser
 import h5py
 import os
 import sys
 
 import healpy as hp
 import numpy as np
+from toast.coordinates import to_MJD
 
 
 # Filenames are based on
@@ -23,7 +25,7 @@ alternate_names = {
     "150" : "f150",
     "230" : "f220",
     "280" : "f280",
-    "cmb" : "primary CMB",
+    "unlensed_cmb" : "unlensed CMB",
     "cmb_lensing" : "lensing perturbation",
     "foreground" : "extragalactic + galactic foregrounds",
     "noise" : "atmosphere + noise",
@@ -40,13 +42,14 @@ with open(fname_schedule, "r") as file_in:
         start_time = parts[1]
         stop_date = parts[2]
         stop_time = parts[3]
-        start_mjd = parts[4]
-        stop_mjd = parts[5]
         start = f"{start_date} {start_time}"
         stop = f"{stop_date} {stop_time}"
-        target = parts[7]
-        scan = parts[21]
-        subscan = parts[22]
+        # Derive start and stop MJD from UTC
+        start_mjd = to_MJD(parser.parse(start + ' +0000').timestamp())
+        stop_mjd = to_MJD(parser.parse(stop + ' +0000').timestamp())
+        # target = parts[7]
+        scan = parts[-2]
+        subscan = parts[-1]
         observation = f"{target}-{scan}-{subscan}"
         schedule.append((observation, start, stop, start_mjd, stop_mjd))
 
@@ -73,8 +76,8 @@ supporting_products = [
     ("mat01", "inverse white noise covariance matrix"),
 ]
 
-rootdir = "/global/cfs/cdirs/cmbs4/dc/dc1/staging"
-outdir = "/global/cfs/cdirs/cmbs4/dc/dc1/delivery"
+rootdir = "/global/cfs/cdirs/cmbs4/dc/dc0/staging"
+outdir = "/global/cfs/cdirs/cmbs4/dc/dc0/delivery"
 
 def add_chunked_dataset(dset1, dset2):
     """ Add chunks from dset2 into dset1 """
@@ -185,9 +188,9 @@ for telescope, bands in telescopes_to_bands.items():
                                     # Noise-weighted filter-and-bin map
                                     fname_in = os.path.join(
                                         rootdir,
-                                        f"{component}_sim/outputs_rk/{alt_telescope}/{alt_band}",
+                                        f"multimap_sim/outputs_rk/{alt_telescope}/{alt_band}",
                                         f"{obs_id}",
-                                        f"mapmaker_{obs_id}_noiseweighted_map.h5",
+                                        f"mapmaker_{obs_id}_{component}_noiseweighted_map.h5",
                                     )
                                 else:
                                     msg = f"Don't know how to assemble signal product: {product}"
@@ -205,16 +208,6 @@ for telescope, bands in telescopes_to_bands.items():
                                         # otherwise the new file is dense
                                         add_chunked_dataset(dest["map"], source["map"])
                                         component_names += f", {alt_component}"
-                                if component == "foreground":
-                                    # Foreground maps had the CMB included
-                                    # but we want it out
-                                    fname_cmb = fname_in.replace("foreground", "cmb")
-                                    if not os.path.isfile(fname_cmb):
-                                        msg = f"missing input file: {fname_cmb}"
-                                        raise FileNotFoundError(msg)
-                                    print(f"Loading and subtracting {fname_cmb}", flush=True)
-                                    with h5py.File(fname_cmb, "r") as source:
-                                        subtract_chunked_dataset(dest["map"], source["map"])
                             for key, value in supporting_metadata.items():
                                 dest.attrs[key] = value
                             dest.attrs["product"] = product
@@ -229,3 +222,6 @@ for telescope, bands in telescopes_to_bands.items():
                         if os.path.isfile(fname_out):
                             print(f"Deleting failed output file: {fname_out}")
                             os.remove(fname_out)
+            # Also create a symbolic link to the simulated noise TOD
+            for fname_in in glob(f"{rootdir}/noise_sim/outputs_rk/LAT0_CHLAT/f030/RISING_SCAN_40-47-15/obs_*.h5"):
+                fname_out = f"{dir_out}/dc0_{telescope}_{obs_name}_{band}_tod00_c1000.hdf5"

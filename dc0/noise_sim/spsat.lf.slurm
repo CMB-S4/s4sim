@@ -114,7 +114,7 @@ for TELESCOPE in SAT3_SAT; do
                      --scan_healpix_map.disable \
                      --pixels_healpix_radec.nside 512 \
                      --sim_atmosphere.cache_dir atm_cache_${TELESCOPE} \
-                     --sim_atmosphere.field_of_view "30 deg" \
+                     --sim_atmosphere.field_of_view "35 deg" \
                      --filterbin.report_memory \
                      --filterbin.name filterbin_${rootname} \
                      --filterbin.write_invcov \

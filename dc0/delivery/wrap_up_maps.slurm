@@ -6,7 +6,7 @@
 # OOM: 12, 18
 # Success: 24
 #SBATCH --cpus-per-task=24
-#SBATCH --job-name=CMBS4_DC1_wrap_up
+#SBATCH --job-name=CMBS4_DC0_wrap_up
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107

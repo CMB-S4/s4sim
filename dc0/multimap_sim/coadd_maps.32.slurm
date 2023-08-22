@@ -101,7 +101,7 @@ for TELESCOPE in SAT3_SAT; do
             echo ${TELESCOPE} ${band}GHz $isplit
             splitroot=`printf "%03iof%03i" ${isplit} ${nsplit}`
             for flavor in unlensed_cmb cmb_lensing foreground; do
-            #for flavor in foreground; do
+            #for flavor in unlensed_cmb; do
                 outroot=$outdir/coadd_${TELESCOPE}_${band}_${flavor}_${splitroot}
                 outmap=${outroot}_map.fits
                 if [[ -e $outmap ]]; then
