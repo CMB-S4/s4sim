@@ -36,6 +36,6 @@ echo "  OMP_NUM_THREADS = ${OMP_NUM_THREADS}"
 #python3 wrap_up_maps.py 025
 #python3 wrap_up_maps.py 040
 #python3 wrap_up_maps.py 090
-#python3 wrap_up_maps.py 150
+python3 wrap_up_maps.py 150
 #python3 wrap_up_maps.py 230
-python3 wrap_up_maps.py 280
+#python3 wrap_up_maps.py 280

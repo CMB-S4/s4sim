@@ -10,24 +10,16 @@ import numpy as np
 
 telescopes_to_bands = {
     "chlat" : ["025", "040", "090", "150", "230", "280"],
+    #"splat" : ["020", "025", "040", "090", "150", "230", "280"],
+    "spsat" : ["025", "040", "085", "095", "145", "155", "230", "280"],
 }
 
 # Simulation scripts used different names than the delivery
 
 alternate_names = {
     "chlat" : "LAT0_CHLAT",
-    #"027" : "f030",
-    #"039" : "f040",
-    #"093" : "f090",
-    #"145" : "f150",
-    #"225" : "f220",
-    #"278" : "f280",
     "025" : "f030",
-    "040" : "f040",
-    "090" : "f090",
-    "150" : "f150",
     "230" : "f220",
-    "280" : "f280",
     "unlensed_cmb" : "unlensed CMB",
     "cmb_lensing" : "lensing perturbation",
     "foreground" : "extragalactic + galactic foregrounds",
@@ -66,11 +58,17 @@ rootdir = "/global/cfs/cdirs/cmbs4/dc/dc0/staging"
 outdir = "/global/cfs/cdirs/cmbs4/dc/dc0"
 
 for telescope, bands in telescopes_to_bands.items():
-    alt_telescope = alternate_names[telescope]
+    if telescope in alternate_names:
+        alt_telescope = alternate_names[telescope]
+    else:
+        alt_telescope = telescope
     for band in bands:
         if len(sys.argv) > 1 and band not in sys.argv[1:]:
             continue
-        alt_band = alternate_names[band]
+        if band in alternate_names:
+            alt_band = alternate_names[band]
+        else:
+            alt_band = f"f{band}"
         for n_time_split in time_splits:
             dir_out = f"{outdir}/mission/{telescope}/split{n_time_split:02}/{band}"
             os.makedirs(dir_out, exist_ok=True)
@@ -172,7 +170,10 @@ for telescope, bands in telescopes_to_bands.items():
                         for i, component in enumerate(components):
                             if complement[i] == "0":
                                 continue
-                            alt_component = alternate_names[component]
+                            if component in alternate_names:
+                                alt_component = alternate_names[component]
+                            else:
+                                alt_component = component
                             if product == "map02":
                                 # Filter-and-bin map
                                 if component == "noise":

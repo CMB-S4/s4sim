@@ -46,38 +46,29 @@ let nsplit=32
 # Random wait time to reduce clashes
 sleep $((RANDOM % 15))
 
-#for TELESCOPE in LAT0_CHLAT; do
-for TELESCOPE in SAT3_SAT; do
-    case $TELESCOPE in
-        LAT0_CHLAT)
-            telescope=chlat
+# for telescope in chlat splat spsat; do
+for telescope in spsat; do
+    case $telescope in
+        chlat)
+            TELESCOPES=(LAT0_CHLAT)
             bands=(f030 f040 f090 f150 f220 f280)
             ;;
-        LAT2_SPLAT)
-            telescope=splat
+        splat)
+            TELESCOPES=(LAT2_SPLAT)
             bands=(f030 f040 f090 f150 f220 f280)
             ;;
-        SAT1_SAT)
-            telescope=spsat
-            bands=(f095 f155 f220 f280)
-            ;;
-        SAT2_SAT)
-            telescope=spsat
-            bands=(f085 f095 f145 f155 f220 f280)
-            ;;
-        SAT3_SAT)
-            telescope=spsat
-            # bands=(f030 f040 f085 f145)
-            bands=(f030 f040)
+        spsat)
+            TELESCOPES=(SAT1_SAT SAT2_SAT SAT3_SAT)
+            bands=(f030 f040 f085 f095 f145 f155 f220 f280)
             ;;
         *)
-            echo "Unknown TELESCOPE: $TELESCOPE"
+            echo "Unknown telescope: $telescope"
             ;;
     esac
 
-    outdir=$indir/coadd/${TELESCOPE}
+    outdir=$indir/coadd/${telescope}
     for band in ${bands[*]}; do
-        if [[ $TELESCOPE == "LAT0_CHLAT" ]]; then
+        if [[ $telescope == "chlat" ]]; then
             # For CHLAT we simulated observations across the year but
             # only want to co-add the good weather nominal season
             case $band in
@@ -98,11 +89,10 @@ for TELESCOPE in SAT3_SAT; do
             schedule_dir=../split_schedules_1_upto2mm
         fi
         for isplit in `seq 1 $nsplit`; do
-            echo ${TELESCOPE} ${band}GHz $isplit
+            echo ${telescope} ${band}GHz $isplit
             splitroot=`printf "%03iof%03i" ${isplit} ${nsplit}`
             for flavor in unlensed_cmb cmb_lensing foreground; do
-            #for flavor in unlensed_cmb; do
-                outroot=$outdir/coadd_${TELESCOPE}_${band}_${flavor}_${splitroot}
+                outroot=$outdir/coadd_${telescope}_${band}_${flavor}_${splitroot}
                 outmap=${outroot}_map.fits
                 if [[ -e $outmap ]]; then
                     echo "$outmap already exists, skipping..."
@@ -110,7 +100,7 @@ for TELESCOPE in SAT3_SAT; do
                 fi
                 logdir=coadd_logs
                 mkdir -p $logdir
-                logfile=${logdir}/coadd_${TELESCOPE}_${band}_${flavor}_${splitroot}.log
+                logfile=${logdir}/coadd_${telescope}_${band}_${flavor}_${splitroot}.log
                 if [[ -e $logfile ]]; then
                     echo "$logfile already exists, skipping..."
                     continue
@@ -132,39 +122,67 @@ for TELESCOPE in SAT3_SAT; do
                     fi
 
                     obs=`basename --suffix=.txt $schedule`
-                    if [[ $TELESCOPE == SAT* ]]; then
-                        fname="${indir}/${TELESCOPE}/${band}/${obs}/filterbin_${obs}_${flavor}_noiseweighted_filtered_map.h5"
-                    else
-                        fname="${indir}/${TELESCOPE}/${band}/${obs}/mapmaker_${obs}_${flavor}_noiseweighted_map.h5"
-                    fi
-                    if [[ ! -e $fname ]]; then
-                        echo "Not found: $fname"
-                        echo "Not found: $fname" >> $logfile
-                        exit
-                        let nfail++
-                    else
-                        echo $fname >> $fname_maps
-                        # Ensure we have a symbolic link in place to the
-                        # inverse white noise covariance
+                    for TELESCOPE in ${TELESCOPES[*]}; do
+                        case $TELESCOPE in
+                            LAT0_CHLAT)
+                                TELE_bands=(f030 f040 f090 f150 f220 f280)
+                                ;;
+                            LAT2_SPLAT)
+                                TELE_bands=(f020 f030 f040 f090 f150 f220 f280)
+                                ;;
+                            SAT1_SAT)
+                                TELE_bands=(f095 f155 f220 f280)
+                                ;;
+                            SAT2_SAT)
+                                TELE_bands=(f085 f095 f145 f155 f220 f280)
+                                ;;
+                            SAT3_SAT)
+                                TELE_bands=(f030 f040 f085 f145)
+                                ;;
+                            *)
+                                echo "Unknown TELESCOPE: $TELESCOPE"
+                                ;;
+                        esac
+                        # Is the band on this TELESCOPE?
+                        [[ ! ${TELE_bands[*]} == *$band* ]] && continue
                         if [[ $TELESCOPE == SAT* ]]; then
-                            fname_invcov_out=${fname/noiseweighted_filtered_map/invcov}
+                            fname="${indir}/${TELESCOPE}/${band}/${obs}/filterbin_${obs}_${flavor}_noiseweighted_filtered_map.h5"
                         else
-                            fname_invcov_out=${fname/noiseweighted_map/invcov}
+                            fname="${indir}/${TELESCOPE}/${band}/${obs}/mapmaker_${obs}_${flavor}_noiseweighted_map.h5"
                         fi
-                        if [[ ! -f $fname_invcov_out ]]; then
-                            rm -f $fname_invcov_out
-                            fname_invcov_in=${fname_invcov_out/_$flavor/}
-                            fname_invcov_in=${fname_invcov_in/multimap_sim/noise_sim}
-                            if [[ ! -e $fname_invcov_in ]]; then
-                                echo "ERROR: missing invcov: $fname_invcov_in"
-                                exit
+                        if [[ ! -e $fname ]]; then
+                            echo "Not found: $fname"
+                            echo "Not found: $fname" >> $logfile
+                            exit
+                            let nfail++
+                        else
+                            echo $fname >> $fname_maps
+                            # Ensure we have a symbolic link in place to the
+                            # inverse white noise covariance
+                            if [[ $TELESCOPE == SAT* ]]; then
+                                fname_invcov_out=${fname/noiseweighted_filtered_map/invcov}
+                            else
+                                fname_invcov_out=${fname/noiseweighted_map/invcov}
                             fi
-                            ln -s $fname_invcov_in $fname_invcov_out
+                            if [[ ! -f $fname_invcov_out ]]; then
+                                rm -f $fname_invcov_out
+                                fname_invcov_in=${fname_invcov_out/_$flavor/}
+                                fname_invcov_in=${fname_invcov_in/multimap_sim/noise_sim}
+                                if [[ ! -e $fname_invcov_in ]]; then
+                                    echo "ERROR: missing invcov: $fname_invcov_in"
+                                    exit
+                                fi
+                                ln -s $fname_invcov_in $fname_invcov_out
+                            fi
+                            let nfound++
                         fi
-                        let nfound++
-                    fi
-                    let ntotal++
+                        let ntotal++
+                    done
                 done
+                if [[ ! -e $fname_maps ]]; then
+                    echo "ERROR: $fname_maps was not created."
+                    continue
+                fi
                 echo "Found a total of ${nfound} / ${ntotal} maps. ${nfail} maps were missing." >> $logfile
 
                 mkdir -p $outdir

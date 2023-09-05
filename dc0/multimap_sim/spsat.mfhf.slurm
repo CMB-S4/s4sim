@@ -1,10 +1,7 @@
 #!/bin/bash
-##SBATCH --qos=preempt
-##SBATCH --time=24:00:00
-##SBATCH --nodes=4
-#SBATCH --qos=debug
-#SBATCH --time=00:30:00
-#SBATCH --nodes=1
+#SBATCH --qos=preempt
+#SBATCH --time=04:00:00
+#SBATCH --nodes=4
 #SBATCH --job-name=CMBS4_DC0_spsat_mfhf_multimap
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu

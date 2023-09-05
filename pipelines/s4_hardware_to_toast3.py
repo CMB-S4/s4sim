@@ -23,6 +23,88 @@ import s4sim.hardware as hardware
 XAXIS, YAXIS, ZAXIS = np.eye(3)
 
 
+def write_fp(
+    telescope,
+    tube,
+    band_name,
+    outroot,
+    fsample,
+    cut,
+    det_data,
+    pol_leakage,
+    fmin,
+    fknee,
+    alpha,
+    net,
+    bandcenter,
+    bandwidth,
+    A,
+    C,
+    pwv_poly,
+):
+    if tube is not None:
+        cut = np.copy(cut)
+        for idet, det_tube in enumerate(det_data["tube"]):
+            if det_tube != tube:
+                cut[idet] = False
+    n_det = np.sum(cut)
+    print(
+        f"telescope = {telescope}, band = {band_name}, tube = {tube}, n_det = {n_det}"
+    )
+    if n_det == 0:
+        return
+    ones = np.ones(n_det)
+    names = []
+    for name, flag in zip(det_data["name"], cut):
+        if flag:
+            names.append(name)
+
+    columns = [
+        Column(name="name", data=names),
+        Column(name="pol_leakage", data= ones * pol_leakage, unit=None),
+        #Column(name="fwhm", data=ones * fwhm, unit=u.arcmin),
+        Column(name="psd_fmin", data=ones * fmin, unit=u.Hz),
+        Column(name="psd_fknee", data=ones * fknee, unit=u.Hz),
+        Column(name="psd_alpha", data=ones * alpha, unit=None),
+        Column(name="psd_net", data=ones * net, unit=(u.K * u.second ** .5)),
+        Column(name="bandcenter", data=ones * bandcenter, unit=u.GHz),
+        Column(name="bandwidth", data=ones * bandwidth, unit=u.GHz),
+        Column(name="elevation_noise_a", data=ones * A, unit=None),
+        Column(name="elevation_noise_c", data=ones * C, unit=None),
+        Column(name="pwv_noise_a0", data=ones * pwv_poly[0], unit=None),
+        Column(name="pwv_noise_a1", data=ones * pwv_poly[1], unit=None),
+        Column(name="pwv_noise_a2", data=ones * pwv_poly[2], unit=None),
+    ]
+
+    for key, value in det_data.items():
+        unit = None
+        if key == "name":
+            continue
+        if key == "fwhm":
+            unit = u.arcmin
+        if key == "quat":
+            val = np.array(value)[cut, :]
+        else:
+            val = np.array(value)[cut]
+        columns.append(Column(name=key, data=val, unit=unit))
+
+    det_table = QTable(columns)
+
+    fp = Focalplane(detector_data=det_table, sample_rate=fsample * u.Hz)
+    fname = outroot
+    if telescope is not None:
+        fname += f"_{telescope}"
+    fname += f"_{band_name}"
+    if tube is not None:
+        fname += f"_{tube}"
+    fname += ".h5"
+    with toast.io.H5File(fname, "w", comm=None, force_serial=True) as f:
+        fp.save_hdf5(f.handle)
+    print(f"Wrote {fname}")
+    
+    return
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="This program simulates or reads a hardware model "
@@ -58,17 +140,29 @@ def main():
         help="Sampling rate for the focalplane",
     )
 
+    parser.add_argument(
+        "--by-tube",
+        required=False,
+        default=False,
+        action="store_true",
+        help="Split files by optics tube",
+    )
+
     args = parser.parse_args()
 
     if args.hardware is None:
         if args.telescope is None:
-            raise RuntimeError("Must select a telescope if not providing a hardware file.")
+            raise RuntimeError(
+                "Must select a telescope if not providing a hardware file."
+            )
         print(f"Simulating hardware for {args.telescope}...", end="", flush=True)
         hw = hardware.sim_nominal()
         hardware.sim_telescope_detectors(hw, args.telescope)
     else:
         if args.telescope is not None:
-            raise RuntimeError("Must not select a telescope if providing a hardware file.")
+            raise RuntimeError(
+                "Must not select a telescope if providing a hardware file."
+            )
         print(f"Loading hardware from {args.hardware}...", end="", flush=True)
         hw = hardware.Hardware(args.hardware)
     print(" Done!")
@@ -158,7 +252,6 @@ def main():
             f"INFO: FOV_cut: {cut.size:8} - {cut.size - np.sum(cut):8}"
             f" = {np.sum(cut):8} detectors"
         )
-        n_det = np.sum(cut)
 
         band_data = hw.data["bands"][band_name]
         bandcenter = band_data["center"]
@@ -166,7 +259,9 @@ def main():
         net = band_data["NET"] * 1e-6  # to K rts
         if "NET_corr" in band_data:
             net_corr = band_data["NET_corr"]
-            print(f"Scaling single detector NETs with the correlation factor: {net_corr}")
+            print(
+                f"Scaling single detector NETs with the correlation factor: {net_corr}"
+            )
             net *= net_corr
         fknee = band_data["fknee"] * 1e-3  # to Hz
         fmin = band_data["fmin"] * 1e-3  # to Hz
@@ -179,51 +274,30 @@ def main():
         pwv_poly = band_data["pwv_poly"]
         pol_leakage = 0
 
-        ones = np.ones(n_det)
-        names = []
-        for name, flag in zip(det_data["name"], cut):
-            if flag:
-                names.append(name)
-        columns = [
-            Column(name="name", data=names),
-            Column(name="pol_leakage", data= ones * pol_leakage, unit=None),
-            #Column(name="fwhm", data=ones * fwhm, unit=u.arcmin),
-            Column(name="psd_fmin", data=ones * fmin, unit=u.Hz),
-            Column(name="psd_fknee", data=ones * fknee, unit=u.Hz),
-            Column(name="psd_alpha", data=ones * alpha, unit=None),
-            Column(name="psd_net", data=ones * net, unit=(u.K * u.second ** .5)),
-            Column(name="bandcenter", data=ones * bandcenter, unit=u.GHz),
-            Column(name="bandwidth", data=ones * bandwidth, unit=u.GHz),
-            Column(name="elevation_noise_a", data=ones * A, unit=None),
-            Column(name="elevation_noise_c", data=ones * C, unit=None),
-            Column(name="pwv_noise_a0", data=ones * pwv_poly[0], unit=None),
-            Column(name="pwv_noise_a1", data=ones * pwv_poly[1], unit=None),
-            Column(name="pwv_noise_a2", data=ones * pwv_poly[2], unit=None),
-        ]
-
-        for key, value in det_data.items():
-            unit = None
-            if key == "name":
-                continue
-            if key == "fwhm":
-                unit = u.arcmin
-            if key == "quat":
-                val = np.array(value)[cut, :]
-            else:
-                val = np.array(value)[cut]
-            columns.append(Column(name=key, data=val, unit=unit))
-
-        det_table = QTable(columns)
-
-        fp = Focalplane(detector_data=det_table, sample_rate=fsample * u.Hz)
-        if args.telescope is None:
-            fname = f"{args.out}_{band_name}.h5"
-        else:
-            fname = f"{args.out}_{args.telescope}_{band_name}.h5"
-        with toast.io.H5File(fname, "w", comm=None, force_serial=True) as f:
-            fp.save_hdf5(f.handle)
-        print(f"Wrote {fname}")
-
+        for tube in set(tubes):
+            if not args.by_tube:
+                tube = None
+            write_fp(
+                args.telescope,
+                tube,
+                band_name,
+                args.out,
+                fsample,
+                cut,
+                det_data,
+                pol_leakage,
+                fmin,
+                fknee,
+                alpha,
+                net,
+                bandcenter,
+                bandwidth,
+                A,
+                C,
+                pwv_poly,
+            )
+            if tube is None:
+                break
     return
 
 

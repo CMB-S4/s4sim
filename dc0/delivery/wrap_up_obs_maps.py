@@ -1,4 +1,5 @@
 from dateutil import parser
+from glob import glob
 import h5py
 import os
 import sys
@@ -13,6 +14,8 @@ from toast.coordinates import to_MJD
 
 telescopes_to_bands = {
     "chlat" : ["025", "040", "090", "150", "230", "280"],
+    "splat" : ["020", "025", "040", "090", "150", "230", "280"],
+    "spsat" : ["025", "040", "085", "095", "145", "155", "230", "280"],
 }
 
 # Simulation scripts used different names than the delivery
@@ -20,16 +23,19 @@ telescopes_to_bands = {
 alternate_names = {
     "chlat" : "LAT0_CHLAT",
     "025" : "f030",
-    "040" : "f040",
-    "090" : "f090",
-    "150" : "f150",
     "230" : "f220",
-    "280" : "f280",
     "unlensed_cmb" : "unlensed CMB",
     "cmb_lensing" : "lensing perturbation",
     "foreground" : "extragalactic + galactic foregrounds",
     "noise" : "atmosphere + noise",
 }
+
+TELESCOPES = {
+    "chlat" : ["LAT0_CHLAT"],
+    "splat" : ["LAT2_SPLAT"],
+    "spsat" : ["SAT1_SAT", "SAT2_SAT", "SAT3_SAT"],
+}
+
 
 fname_schedule = "../scan_strategy/chile_lat/schedules/chile_schedule_lat.pruned.txt"
 schedule = []
@@ -45,11 +51,13 @@ with open(fname_schedule, "r") as file_in:
         start = f"{start_date} {start_time}"
         stop = f"{stop_date} {stop_time}"
         # Derive start and stop MJD from UTC
-        start_mjd = to_MJD(parser.parse(start + ' +0000').timestamp())
-        stop_mjd = to_MJD(parser.parse(stop + ' +0000').timestamp())
-        # target = parts[7]
-        scan = parts[-2]
-        subscan = parts[-1]
+        # start_mjd = to_MJD(parser.parse(start + ' +0000').timestamp())
+        # stop_mjd = to_MJD(parser.parse(stop + ' +0000').timestamp())
+        start_mjd = float(parts[4])
+        stop_mjd = float(parts[5])
+        target = parts[7]
+        scan = parts[21]
+        subscan = parts[22]
         observation = f"{target}-{scan}-{subscan}"
         schedule.append((observation, start, stop, start_mjd, stop_mjd))
 
@@ -60,7 +68,7 @@ i_wafer_split = 1
 wafer_split_name = f"w{n_wafer_split:02}.{i_wafer_split:02}"
 realization = 0
 realization_name = f"r{realization:03}"
-components = ["noise", "foreground", "cmb_lensing", "cmb"]
+components = ["noise", "foreground", "cmb_lensing", "unlensed_cmb"]
 # four-digit mask identifying signal content.  The position of each
 # digit matches an entry in `components`
 #complements = ["0001", "0010", "0100", "1000", "1111"]
@@ -106,11 +114,17 @@ def subtract_chunked_dataset(dset1, dset2):
     return
 
 for telescope, bands in telescopes_to_bands.items():
-    alt_telescope = alternate_names[telescope]
+    if telescope in alternate_names:
+        alt_telescope = alternate_names[telescope]
+    else:
+        alt_telescope = telescope
     for band in bands:
         if len(sys.argv) > 1 and band not in sys.argv[1:]:
             continue
-        alt_band = alternate_names[band]
+        if band in alternate_names:
+            alt_band = alternate_names[band]
+        else:
+            alt_band = f"f{band}"
         dir_out = f"{outdir}/dc0/observation/{telescope}/{band}"
         os.makedirs(dir_out, exist_ok=True)
         for iobs, obs in enumerate(schedule):
@@ -186,12 +200,20 @@ for telescope, bands in telescopes_to_bands.items():
                                 alt_component = alternate_names[component]
                                 if product == "map01":
                                     # Noise-weighted filter-and-bin map
-                                    fname_in = os.path.join(
-                                        rootdir,
-                                        f"multimap_sim/outputs_rk/{alt_telescope}/{alt_band}",
-                                        f"{obs_id}",
-                                        f"mapmaker_{obs_id}_{component}_noiseweighted_map.h5",
-                                    )
+                                    if component == "noise":
+                                        fname_in = os.path.join(
+                                            rootdir,
+                                            f"noise_sim/outputs_rk/{alt_telescope}/{alt_band}",
+                                            f"{obs_id}",
+                                            f"mapmaker_{obs_id}_noiseweighted_map.h5",
+                                        )
+                                    else:
+                                        fname_in = os.path.join(
+                                            rootdir,
+                                            f"multimap_sim/outputs_rk/{alt_telescope}/{alt_band}",
+                                            f"{obs_id}",
+                                            f"mapmaker_{obs_id}_{component}_noiseweighted_map.h5",
+                                        )
                                 else:
                                     msg = f"Don't know how to assemble signal product: {product}"
                                     raise RuntimeError(msg)
@@ -222,6 +244,21 @@ for telescope, bands in telescopes_to_bands.items():
                         if os.path.isfile(fname_out):
                             print(f"Deleting failed output file: {fname_out}")
                             os.remove(fname_out)
-            # Also create a symbolic link to the simulated noise TOD
-            for fname_in in glob(f"{rootdir}/noise_sim/outputs_rk/LAT0_CHLAT/f030/RISING_SCAN_40-47-15/obs_*.h5"):
-                fname_out = f"{dir_out}/dc0_{telescope}_{obs_name}_{band}_tod00_c1000.hdf5"
+
+            # Create symbolic links to the simulated noise TOD
+            todfiles = []
+            for TELESCOPE in TELESCOPES[telescope]:
+                todfiles += glob(f"{rootdir}/noise_sim/outputs_rk/{TELESCOPE}/{alt_band}/{obs_id}/obs_*.h5")
+            for fname_in in todfiles:
+                # /global/cfs/cdirs/cmbs4/dc/dc0/staging/noise_sim/outputs_rk/SAT1_SAT/f095/POLE_DEEP-265-4/obs_POLE_DEEP-265-4_243_1914337542.h5
+                # /global/cfs/cdirs/cmbs4/dc/dc0/staging/noise_sim/outputs_rk/LAT0_CHLAT/f150/RISING_SCAN_40-279-3/obs_RISING_SCAN_40-279-3_LT30_3692582239.h5
+                wafer = os.path.basename(fname_in).replace(".h5", "").split("_")[-2]
+                fname_out = f"{dir_out}/dc0_{telescope}_{obs_name}_{band}_tod00_c1000_{wafer}.hdf5"
+                if os.path.islink(fname_out):
+                    print(f"{fname_out} is linked, skipping ...", flush=True)
+                    continue
+                if os.path.isfile(fname_out):
+                    msg = f"{fname_out} is a file. Cannot create link"
+                    raise RuntimeError(msg)
+                print(f"\nLinking {fname_out} -> {fname_in}", flush=True)
+                os.symlink(fname_in, fname_out)
