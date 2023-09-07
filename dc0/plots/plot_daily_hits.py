@@ -13,8 +13,11 @@ fname_schedule = "../scan_strategy/chile_lat/schedules/chile_schedule_lat.txt"
 
 
 # /global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim/outputs_rk/LAT0_CHLAT/f150/RISING_SCAN_40-231-12/mapmaker_RISING_SCAN_40-231-12_hits.h5
-#indir = "/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim/outputs_rk/LAT0_CHLAT/f150"
-indir = "/global/cfs/cdirs/cmbs4/dc/dc1/staging/foreground_sim/outputs_rk/LAT0_CHLAT/f150"
+indir = "/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim/outputs_rk/LAT0_CHLAT/f150"
+#indir = "/global/cfs/cdirs/cmbs4/dc/dc1/staging/foreground_sim/outputs_rk/LAT0_CHLAT/f150"
+
+outdir = "hitmaps"
+os.mkdirs(outdir, exist_ok=True)
 
 
 schedule = []
@@ -68,6 +71,6 @@ for start, observation in schedule[3500:4100]:
         max=15000,
         xsize=1600,
     )
-    fname_plot = f"hitmaps/hits_{start}.png"
+    fname_plot = f"{outdir}/hits_{start}.png"
     fig.savefig(fname_plot)
     print(f"Wrote {fname_plot}")

@@ -6,7 +6,7 @@ outdir="/global/cfs/cdirs/cmbs4/dc/dc0/mission/spsat"
 for band in 025 040 085 095 145 155 230 280; do
     case $band in
         025) band_in=f030;;
-        230) band_in=f0220;;
+        230) band_in=f220;;
         *) band_in=f${band};;
     esac
     fname_in=${indir}/full/${band_in}/obsmat_${band_in}.npz
