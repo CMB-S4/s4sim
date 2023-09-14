@@ -1269,7 +1269,12 @@ def sim_nominal():
                         woff[ttyp] += 1
                         break
                     off += 1
-        tb["wafer_angle"] = [-90.0 for tw in range(1)] # Degrees
+        if ttyp == "CHLAT_HF" or ttyp == "SPLAT_HF":
+            # These are hex wafers
+            tb["wafer_angle"] = [-90.0 for tw in range(1)] # Degrees
+        else:
+            # These are rhombi-hex wafers
+            tb["wafer_angle"] = [0.0 for tw in range(1)] # Degrees
         if tindx < 170:
             # CHLAT platescale
             tb["platescale"] = 0.003964
