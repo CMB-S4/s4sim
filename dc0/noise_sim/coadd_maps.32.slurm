@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --qos=preempt
-#SBATCH --time=01:00:00
+#SBATCH --time=02:00:00
 #SBATCH --nodes=4
 #SBATCH --job-name=CMBS4_DC0_coadd_noise_32
 #SBATCH --licenses=SCRATCH
@@ -34,7 +34,7 @@ let ntask_node=256/$OMP_NUM_THREADS
 let ntask=$nnode*$ntask_node
 let ncore=$OMP_NUM_THREADS
 
-echo "Running with"
+echo "$(date) : Running with"
 echo "            nnode = ${nnode}"
 echo "  OMP_NUM_THREADS = ${OMP_NUM_THREADS}"
 echo "       ntask_node = ${ntask_node}"
@@ -47,7 +47,7 @@ let nsplit=32
 sleep $((RANDOM % 15))
 
 # for telescope in chlat splat spsat; do
-for telescope in spsat; do
+for telescope in splat; do
     case $telescope in
         chlat)
             TELESCOPES=(LAT0_CHLAT)
@@ -55,14 +55,15 @@ for telescope in spsat; do
             ;;
         splat)
             TELESCOPES=(LAT2_SPLAT)
-            bands=(f030 f040 f090 f150 f220 f280)
+            # bands=(f020 f030 f040 f090 f150 f220 f280)
+            bands=(f090 f150 f220 f280)
             ;;
         spsat)
             TELESCOPES=(SAT1_SAT SAT2_SAT SAT3_SAT)
             bands=(f030 f040 f085 f095 f145 f155 f220 f280)
             ;;
         *)
-            echo "Unknown telescope: $telescope"
+            echo "$(date) : Unknown telescope: $telescope"
             ;;
     esac
 
@@ -90,7 +91,7 @@ for telescope in spsat; do
                     schedule_dir=../split_schedules_1_upto2mm_with_break
                     ;;
                 *)
-                    echo "Unknown frequency band: $band"
+                    echo "$(date) : Unknown frequency band: $band"
                     exit
                     ;;
             esac
@@ -105,14 +106,14 @@ for telescope in spsat; do
             outroot=$outdir/coadd_${telescope}_${band}_${splitroot}
             outmap=${outroot}_map.fits
             if [[ -e $outmap ]]; then
-                echo "$outmap already exists, skipping..."
+                echo "$(date) : $outmap already exists, skipping..."
                 continue
             fi
             logdir=coadd_logs
             mkdir -p $logdir
             logfile=${logdir}/coadd_${telescope}_${band}_${splitroot}.log
             if [[ -e $logfile ]]; then
-                echo "$logfile already exists, skipping..."
+                echo "$(date) : $logfile already exists, skipping..."
                 continue
             fi
             date > $logfile
@@ -150,7 +151,7 @@ for telescope in spsat; do
                             TELE_bands=(f030 f040 f085 f145)
                             ;;
                         *)
-                            echo "Unknown TELESCOPE: $TELESCOPE"
+                            echo "$(date) : Unknown TELESCOPE: $TELESCOPE"
                             ;;
                     esac
                     # Is the band on this TELESCOPE?
@@ -161,8 +162,8 @@ for telescope in spsat; do
                         fname="${indir}/${TELESCOPE}/${band}/${obs}/mapmaker_${obs}_noiseweighted_map.h5"
                     fi
                     if [[ ! -e $fname ]]; then
-                        echo "Not found: $fname"
-                        echo "Not found: $fname" >> $logfile
+                        echo "$(date) : Not found: $fname"
+                        echo "$(date) : Not found: $fname" >> $logfile
                         exit
                         let nfail++
                     else
@@ -173,13 +174,13 @@ for telescope in spsat; do
                 done
             done
             if [[ ! -e $fname_maps ]]; then
-                echo "ERROR: $fname_maps was not created."
+                echo "$(date) : ERROR: $fname_maps was not created."
                 continue
             fi
-            echo "Found a total of ${nfound} / ${ntotal} maps. ${nfail} maps were missing." >> $logfile
+            echo "$(date) : Found a total of ${nfound} / ${ntotal} maps. ${nfail} maps were missing." >> $logfile
 
             mkdir -p $outdir
-            echo "Writing $logfile"
+            echo "$(date) : Writing $logfile"
             date >> $logfile
             srun -n $ntask -c $ncore --cpu_bind=cores toast_healpix_coadd \
                  --scale ${scale} \

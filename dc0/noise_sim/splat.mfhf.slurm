@@ -1,10 +1,7 @@
 #!/bin/bash
-##SBATCH --qos=preempt
-##SBATCH --time=24:00:00
-##SBATCH --nodes=24
-#SBATCH --qos=debug
-#SBATCH --time=00:30:00
-#SBATCH --nodes=8
+#SBATCH --qos=preempt
+#SBATCH --time=24:00:00
+#SBATCH --nodes=24
 #SBATCH --job-name=CMBS4_DC0_splat_mfhf_noise
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
@@ -40,7 +37,7 @@ let ntask_group=$nnode_group*$ntask_node
 let groupsize=ntask_node
 let ngroup=$nnode/$nnode_group
 
-echo "Start: " `date`
+echo "$(date) : Start: "
 echo "Running with"
 echo "            nnode = ${nnode}"
 echo "  OMP_NUM_THREADS = ${OMP_NUM_THREADS}"
@@ -56,17 +53,17 @@ site=pole
 TELESCOPE=LAT2_SPLAT
 bands=(f090 f150 f220 f280)
 
-echo "Listing schedules at" `date`
+echo "$(date) : Listing schedules"
 
 fnames1=(`python3 ../get_fnames_serial.py ../split_schedules_1_upto2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
 fnames2=(`python3 ../get_fnames_serial.py ../split_schedules_1_over2mm/${telescope} logs/${TELESCOPE} ${TELESCOPE} ${bands[*]}`)
 fnames=( ${fnames1[@]} ${fnames2[@]} )
-echo "Found ${#fnames[@]} schedule files"
+echo "$(date) : Found ${#fnames[@]} schedule files"
 
 # Random wait time to reduce clashes
 sleep $((RANDOM % 15))
 
-echo "Looking for schedule at" `date`
+echo "$(date) : Looking for schedule"
 
 for band in ${bands[*]}; do
     for schedule in ${fnames[*]}; do
@@ -76,7 +73,7 @@ for band in ${bands[*]}; do
         logfile=$logdir/${rootname}.log
         logfile2=cleared_$logfile
         if [[ ! -e $logfile && ! -e $logfile2 ]]; then
-            echo "Writing $logfile at" `date`
+            echo "$(date) : Writing $logfile"
             date > ${logfile}
 
             # Generate this directory not to confuse rsync.sh
@@ -115,8 +112,8 @@ for band in ${bands[*]}; do
             let running=${nsrun}/2
             let nsrun_estimate=${running}*2
             while [[ $nsrun -ne $nsrun_estimate ]]; do
-                echo "There are $running running processes and $nsrun srun instances at" `date`
-                echo "Waiting for 15 seconds."
+                echo "$(date) : There are $running running processes and $nsrun srun instances"
+                echo "$(date) : Waiting for 15 seconds."
                 sleep 15
                 let nsrun=`ps | grep srun | wc -l`
                 let running=${nsrun}/2
@@ -125,20 +122,20 @@ for band in ${bands[*]}; do
             # Now see if we have all the slots taken
             while [[ $running -ge $ngroup ]]; do
                 # We do. Wait for at least one slot to be freed
-                echo "There are $running running processes at" `date`
-                echo "Waiting for 15 seconds."
+                echo "$(date) : There are $running running processes"
+                echo "$(date) : Waiting for 15 seconds."
                 sleep 15
                 let running=`ps | grep srun | wc -l`/2
             done
-            echo "Finding more work at" `date`
+            echo "$(date) : Finding more work"
         else
-            echo "$logfile exists"
+            echo "$(date) : $logfile exists"
         fi
     done
 done
 
-echo "Waiting for $running jobs to complete at" `date`
+echo "$(date) : Waiting for $running jobs to complete"
 
 wait
 
-echo "Jobs completed at" `date`
+echo "$(date): Jobs completed"

@@ -34,7 +34,7 @@ export OMP_NUM_THREADS=16
 export OMP_PLACES=threads
 export OMP_PROC_BIND=spread
 
-echo "Running with"
+echo "$(date) : Running with"
 echo "  OMP_NUM_THREADS = ${OMP_NUM_THREADS}"
 
 indir=/global/cfs/cdirs/cmbs4/dc/dc0/staging/multimap_sim/outputs_rk
@@ -44,38 +44,26 @@ let nsplit=32
 sleep $((RANDOM % 15))
 
 # for telescope in chlat splat spsat; do
-for telescope in spsat; do
+for telescope in splat; do
     case $telescope in
         chlat)
             bands=(f030 f040 f090 f150 f220 f280)
             ;;
         splat)
-            bands=(f030 f040 f090 f150 f220 f280)
+            #bands=(f020 f030 f040 f090 f150 f220 f280)
+            bands=(f090 f150 f220 f280)
             ;;
         spsat)
             bands=(f030 f040 f085 f095 f145 f155 f220 f280)
             ;;
         *)
-            echo "Unknown telescope: $telescope"
+            echo "$(date) : Unknown telescope: $telescope"
             ;;
     esac
 
     outdir=$indir/coadd/${telescope}
     for band in ${bands[*]}; do
-        # Check that all the input maps are in place
         for flavor in unlensed_cmb cmb_lensing foreground; do
-        #for flavor in foreground; do
-            for isplit in `seq 1 $nsplit`; do
-                echo ${telescope} ${band}GHz $isplit
-                splitroot=`printf "%03iof%03i" ${isplit} ${nsplit}`
-                outroot=$outdir/coadd_${telescope}_${band}_${flavor}_${splitroot}
-                outmap=${outroot}_map.fits
-                if [[ ! -e $outmap ]]; then
-                    echo "$outmap does not exist!"
-                    exit
-                fi
-            done
-
             # Co-add maps
             let nsplit_in=$nsplit
             while [[ $nsplit_in -gt 1 ]]; do
@@ -85,14 +73,14 @@ for telescope in spsat; do
                     outroot=$outdir/coadd_${telescope}_${band}_${flavor}_${splitroot}
                     outmap=${outroot}_map.fits
                     if [[ -e $outmap ]]; then
-                        echo "$outmap already exists, skipping..."
+                        echo "$(date) : $outmap already exists, skipping..."
                         continue
                     fi
                     logdir=coadd_logs
                     mkdir -p $logdir
                     logfile=${logdir}/coadd_${telescope}_${band}_${flavor}_${splitroot}.log
                     if [[ -e $logfile ]]; then
-                        echo "$logfile already exists, skipping..."
+                        echo "$(date) : $logfile already exists, skipping..."
                         continue
                     fi
                     let isplit_in1=$isplit
@@ -101,6 +89,16 @@ for telescope in spsat; do
                     splitroot2=`printf "%03iof%03i" ${isplit_in2} ${nsplit_in}`
                     inroot1=$outdir/coadd_${telescope}_${band}_${flavor}_${splitroot1}
                     inroot2=$outdir/coadd_${telescope}_${band}_${flavor}_${splitroot2}
+                    inmap1=${inroot1}_map.fits
+                    inmap2=${inroot2}_map.fits
+                    if [[ ! -e $inmap1 ]]; then
+                        echo "$(date): ${inmap1} does not exist"
+                        break 2
+                    fi
+                    if [[ ! -e $inmap2 ]]; then
+                        echo "$(date): ${inmap2} does not exist"
+                        break 2
+                    fi
                     # Link the inverse covariance from noise_sim
                     invcov1_in=${outdir/multimap_sim/noise_sim}/coadd_${telescope}_${band}_${splitroot1}_invcov.fits
                     invcov2_in=${outdir/multimap_sim/noise_sim}/coadd_${telescope}_${band}_${splitroot2}_invcov.fits
@@ -108,13 +106,13 @@ for telescope in spsat; do
                     invcov2_out=${inroot2}_invcov.fits
                     ln -s $invcov1_in $invcov1_out
                     ln -s $invcov2_in $invcov2_out
-                    echo "Writing $logfile"
+                    echo "$(date) : Writing $logfile"
                     date > $logfile
                     toast_healpix_coadd \
                         --outmap ${outmap} \
                         --rcond_limit 1e-3 \
-                        ${inroot1}_map.fits \
-                        ${inroot2}_map.fits \
+                        ${inmap1} \
+                        ${inmap2} \
                         >> $logfile 2>&1
                 done # isplit
                 let nsplit_in=$nsplit_out
@@ -122,3 +120,5 @@ for telescope in spsat; do
         done # flavor
     done # band
 done # telescope
+
+echo "$(date) : All done!"

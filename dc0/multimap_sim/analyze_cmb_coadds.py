@@ -18,7 +18,8 @@ bands = {
     #"LAT2_SPLAT" : (20, 30, 40, 90, 150, 220, 280),
     #"SAT1_SAT" : (95, 155, 220, 280),
     #"SAT2_SAT" : (85, 95, 145, 155, 220, 280),
-    "spsat" : (30, 40, 85, 95, 145, 155, 220, 280),
+    #"spsat" : (30, 40, 85, 95, 145, 155, 220, 280),
+    "splat" : (20, 30, 40, 90, 150, 220, 280),
     #"SAT3_SAT" : (30, 40, 85, 145),
 }
 
@@ -41,7 +42,7 @@ for TELE in bands:
     if tele == "spsat":
         nside = 512
     else:
-        nside - 4096
+        nside = 4096
     npix = 12 * nside**2
     fsky_req = fskies[tele]
     lmax = 2 * nside

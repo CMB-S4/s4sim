@@ -10,7 +10,11 @@ for TELE in *; do
         echo "$(date) : $band"
         cd $band
         fname_out=${workdir}/times_${TELE}_${band}.txt
-        rm -f $fname_out
+        if [[ -e $fname_out ]]; then
+            echo "$fname_out exists, skipping"
+            cd ..
+            continue
+        fi
         echo "$(date) : Writing $fname_out"
         touch $fname_out
         for fname in ${workdir}/cleared_logs/${TELE}/${band}/*.log; do
@@ -36,23 +40,4 @@ for TELE in *; do
         cd ..
     done
     cd ..
-done
-
-exit
-
-for band in f030 f040 f090 f150 f220 f280; do
-    echo $band
-    fname_out=times_${band}.txt
-    rm -f $fname_out
-    touch $fname_out
-    for fname in cleared_logs/LAT0_CHLAT/$band/*.log; do
-        nnode=`head $fname | grep "^TOAST INFO: Executing workflow" | awk '{print $6 * $11 / 256}'`
-        elapsed=`tail $fname | grep "^TOAST INFO: Workflow completed" | awk '{print $6}'`
-        echo "$fname $nnode $elapsed" >> $fname_out
-    done
-    for fname in staged_logs/LAT0_CHLAT/$band/*.log; do
-        nnode=`head $fname | grep "^TOAST INFO: Executing workflow" | awk '{print $6 * $11 / 256}'`
-        elapsed=`tail $fname | grep "^TOAST INFO: Workflow completed" | awk '{print $6}'`
-        echo "$fname $nnode $elapsed" >> $fname_out
-    done
 done

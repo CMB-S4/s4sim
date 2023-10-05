@@ -14,14 +14,20 @@ from toast.coordinates import to_MJD
 
 telescopes_to_bands = {
     "chlat" : ["025", "040", "090", "150", "230", "280"],
-    "splat" : ["020", "025", "040", "090", "150", "230", "280"],
-    "spsat" : ["025", "040", "085", "095", "145", "155", "230", "280"],
+    #"splat" : ["020", "025", "040", "090", "150", "230", "280"],
+    #"spsat1" : ["095", "155", "230", "280"],
+    #"spsat2" : ["085", "095", "145", "155", "230", "280"],
+    #"spsat3" : ["025", "040", "085", "145"],
 }
 
 # Simulation scripts used different names than the delivery
 
 alternate_names = {
     "chlat" : "LAT0_CHLAT",
+    "splat" : "LAT2_SPLAT",
+    "spsat1" : "SAT1_SAT",
+    "spsat2" : "SAT2_SAT",
+    "spsat3" : "SAT3_SAT",
     "025" : "f030",
     "230" : "f220",
     "unlensed_cmb" : "unlensed CMB",
@@ -33,33 +39,11 @@ alternate_names = {
 TELESCOPES = {
     "chlat" : ["LAT0_CHLAT"],
     "splat" : ["LAT2_SPLAT"],
-    "spsat" : ["SAT1_SAT", "SAT2_SAT", "SAT3_SAT"],
+    "spsat1" : ["SAT1_SAT"],
+    "spsat2" : ["SAT2_SAT"],
+    "spsat3" : ["SAT3_SAT"],
 }
 
-
-fname_schedule = "../scan_strategy/chile_lat/schedules/chile_schedule_lat.pruned.txt"
-schedule = []
-with open(fname_schedule, "r") as file_in:
-    for iline, line in enumerate(file_in):
-        if iline < 3:
-            continue
-        parts = line.split()
-        start_date = parts[0]
-        start_time = parts[1]
-        stop_date = parts[2]
-        stop_time = parts[3]
-        start = f"{start_date} {start_time}"
-        stop = f"{stop_date} {stop_time}"
-        # Derive start and stop MJD from UTC
-        # start_mjd = to_MJD(parser.parse(start + ' +0000').timestamp())
-        # stop_mjd = to_MJD(parser.parse(stop + ' +0000').timestamp())
-        start_mjd = float(parts[4])
-        stop_mjd = float(parts[5])
-        target = parts[7]
-        scan = parts[21]
-        subscan = parts[22]
-        observation = f"{target}-{scan}-{subscan}"
-        schedule.append((observation, start, stop, start_mjd, stop_mjd))
 
 # Subsets
 
@@ -85,7 +69,7 @@ supporting_products = [
 ]
 
 rootdir = "/global/cfs/cdirs/cmbs4/dc/dc0/staging"
-outdir = "/global/cfs/cdirs/cmbs4/dc/dc0/delivery"
+outdir = "/global/cfs/cdirs/cmbs4/dc/dc0"
 
 def add_chunked_dataset(dset1, dset2):
     """ Add chunks from dset2 into dset1 """
@@ -118,19 +102,60 @@ for telescope, bands in telescopes_to_bands.items():
         alt_telescope = alternate_names[telescope]
     else:
         alt_telescope = telescope
-    for band in bands:
+    print(f"{telescope}, {alt_telescope}", flush=True)
+
+    if telescope == "chlat":
+        fname_schedule = "../scan_strategy/chile_lat/schedules/chile_schedule_lat.pruned.txt"
+    elif telescope == "splat":
+        fname_schedule = "../scan_strategy/pole_lat/schedules/pole_schedule_lat.pruned.txt"
+    elif telescope[:-1] == "spsat":
+        fname_schedule = "../scan_strategy/pole_sat/schedules/pole_schedule_sat.pruned.txt"
+    else:
+        raise RuntimeError(f"Unknown telescope: {telescope}")
+    schedule = []
+    print(f"Reading {fname_schedule}", flush=True)
+    with open(fname_schedule, "r") as file_in:
+        for iline, line in enumerate(file_in):
+            if iline < 3:
+                continue
+            parts = line.split()
+            start_date = parts[0]
+            start_time = parts[1]
+            stop_date = parts[2]
+            stop_time = parts[3]
+            start = f"{start_date} {start_time}"
+            stop = f"{stop_date} {stop_time}"
+            # Derive start and stop MJD from UTC
+            # start_mjd = to_MJD(parser.parse(start + ' +0000').timestamp())
+            # stop_mjd = to_MJD(parser.parse(stop + ' +0000').timestamp())
+            start_mjd = float(parts[4])
+            stop_mjd = float(parts[5])
+            target = parts[7]
+            scan = parts[21]
+            subscan = parts[22]
+            observation = f"{target}-{scan}-{subscan}"
+            schedule.append((observation, start, stop, start_mjd, stop_mjd))
+    nobs = len(schedule)
+    print(f"Found {nobs} observations", flush=True)
+
+    nband = len(bands)
+    for iband, band in enumerate(bands):
+        print(f"band = {band}", flush=True)
         if len(sys.argv) > 1 and band not in sys.argv[1:]:
+            print(f"Overridden from command line, skipping")
             continue
         if band in alternate_names:
             alt_band = alternate_names[band]
         else:
             alt_band = f"f{band}"
-        dir_out = f"{outdir}/dc0/observation/{telescope}/{band}"
+        print(f"alt_band = {alt_band}", flush=True)
+        dir_out = f"{outdir}/observation/{telescope}/{band}"
         os.makedirs(dir_out, exist_ok=True)
         for iobs, obs in enumerate(schedule):
             obs_id, start, stop, start_mjd, stop_mjd = obs
             obs_name = f"o{iobs:05}"
-            
+            print(f"Obs {iobs + 1} / {nobs} : {obs_name}", flush=True)
+
             # Supporting products do not reference signal component
 
             supporting_metadata = {
@@ -162,6 +187,8 @@ for telescope, bands in telescopes_to_bands.items():
                         f"{obs_id}",
                         f"mapmaker_{obs_id}_invcov.h5",
                     )
+                    if telescope[:-1] == "spsat":
+                        fname_in = fname_in.replace("mapmaker", "filterbin")
                     if not os.path.isfile(fname_in):
                         print(f"ERROR: missing input file: {fname_in}", flush=True)
                         continue
@@ -214,6 +241,9 @@ for telescope, bands in telescopes_to_bands.items():
                                             f"{obs_id}",
                                             f"mapmaker_{obs_id}_{component}_noiseweighted_map.h5",
                                         )
+                                    if telescope[:-1] == "spsat":
+                                        fname_in = fname_in.replace("mapmaker", "filterbin")
+                                        fname_in = fname_in.replace("noiseweighted_map", "noiseweighted_filtered_map")
                                 else:
                                     msg = f"Don't know how to assemble signal product: {product}"
                                     raise RuntimeError(msg)
@@ -262,3 +292,6 @@ for telescope, bands in telescopes_to_bands.items():
                     raise RuntimeError(msg)
                 print(f"\nLinking {fname_out} -> {fname_in}", flush=True)
                 os.symlink(fname_in, fname_out)
+
+            print(f"Complete: {(iobs + 1) / nobs * 100:6.2f} % of {band}", flush=True)
+        print(f"{band} Done!", flush=True)

@@ -9,9 +9,9 @@ import numpy as np
 # https://docs.google.com/document/d/1VIQYsGMza9rOn3E0GY1hDpzLN4hcR7Fwm7tpXGUxSlY/edit?usp=sharing
 
 telescopes_to_bands = {
-    "chlat" : ["025", "040", "090", "150", "230", "280"],
-    #"splat" : ["020", "025", "040", "090", "150", "230", "280"],
-    "spsat" : ["025", "040", "085", "095", "145", "155", "230", "280"],
+    #"chlat" : ["025", "040", "090", "150", "230", "280"],
+    "splat" : ["020", "025", "040", "090", "150", "230", "280"],
+    #"spsat" : ["025", "040", "085", "095", "145", "155", "230", "280"],
 }
 
 # Simulation scripts used different names than the delivery

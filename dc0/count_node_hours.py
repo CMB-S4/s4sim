@@ -32,8 +32,6 @@ for flavor in totals:
     print(f"{flavor}")
     flavor_hours = 0
     for TELE in sorted(totals[flavor]):
-        if TELE == "SPLAT":
-            continue
         print(f"    {TELE}")
         tele_hours = 0
         for band in sorted(totals[flavor][TELE]):
