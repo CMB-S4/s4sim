@@ -1,4 +1,5 @@
 import os
+import pickle
 import sys
 
 import astropy.units as u
@@ -10,14 +11,17 @@ import toast
 import toast.io
 import toast.qarray as qa
 
+
+tele = "SPLAT"
+
 XAXIS, YAXIS, ZAXIS = np.eye(3)
 
 if len(sys.argv) > 1:
     freq = int(sys.argv[1])
 else:
-    freq = 20
+    #freq = 30
     #freq = 90
-    #freq = 220
+    freq = 220
 band = f"f{freq:03}"
 fname = f"focalplane_LAT2_SPLAT_{band}.h5"
 
@@ -59,17 +63,17 @@ nbin = None
 target = None
 ymax = None
 
-# The polarization angles are 15 degrees apart starting at 7.5 deg.
-# 7.5 + [0, 15, 30, 45, 60, 75]
 #if freq > 50 and freq < 200:
-psi_pol = fp.detector_data["pol_ang"]
-
 if freq < 200:
+    # The polarization angles are 15 degrees apart starting at 7.5 deg.
+    # 7.5 + [0, 15, 30, 45, 60, 75]
     npol = 6
+    psi_pol = fp.detector_data["pol_ang"]
     pol_type = (np.around((((psi_pol - 7.5) % 90) / 15)) % npol).astype(int)
-    pol_ang = np.arange(npol) * 45
+    pol_ang = 7.5 + np.arange(npol) * 15
 elif freq > 200:
     npol = 2
+    psi_pol = fp.detector_data["pol_ang"]
     pol_type = (np.around(((psi_pol % 90) / 45)) % npol).astype(int)
     pol_ang = np.arange(npol) * 45
 #else:
@@ -77,7 +81,8 @@ elif freq > 200:
 
 #for angle in 0, 1, 2, 3, 4, 5, 10, 15, 20, 22.5, 30, 45, 60, 67.5, 90:
 #angles = np.arange(91)
-angles = np.linspace(0, 90, 901)
+#angles = np.linspace(0, 90, 901)
+angles = np.linspace(0, 90, 9001)
 nangle = angles.size
 frac_vec_lat = np.zeros(nangle)
 rms_vec_lat = np.zeros(nangle)
@@ -101,7 +106,8 @@ for iangle, angle in enumerate(angles):
     lat = 90 - np.degrees(theta)
 
     if fp_radius is None:
-        fp_radius = max(np.amax(np.abs(lon)), np.amax(np.abs(lat)))
+        # fp_radius = max(np.amax(np.abs(lon)), np.amax(np.abs(lat)))
+        fp_radius = np.amax(np.sqrt(lon**2 + lat**2))
         R = int(fp_radius) + 1
         nbin = int(2 * R / wbin)
         target = len(lon) / (2 * fp_radius / wbin)
@@ -164,11 +170,15 @@ for iangle, angle in enumerate(angles):
         ax.set_xlabel("Cross-scan [deg]")
         ax.set_ylabel("Ndetectors")
 
-        fname_plot = f"histograms_SPLAT_{band}_{angle:0>5.1f}deg.png"
+        fname_plot = f"histograms_{tele}_{band}_{angle:0>5.1f}deg.png"
         fig.tight_layout()
         fig.savefig(fname_plot)
         print(f"Saved plot to {fname_plot}")
         plt.close()
+
+fname_data = f"data_{tele}_{band}.pck"
+with open(fname_data, "wb") as f:
+    pickle.dump([tele, band, pol_ang, angles, frac_vec_lon, frac_vec_lat, frac_vec_pol, rms_vec_lon, rms_vec_lat, rms_vec_pol], f)
 
 nrow, ncol = 2, 2
 fig = plt.figure(figsize=[8 * ncol, 8 * nrow])
@@ -212,4 +222,6 @@ fig.suptitle(
 )
 
 fig.tight_layout()
-fig.savefig(f"fraction_and_rms_SPLAT_{band}.png")
+fname = f"fraction_and_rms_{tele}_{band}.png"
+fig.savefig(fname)
+print(f"Saved plot in {fname}")

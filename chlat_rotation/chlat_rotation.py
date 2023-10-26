@@ -1,4 +1,5 @@
 import os
+import pickle
 import sys
 
 import astropy.units as u
@@ -9,6 +10,9 @@ import numpy as np
 import toast
 import toast.io
 import toast.qarray as qa
+
+
+tele = "CHLAT"
 
 XAXIS, YAXIS, ZAXIS = np.eye(3)
 
@@ -77,7 +81,8 @@ elif freq > 200:
 
 #for angle in 0, 1, 2, 3, 4, 5, 10, 15, 20, 22.5, 30, 45, 60, 67.5, 90:
 #angles = np.arange(91)
-angles = np.linspace(0, 90, 901)
+#angles = np.linspace(0, 90, 901)
+angles = np.linspace(0, 90, 9001)
 nangle = angles.size
 frac_vec_lat = np.zeros(nangle)
 rms_vec_lat = np.zeros(nangle)
@@ -101,7 +106,8 @@ for iangle, angle in enumerate(angles):
     lat = 90 - np.degrees(theta)
 
     if fp_radius is None:
-        fp_radius = max(np.amax(np.abs(lon)), np.amax(np.abs(lat)))
+        # fp_radius = max(np.amax(np.abs(lon)), np.amax(np.abs(lat)))
+        fp_radius = np.amax(np.sqrt(lon**2 + lat**2))
         R = int(fp_radius) + 1
         nbin = int(2 * R / wbin)
         target = len(lon) / (2 * fp_radius / wbin)
@@ -164,11 +170,15 @@ for iangle, angle in enumerate(angles):
         ax.set_xlabel("Cross-scan [deg]")
         ax.set_ylabel("Ndetectors")
 
-        fname_plot = f"histograms_CHLAT_{band}_{angle:0>5.1f}deg.png"
+        fname_plot = f"histograms_{tele}_{band}_{angle:0>5.1f}deg.png"
         fig.tight_layout()
         fig.savefig(fname_plot)
         print(f"Saved plot to {fname_plot}")
         plt.close()
+
+fname_data = f"data_{tele}_{band}.pck"
+with open(fname_data, "wb") as f:
+    pickle.dump([tele, band, pol_ang, angles, frac_vec_lon, frac_vec_lat, frac_vec_pol, rms_vec_lon, rms_vec_lat, rms_vec_pol], f)
 
 nrow, ncol = 2, 2
 fig = plt.figure(figsize=[8 * ncol, 8 * nrow])
@@ -212,4 +222,6 @@ fig.suptitle(
 )
 
 fig.tight_layout()
-fig.savefig(f"fraction_and_rms_CHLAT_{band}.png")
+fname = f"fraction_and_rms_{tele}_{band}.png"
+fig.savefig(fname)
+print(f"Saved plot in {fname}")
