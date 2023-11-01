@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from toast.pixels_io_healpix import read_healpix
 
-import requirements as req
+import ..requirements as req
 
 
 multipanel = True
@@ -102,15 +102,15 @@ for TELE in bands:
         freq = alt_bands[tele][band]
         req_ell = req.ells[:lmax + 1]
         if tele == "chlat":
-            fwhm = req.Chile_LAT[freq][0]
+            fwhm = req.Chile_LAT_DC0[freq][0]
             nltt = req.NlTT_Chile_LAT[freq][:lmax + 1]
             nlee = req.NlEE_Chile_LAT[freq][:lmax + 1]
         elif tele == "splat":
-            fwhm = req.Pole_LAT[freq][0]
+            fwhm = req.Pole_LAT_DC0[freq][0]
             nltt = req.NlTT_Pole_LAT[freq][:lmax + 1]
             nlee = req.NlEE_Pole_LAT[freq][:lmax + 1]
         else:
-            fwhm = req.Pole_SAT[freq][0]
+            fwhm = req.Pole_SAT_DC0[freq][0]
             nltt = req.NlTT_Pole_SAT[freq][:lmax + 1]
             nlee = req.NlEE_Pole_SAT[freq][:lmax + 1]
         bl = req.get_bl(fwhm, ell)
