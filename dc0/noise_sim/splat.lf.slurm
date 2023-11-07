@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --qos=preempt
-#SBATCH --time=24:00:00
+#SBATCH --time=02:00:00
 #SBATCH --nodes=4
 #SBATCH --job-name=CMBS4_DC0_splat_lf_noise
 #SBATCH --licenses=SCRATCH

@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from toast.pixels_io_healpix import read_healpix
 
-import ..requirements as req
+import requirements as req
 
 
 multipanel = True
@@ -14,12 +14,13 @@ multipanel = True
 rootdir = "/global/cfs/cdirs/cmbs4/dc/dc0/staging"
 
 bands = {
-    #"LAT0_CHLAT" : (30, 40, 90, 150, 220, 280),
+    "LAT0_CHLAT" : (30, 40, 90, 150, 220, 280),
     #"LAT2_SPLAT" : (20, 30, 40, 90, 150, 220, 280),
     #"SAT1_SAT" : (95, 155, 220, 280),
     #"SAT2_SAT" : (85, 95, 145, 155, 220, 280),
-    #"spsat" : (30, 40, 85, 95, 145, 155, 220, 280),
-    "splat" : (20, 30, 40, 90, 150, 220, 280),
+    "spsat" : (30, 40, 85, 95, 145, 155, 220, 280),
+    #"splat" : (20, 30, 40, 90, 150, 220, 280),
+    "splat" : (150,),
     #"SAT3_SAT" : (30, 40, 85, 145),
 }
 

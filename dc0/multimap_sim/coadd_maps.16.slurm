@@ -51,7 +51,7 @@ for telescope in splat; do
             ;;
         splat)
             #bands=(f020 f030 f040 f090 f150 f220 f280)
-            bands=(f090 f150 f220 f280)
+            bands=(f150)
             ;;
         spsat)
             bands=(f030 f040 f085 f095 f145 f155 f220 f280)

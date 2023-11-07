@@ -47,7 +47,7 @@ let nsplit=32
 sleep $((RANDOM % 15))
 
 # for telescope in chlat splat spsat; do
-for telescope in splat; do
+for telescope in spsat; do
     case $telescope in
         chlat)
             TELESCOPES=(LAT0_CHLAT)
@@ -56,7 +56,7 @@ for telescope in splat; do
         splat)
             TELESCOPES=(LAT2_SPLAT)
             # bands=(f020 f030 f040 f090 f150 f220 f280)
-            bands=(f090 f150 f220 f280)
+            bands=(f150)
             ;;
         spsat)
             TELESCOPES=(SAT1_SAT SAT2_SAT SAT3_SAT)
@@ -75,8 +75,8 @@ for telescope in splat; do
             scale=$(echo "1 / sqrt(2 * 7)" | bc -l)
             ;;
         *)
-            # Scale the noise maps to match 7-year sensitivity
-            scale=$(echo "1 / sqrt(1 * 7)" | bc -l)
+            # Scale the noise maps to match 10-year sensitivity
+            scale=$(echo "1 / sqrt(1 * 10)" | bc -l)
             ;;
     esac
     for band in ${bands[*]}; do

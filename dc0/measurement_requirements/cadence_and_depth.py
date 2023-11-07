@@ -11,21 +11,11 @@ from scipy.constants import c, h, k
 from toast.pixels_io_healpix import read_healpix
 
 
-fname_out = "cadence_and_depth.pck"
+#fname_out = "cadence_and_depth.pck"
+fname_out = "cadence_and_depth.pck.OLD"
 if os.path.isfile(fname_out):
     with open(fname_out, "rb") as f:
         common, depths = pickle.load(f)
-    """
-    # TEMPORARY
-    temp = common.copy()
-    common = {}
-    for date, fsky in zip(temp["date"], temp["fsky"]):
-        common[date] = fsky
-    temp = depths.copy()
-    depths = {}
-    for date, depth in zip(temp["date"], temp["depth"]):
-        depths[date] = depth
-    """
 else:
     common = {}
     depths = {}
@@ -63,6 +53,7 @@ ax.set_title("5-day common sky fraction")
 ax.legend(loc="best")
 
 fig.tight_layout()
+plt.savefig("cadence_and_depth.png")
 plt.savefig("cadence_and_depth.pdf")
 
 TCMB = 2.72548
@@ -75,8 +66,8 @@ solid_angle = 2 * np.pi * sigma**2
 fname_schedule = "../scan_strategy/chile_lat/schedules/chile_schedule_lat.txt"
 
 # /global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim/outputs_rk/LAT0_CHLAT/f150/RISING_SCAN_40-231-12/mapmaker_RISING_SCAN_40-231-12_hits.h5
-#indir = "/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim/outputs_rk/LAT0_CHLAT/f150"
-indir = "/global/cfs/cdirs/cmbs4/dc/dc1/staging/foreground_sim/outputs_rk/LAT0_CHLAT/f150"
+indir = "/global/cfs/cdirs/cmbs4/dc/dc1/staging/noise_sim/outputs_rk/LAT0_CHLAT/f150"
+# indir = "/global/cfs/cdirs/cmbs4/dc/dc1/staging/foreground_sim/outputs_rk/LAT0_CHLAT/f150"
 
 
 schedule = []
@@ -116,7 +107,8 @@ kcmb2mJysr = kcmb2Jysr * 1e3
 
 sys.exit()
 
-for month in range(12, 13):
+#for month in range(1, 13):
+for month in range(1, 2):
     for day in range(1, 32):
         date = f"{year}-{month:02}-{day:02}"
         if date not in dates:

@@ -157,7 +157,7 @@
     det_data = "signal" # Observation detdata key apply filtering to
     det_flag_mask = 3 # Bit mask value for optional detector flagging
     det_flags = "flags" # Observation detdata key for flags to use
-    enabled = false # If True, this class instance is marked as enabled
+    enabled = true # If True, this class instance is marked as enabled
     focalplane_key = "tube" # Which focalplane key to match
     kernel_implementation = "0" # Which kernel implementation to use (DEFAULT, COMPILED, NUMPY, JAX).
     name = "common_mode_filter" # The 'name' of this class instance

@@ -11,18 +11,17 @@ import requirements as req
 
 #multipanel = False
 multipanel = True
-#fileformat = "pdf"
-fileformat = "png"
 
 rootdir = "/global/cfs/cdirs/cmbs4/dc/dc0/staging/noise_sim/outputs_rk"
 
 bands = {
-    #"LAT0_CHLAT" : (30, 40, 90, 150, 220, 280),
+    "LAT0_CHLAT" : (30, 40, 90, 150, 220, 280),
     #"LAT2_SPLAT" : (20, 30, 40, 90, 150, 220, 280),
     #"SAT1_SAT" : (95, 155, 220, 280),
     #"SAT2_SAT" : (85, 95, 145, 155, 220, 280),
-    #"spsat" : (30, 40, 85, 95, 145, 155, 220, 280),
-    "splat" : (20, 30, 40, 90, 150, 220, 280),
+    "spsat" : (30, 40, 85, 95, 145, 155, 220, 280),
+    # "splat" : (20, 30, 40, 90, 150, 220, 280),
+    "splat" : (150, ),
     #"SAT3_SAT" : (30, 40, 85, 145),
 }
 
@@ -86,8 +85,14 @@ for TELE in bands:
         tf[:, :2] = 1
         # Overwrite transfer function where there is no signal to measure
         tf = tf * bl + np.ones_like(tf) * (1 - bl)
+        # Save the TF
+        # fname_cl = f"outputs/cl/{TELE}/tf_{TELE}_f{band:03}_001of001_cl.fits"
+        fname_tf = f"outputs/cl/tf_{TELE}_f{band:03}_001of001_cl.fits"
+        hp.write_cl(fname_tf, tf, overwrite=True)
+        print(f"Wrote transfer function to {fname_tf}")
 
         if os.path.isfile(fname_cl):
+            # if False:
             print(f"Loading {fname_cl}", flush=True)
             cl = hp.read_cl(fname_cl)
         else:
@@ -134,14 +139,22 @@ for TELE in bands:
         ax.set_ylabel("D$\ell$ [$\mu$K$^2$]")
         fiducial_ell = req.fiducial_ell[:lmax + 1]
         fiducial_TT = req.fiducial_TT[:lmax + 1]
-        ax.loglog(fiducial_ell, fiducial_TT, "k", label="fiducial")
-        ax.loglog(req_ell, nltt, label="MR 2.0 & 3.1")
+        ax.loglog(fiducial_ell, fiducial_TT, "k", label="CMB")
+        mr = {
+            "LAT0_CHLAT" : "MR 2.0 & 3.1",
+            "spsat" : None,
+            "splat" : "MR 3.2",
+        }[TELE]
+        ax.loglog(req_ell, nltt, label=mr)
         ax.loglog(ell[2:], (ellnorm * cl[0])[2:], label=f"DC0")
         ax.loglog(ell[2:], (ellnorm * cl[0] / bl / tf[0])[2:], label=f"TF-corrected DC0")
         ax.legend(loc="best")
         ax.set_ylim([np.amin(fiducial_TT) * 1e-5, np.amax(fiducial_TT) * 1e5])
         if not multipanel:
-            fname_out = f"cl_comparison_noise_{tele}_{band:03}_TT.{fileformat}"
+            fname_out = f"cl_comparison_noise_{tele}_{band:03}_TT.png"
+            fig.savefig(fname_out)
+            print(f"Wrote {fname_out}", flush=True)
+            fname_out = f"cl_comparison_noise_{tele}_{band:03}_TT.pdf"
             fig.savefig(fname_out)
             print(f"Wrote {fname_out}", flush=True)
             plt.clf()
@@ -154,12 +167,21 @@ for TELE in bands:
         ax.set_ylabel("D$\ell$ [$\mu$K$^2$]")
         fiducial_EE = req.fiducial_EE[:lmax + 1]
         ax.loglog(fiducial_ell, fiducial_EE, "k", label="CMB")
-        ax.loglog(req_ell, nlee, label="MR 2.0")
+        mr = {
+            "LAT0_CHLAT" : "MR2 2.0",
+            "spsat" : "MR 1.1",
+            "splat" : "MR 1.2",
+        }[TELE]
+        ax.loglog(req_ell, nlee, label=mr)
         ax.loglog(ell[2:], (ellnorm * cl[1])[2:], label=f"DC0")
-        ax.loglog(ell[2:], (ellnorm * cl[1] / bl / tf[1])[2:], label=f"DC0")
+        ax.loglog(ell[2:], (ellnorm * cl[1] / bl / tf[1])[2:], label=f"TF-corrected DC0")
+        ax.legend(loc="best")
         ax.set_ylim([np.amin(fiducial_EE) * 1e-5, np.amax(fiducial_EE) * 1e5])
         if not multipanel:
-            fname_out = f"cl_comparison_noise_{tele}_{band:03}_EE.{fileformat}"
+            fname_out = f"cl_comparison_noise_{tele}_{band:03}_EE.png"
+            fig.savefig(fname_out)
+            print(f"Wrote {fname_out}", flush=True)
+            fname_out = f"cl_comparison_noise_{tele}_{band:03}_EE.pdf"
             fig.savefig(fname_out)
             print(f"Wrote {fname_out}", flush=True)
             plt.clf()
@@ -178,10 +200,16 @@ for TELE in bands:
         ax.set_ylim([np.amin(fiducial_BB) * 1e-5, np.amax(fiducial_BB) * 1e5])
         fig.tight_layout()
         if multipanel: 
-            fname_out = f"cl_comparison_noise_{tele}_{band:03}.{fileformat}"
+            fname_out = f"cl_comparison_noise_{tele}_{band:03}.png"
+            fig.savefig(fname_out)
+            print(f"Wrote {fname_out}", flush=True)
+            fname_out = f"cl_comparison_noise_{tele}_{band:03}.pdf"
             fig.savefig(fname_out)
             print(f"Wrote {fname_out}", flush=True)
         else:
-            fname_out = f"cl_comparison_noise_{tele}_{band:03}_BB.{fileformat}"
+            fname_out = f"cl_comparison_noise_{tele}_{band:03}_BB.png"
+            fig.savefig(fname_out)
+            print(f"Wrote {fname_out}", flush=True)
+            fname_out = f"cl_comparison_noise_{tele}_{band:03}_BB.pdf"
             fig.savefig(fname_out)
             print(f"Wrote {fname_out}", flush=True)

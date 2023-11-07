@@ -1,6 +1,7 @@
 #!/bin/bash
 #SBATCH --qos=preempt
-#SBATCH --time=24:00:00
+##SBATCH --time=24:00:00
+#SBATCH --time=02:00:00
 #SBATCH --nodes=24
 #SBATCH --job-name=CMBS4_DC0_splat_mfhf_noise
 #SBATCH --licenses=SCRATCH
@@ -52,6 +53,7 @@ telescope=splat
 site=pole
 TELESCOPE=LAT2_SPLAT
 bands=(f090 f150 f220 f280)
+# bands=(f150)
 
 echo "$(date) : Listing schedules"
 

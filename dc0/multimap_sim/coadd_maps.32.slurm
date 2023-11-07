@@ -56,7 +56,7 @@ for telescope in splat; do
         splat)
             TELESCOPES=(LAT2_SPLAT)
             #bands=(f020 f030 f040 f090 f150 f220 f280)
-            bands=(f090 f150 f220 f280)
+            bands=(f150)
             ;;
         spsat)
             TELESCOPES=(SAT1_SAT SAT2_SAT SAT3_SAT)

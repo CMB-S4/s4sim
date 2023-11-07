@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --qos=shared
-#SBATCH --time=08:00:00
+#SBATCH --time=02:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 # OOM: 24
@@ -41,7 +41,7 @@ indir=/global/cfs/cdirs/cmbs4/dc/dc0/staging/noise_sim/outputs_rk
 let nsplit=32
 
 # Random wait time to reduce clashes
-# sleep $((RANDOM % 15))
+sleep $((RANDOM % 15))
 
 # for telescope in chlat splat spsat; do
 for telescope in splat; do
@@ -51,7 +51,7 @@ for telescope in splat; do
             ;;
         splat)
             #bands=(f020 f030 f040 f090 f150 f220 f280)
-            bands=(f090 f150 f220 f280)
+            bands=(f150)
             ;;
         spsat)
             bands=(f030 f040 f085 f095 f145 f155 f220 f280)
