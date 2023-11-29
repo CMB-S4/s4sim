@@ -110,7 +110,8 @@ for doy in range(max(1, my_start - n), my_stop + 1):
     else:
         depth = np.sqrt(1 / daily_invcov[good]) * kcmb2mJysr \
             * solid_angle.to_value(u.steradian)
-        depth = np.sort(depth)[limit]
+        # depth = np.sort(depth)[limit]
+        depth = np.median(np.sort(depth)[:limit])
         print(f"{rank} : {date} : Depth = {depth:.2f} mJy", flush=True)
     if doy >= my_start:
         depths[date] = depth

@@ -37,6 +37,7 @@ for band in "f090", "f150":
     doy = np.arange(y.size) + 1
     ax1.plot(doy, y, '.', label=f"{band}")
 
+"""
 x, y = [], []
 for key, value in total_depth.items():
     x.append(key)
@@ -44,6 +45,7 @@ for key, value in total_depth.items():
 y = np.array(y)
 doy = np.arange(y.size) + 1
 ax1.plot(doy, y, '.', label=f"Combined")
+"""
 
 ax1.set_xlabel("DOY")
 ax1.set_ylabel("Depth [mJy]")

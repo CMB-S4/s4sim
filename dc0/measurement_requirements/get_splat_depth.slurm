@@ -35,4 +35,5 @@ echo "  OMP_NUM_THREADS = ${OMP_NUM_THREADS}"
 echo "       ntask_node = ${ntask_node}"
 echo "            ntask = ${ntask}"
 
-srun -N $nnode -n $ntask -c $ncore --cpu_bind=cores python get_splat_depth.py
+#srun -N $nnode -n $ntask -c $ncore --cpu_bind=cores python get_splat_depth.py f090
+srun -N $nnode -n $ntask -c $ncore --cpu_bind=cores python get_splat_depth.py f150

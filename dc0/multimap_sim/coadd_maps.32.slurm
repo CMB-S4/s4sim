@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --qos=preempt
+#SBATCH --qos=regular
 #SBATCH --time=02:00:00
 #SBATCH --nodes=4
 #SBATCH --job-name=CMBS4_DC0_coadd_signal_32
@@ -55,8 +55,8 @@ for telescope in splat; do
             ;;
         splat)
             TELESCOPES=(LAT2_SPLAT)
-            #bands=(f020 f030 f040 f090 f150 f220 f280)
-            bands=(f150)
+            bands=(f020 f030 f040 f090 f150 f220 f280)
+            # bands=(f020 f030 f040 f090 f220)
             ;;
         spsat)
             TELESCOPES=(SAT1_SAT SAT2_SAT SAT3_SAT)

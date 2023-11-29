@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --qos=preempt
+#SBATCH --qos=regular
 #SBATCH --time=02:00:00
 #SBATCH --nodes=4
 #SBATCH --job-name=CMBS4_DC0_coadd_noise_32
@@ -47,7 +47,7 @@ let nsplit=32
 sleep $((RANDOM % 15))
 
 # for telescope in chlat splat spsat; do
-for telescope in spsat; do
+for telescope in splat; do
     case $telescope in
         chlat)
             TELESCOPES=(LAT0_CHLAT)
@@ -55,8 +55,8 @@ for telescope in spsat; do
             ;;
         splat)
             TELESCOPES=(LAT2_SPLAT)
-            # bands=(f020 f030 f040 f090 f150 f220 f280)
-            bands=(f150)
+            bands=(f020 f030 f040 f090 f150 f220 f280)
+            # bands=(f020 f030 f040 f090 f220)
             ;;
         spsat)
             TELESCOPES=(SAT1_SAT SAT2_SAT SAT3_SAT)

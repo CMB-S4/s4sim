@@ -38,6 +38,7 @@ for band in "f090", "f150":
     doy = np.arange(y.size) + 1
     ax1.plot(doy, y, '.', label=f"{band}")
 
+"""
 x, y = [], []
 for key, value in total_depth.items():
     x.append(key)
@@ -45,11 +46,12 @@ for key, value in total_depth.items():
 y = np.array(y)
 doy = np.arange(y.size) + 1
 ax1.plot(doy, y, '.', label=f"Combined")
+"""
 
 ax1.set_xlabel("DOY")
 ax1.set_ylabel("Depth [mJy]")
 ax1.axhline(3.0, color="k", linestyle="--", label="MR 4.2")
-ax1.set_title("Daily SPLAT depth")
+ax1.set_title("Daily median SPLAT depth")
 ax1.legend(bbox_to_anchor=(1.0, 1.0))
 ax1.set_ylim([0, 5])
 ax1.set_xlim([0, 365])

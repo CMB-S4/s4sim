@@ -13,8 +13,8 @@ from toast.coordinates import to_MJD
 # https://docs.google.com/document/d/1VIQYsGMza9rOn3E0GY1hDpzLN4hcR7Fwm7tpXGUxSlY/edit?usp=sharing
 
 telescopes_to_bands = {
-    "chlat" : ["025", "040", "090", "150", "230", "280"],
-    #"splat" : ["020", "025", "040", "090", "150", "230", "280"],
+    #"chlat" : ["025", "040", "090", "150", "230", "280"],
+    "splat" : ["020", "025", "040", "090", "150", "230", "280"],
     #"spsat1" : ["095", "155", "230", "280"],
     #"spsat2" : ["085", "095", "145", "155", "230", "280"],
     #"spsat3" : ["025", "040", "085", "145"],

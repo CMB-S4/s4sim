@@ -7,6 +7,12 @@
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107
 
+#let left=$(prjquota cmbs4 | awk '/cmbs4/ {print $3-$2}')
+#if [[ $left -lt 1000 ]]; then
+#    echo "There is only $left GB space left on CFS. Will not run."
+#    exit
+#fi
+
 # Perlmutter-specific fixes
 export FI_CXI_OPTIMIZED_MRS="false"
 export MPI4PY_RC_RECV_MPROBE="False"

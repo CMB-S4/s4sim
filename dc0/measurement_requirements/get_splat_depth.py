@@ -17,8 +17,11 @@ comm = MPI.COMM_WORLD
 ntask = comm.size
 rank = comm.rank
 
-#band = "f150"
-band = "f090"
+if len(sys.argv) > 1:
+    band = sys.argv[1]
+else:
+    #band = "f150"
+    band = "f090"
 fname_out = f"depths_splat_{band}.pck"
 if os.path.isfile(fname_out):
     with open(fname_out, "rb") as f:
@@ -112,7 +115,8 @@ for month in range(1, 13):
         else:
             depth = np.sqrt(1 / daily_invcov[good]) * kcmb2mJysr \
                 * solid_angle.to_value(u.steradian)
-            depth = np.sort(depth)[limit]
+            # depth = np.sort(depth)[limit]
+            depth = np.median(np.sort(depth)[:limit])
             print(f"{rank} : {date} : Depth = {depth:.2f} mJy", flush=True)
         depths[date] = depth
 
