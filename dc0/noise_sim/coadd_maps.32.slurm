@@ -73,10 +73,12 @@ for telescope in splat; do
         chlat)
             # Scale the noise maps to match 7-year 2-LAT sensitivity
             scale=$(echo "1 / sqrt(2 * 7)" | bc -l)
+	    SCALE MUST BE CORRECTED WITH FQUALITY = FPASS / FWEATHER
             ;;
         *)
             # Scale the noise maps to match 10-year sensitivity
             scale=$(echo "1 / sqrt(1 * 10)" | bc -l)
+	    SCALE MUST BE CORRECTED WITH FQUALITY = FPASS / FWEATHER
             ;;
     esac
     for band in ${bands[*]}; do

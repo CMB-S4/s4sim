@@ -108,7 +108,8 @@ for telescope, bands in telescopes_to_bands.items():
                         ii, qq, uu = hp.read_map(fname_in, [0, 3, 5])
                         root_area = np.sqrt(hp.nside2pixarea(hp.get_nside(ii), degrees=True)) * 60
                         t_depth = np.sqrt(ii) * root_area
-                        p_depth = np.sqrt(qq + uu) * 1e6 * root_area
+                        # p_depth units corrected uK->K arcmin on 5/10/24
+                        p_depth = np.sqrt(qq + uu) * root_area
                         total = np.vstack([t_depth, p_depth])
                         column_names = ["T_DEPTH", "P_DEPTH"]
                         column_units = "K_CMB_arcmin"
