@@ -1,6 +1,6 @@
 #!/usr/bin/env/python
 
-# Copyright (c) 2020-2023 CMB-S4 Collaboration.
+# Copyright (c) 2020-2024 CMB-S4 Collaboration.
 # Full license can be found in the top level "LICENSE" file.
 
 """Translate an S4 hardware map on disk into an HDF5 supported by TOAST3
@@ -82,6 +82,8 @@ def write_fp(
             continue
         if key == "fwhm":
             unit = u.arcmin
+        elif key == "gamma":
+            unit = u.degree
         if key == "quat":
             val = np.array(value)[cut, :]
         else:
