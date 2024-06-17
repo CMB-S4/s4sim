@@ -6,6 +6,16 @@ toast_ground_schedule \
     @chile_schedule_sat.par \
     @patches_sat.txt \
     --block-out 01/01-04/01 \
+    --out schedules/solar90.txt \
+    --sun-avoidance-angle 90 \
+    >& log.solar90
+
+exit
+
+toast_ground_schedule \
+    @chile_schedule_sat.par \
+    @patches_sat.txt \
+    --block-out 01/01-04/01 \
     --out schedules/baseline.txt \
     >& log.baseline
 

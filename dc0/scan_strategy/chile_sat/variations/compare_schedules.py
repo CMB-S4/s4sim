@@ -8,7 +8,7 @@ import numpy as np
 import toast
 
 
-flavors = "baseline", "no_break", "no_lunar_avoidance", "south_only", "el_min_40", "sidereal", "all"
+flavors = "baseline", "no_break", "no_lunar_avoidance", "solar90", "el_min_40", "sidereal", "all"
 
 weather = None
 site_uid = toast.utils.name_UID("ATACAMA")

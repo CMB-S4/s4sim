@@ -3,7 +3,7 @@
 export OMP_NUM_THREADS=1
 export TOAST_FUNCTIME=1
 
-for flavor in baseline no_break no_lunar_avoidance south_only el_min_40 sidereal all; do
+for flavor in baseline no_break no_lunar_avoidance south_only el_min_40 sidereal all solar90; do
     outdir=outputs/$flavor
     mkdir -p $outdir
 
