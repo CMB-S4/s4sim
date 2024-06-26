@@ -6,8 +6,8 @@ export TOAST_FUNCTIME=1
 schedule=schedule.txt
 head -n 4 sample.txt > $schedule
 
-# for flavor in hwpss ps atmosphere; do
-for flavor in atmosphere; do
+# for flavor in hwpss ps atmosphere ground; do
+for flavor in ground; do
     logfile=${flavor}.log
     if [[ -e $logfile ]]; then
 	echo "$logfile exists. Skipping..."
@@ -50,13 +50,18 @@ for flavor in atmosphere; do
 	    args+=" --sim_atmosphere.gain 4e-5"
 	    args+=" --sim_atmosphere.wind_dist Quantity('1000m')"
 	    ;;
+	ground)
+	    args="--sim_sss.enable"
+	    args+=" --sim_sss.path ground_pickup_nside512_gauss45deg_plus_1overl2_cosEL2_150GHz_sm3deg.fits"
+	    args+=" --sim_sss.pol"
+	    ;;
 	*)
 	    echo "Unknown flavor: $flavor"
 	    continue
 	    ;;
     esac
 
-    OMP_NUM_THREADS=16 mpirun -np 1 \
+    OMP_NUM_THREADS=2 mpirun -np 8 \
         python toast_sim_ground.py \
 	--focalplane focalplane_SAT1_SAT_f155_ST0.h5 \
 	--telescope SAT \
@@ -72,8 +77,8 @@ for flavor in atmosphere; do
 	--mapmaker.no_write_rcond \
 	--baselines.disable \
 	--polyfilter1D.disable \
-	${args} \
-	>& $logfile
+	${args}
+	# >& $logfile
 
 done
 
