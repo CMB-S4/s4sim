@@ -46,12 +46,14 @@ let nsplit=32
 # Random wait time to reduce clashes
 sleep $((RANDOM % 15))
 
-# for telescope in chlat splat spsat; do
-for telescope in splat; do
+for telescope in chlat splat spsat; do
+# for telescope in splat; do
     case $telescope in
         chlat)
             TELESCOPES=(LAT0_CHLAT)
             bands=(f030 f040 f090 f150 f220 f280)
+            F_WEATHER_2MM=0.698
+            F_WEATHER_3MM=0.827
             ;;
         splat)
             TELESCOPES=(LAT2_SPLAT)
@@ -72,13 +74,11 @@ for telescope in splat; do
     case $telescope in
         chlat)
             # Scale the noise maps to match 7-year 2-LAT sensitivity
-            scale=$(echo "1 / sqrt(2 * 7)" | bc -l)
-	    SCALE MUST BE CORRECTED WITH FQUALITY = FPASS / FWEATHER
+            scale=$(echo "scale=6; 1 / sqrt(2 * 7)" | bc -l)
             ;;
         *)
             # Scale the noise maps to match 10-year sensitivity
-            scale=$(echo "1 / sqrt(1 * 10)" | bc -l)
-	    SCALE MUST BE CORRECTED WITH FQUALITY = FPASS / FWEATHER
+            scale=$(echo "scale=6; 1 / sqrt(1 * 10)" | bc -l)
             ;;
     esac
     for band in ${bands[*]}; do
@@ -97,11 +97,54 @@ for telescope in splat; do
                     exit
                     ;;
             esac
+            case $band in
+                f030|f040|f090|f150)
+                    F_WEATHER=$F_WEATHER_3MM
+                    F_PASS=0.68
+                    ;;
+                f220)
+                    F_WEATHER=$F_WEATHER_2MM
+                    F_PASS=0.59
+                    ;;
+                f280)
+                    F_WEATHER=$F_WEATHER_2MM
+                    F_PASS=0.41
+                    ;;
+            esac
         else
             # For SPSAT and SPLAT we only simulated the nominal season and all
             # simulated observations make the cut
             schedule_dir=../split_schedules_1_upto2mm
+            # No data are cut due to PWV
+            F_WEATHER=1.000
+            if [[ $telescope == "splat" ]]; then
+                case $band in
+                    f020|f030|f040|f090) F_PASS=0.74;;
+                    f150) F_PASS=0.69;;
+                    f220) F_PASS=0.68;;
+                    f280) F_PASS=0.47;;
+                    *)
+                        echo "$(date) : Unknown frequency band: $band"
+                        exit
+                        ;;
+                esac
+            else
+                # SPSAT
+                case $band in
+                    f030|f040|f085|f095) F_PASS=0.72;;
+                    f145|f155) F_PASS=0.71;;
+                    f220) F_PASS=0.50;;
+                    f280) F_PASS=0.35;;
+                    *)
+                        echo "$(date) : Unknown frequency band: $band"
+                        exit
+                        ;;
+                esac
+            fi
         fi
+        F_QUALITY=$(echo "scale=6; $F_PASS/$F_WEATHER" | bc -l)
+        scale=$(echo "scale=6; $scale / sqrt($F_QUALITY)" | bc -l)
+        echo "$telescope $band : F_PASS = $F_PASS, F_WEATHER = $F_WEATHER, F_QUALITY = $F_QUALITY, scale = $scale"
         for isplit in `seq 1 $nsplit`; do
             echo ${telescope} ${band}GHz $isplit
             splitroot=`printf "%03iof%03i" ${isplit} ${nsplit}`
