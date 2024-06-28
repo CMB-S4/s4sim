@@ -1,10 +1,52 @@
 #!/bin/bash
+#SBATCH --qos=debug
+#SBATCH --time=00:30:00
+#SBATCH --nodes=2
+#SBATCH --job-name=CMBS4_CHSAT_sim
+#SBATCH --licenses=SCRATCH
+#SBATCH --constraint=cpu
+#SBATCH --account=mp107a
 
-export OMP_NUM_THREADS=1
+# Python environment
+ulimit -c unlimited
+export PYTHONSTARTUP=""
+export PYTHONNOUSERSITE=1
+export HOME=$SCRATCH
+export HDF5_USE_FILE_LOCKING=FALSE
+
+# TOAST variables
 export TOAST_FUNCTIME=1
 
-schedule=schedule.txt
-head -n 4 sample.txt > $schedule
+# Parallelization
+export OMP_NUM_THREADS=8
+export OMP_PLACES=threads
+export OMP_PROC_BIND=spread
+let nnode=$SLURM_JOB_NUM_NODES
+# 128 cores, 258 hardware threads
+let ntask_node=256/$OMP_NUM_THREADS
+let ntask=$nnode*$ntask_node
+let ncore=$OMP_NUM_THREADS
+# Make sure nnode is divisible by nnode_group
+let nnode_group=1
+let ntask_group=$nnode_group*$ntask_node
+#let groupsize=nnode_group*ntask_node
+let groupsize=16
+let ngroup=$nnode/$nnode_group
+
+echo "Start: " `date`
+echo "Running with"
+echo "            nnode = ${nnode}"
+echo "  OMP_NUM_THREADS = ${OMP_NUM_THREADS}"
+echo "       ntask_node = ${ntask_node}"
+echo "            ntask = ${ntask}"
+echo "      nnode_group = ${nnode_group}"
+echo "      ntask_group = ${ntask_group}"
+echo "        groupsize = ${groupsize}"
+echo "           ngroup = ${ngroup}"
+
+schedule="sample.txt"
+# schedule=schedule.txt
+# head -n 4 sample.txt > $schedule
 
 # for flavor in noise hwpss ps atmosphere ground; do
 for flavor in noise; do
@@ -64,15 +106,16 @@ for flavor in noise; do
 	    ;;
     esac
 
-    # OMP_NUM_THREADS=2 mpirun -np 8
-    toast_sim_ground.py \
+    srun -N $nnode -n $ntask -c $ncore --cpu_bind=cores \
+        toast_sim_ground.py \
+        --job_group_size ${groupsize} \
+        --mem_count.enable \
 	--focalplane focalplane_SAT1_SAT_f155_ST0.h5 \
 	--telescope SAT \
 	--schedule $schedule \
 	--sample_rate 100.0 \
 	--pixels_healpix_radec_final.enable \
 	--pixels_healpix_radec_final.nside 512 \
-	--thinfp 16 \
 	--out $outdir \
 	--sim_atmosphere.disable \
 	--sim_noise.disable \
@@ -80,13 +123,9 @@ for flavor in noise; do
 	--mapmaker.no_write_rcond \
 	--baselines.disable \
 	--polyfilter1D.disable \
-	${args}
-	# >& $logfile
+	${args} \
+	>& $logfile
+
+    exit
 
 done
-
-#	   --job_group_size 1
-#	   --mapmaker.no_write_binmap
-#	   --pwv_limit 3.0
-#	   --weights_azel.mode "I"
-#	   --weights_radec.mode "I"

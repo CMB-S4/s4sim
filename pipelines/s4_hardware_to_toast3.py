@@ -6,6 +6,8 @@
 """Translate an S4 hardware map on disk into an HDF5 supported by TOAST3
 """
 
+import toast  # First TOAST import causes a segfault if not imported early
+
 from collections import OrderedDict
 import sys
 import argparse
