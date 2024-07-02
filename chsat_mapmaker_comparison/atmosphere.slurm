@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --qos=debug
 #SBATCH --time=00:30:00
-#SBATCH --nodes=1
+#SBATCH --nodes=4
 #SBATCH --job-name=CMBS4_CHSAT_sim
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
@@ -18,7 +18,7 @@ export HDF5_USE_FILE_LOCKING=FALSE
 export TOAST_FUNCTIME=1
 
 # Parallelization
-export OMP_NUM_THREADS=8
+export OMP_NUM_THREADS=32
 export OMP_PLACES=threads
 export OMP_PROC_BIND=spread
 let nnode=$SLURM_JOB_NUM_NODES
@@ -46,8 +46,8 @@ echo "           ngroup = ${ngroup}"
 
 input_data=/pscratch/sd/k/keskital/s4sim/chsat_mapmaker_comparison/input_data
 
-schedule="sample00.txt"
-# schedule="sample01.txt"
+#schedule="sample00.txt"
+schedule="sample01.txt"
 # schedule=schedule.txt
 # head -n 4 sample.txt > $schedule
 
