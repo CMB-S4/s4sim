@@ -27,9 +27,9 @@ C
 --stop
 2031-01-01 00:00:00
 --gap-s
-60
---gap-small
 0
+--gap-small
+300
 --ces-max-time
 3600
 --fp-radius
