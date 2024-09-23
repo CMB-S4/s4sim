@@ -10,6 +10,7 @@ import toast.qarray as qa
 
 
 default_band_colors = {
+    "CHLAT_f020": (0.4, 0.4, 1.0, 0.2),
     "SPLAT_f020": (0.4, 0.4, 1.0, 0.2),
     "CHLAT_f030": (0.4, 0.4, 1.0, 0.2),
     "CHLAT_f040": (0.4, 0.4, 1.0, 0.2),
