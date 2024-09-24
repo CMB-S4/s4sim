@@ -290,6 +290,21 @@ def sim_nominal():
     bnd["low"] = 17.5
     bnd["high"] = 22.5
     bnd["bandpass"] = ""
+    bnd["NET"] = 406.0
+    bnd["fknee"] = 50.0
+    bnd["fmin"] = 0.01
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.07100
+    bnd["C"] = 0.90757
+    bnd["NET_corr"] = 1.28
+    bnd["pwv_poly"] = 0.944529, 0.053562, 0.002317
+    bands["CHLAT_f020"] = bnd
+
+    bnd = OrderedDict()
+    bnd["center"] = 20.0
+    bnd["low"] = 17.5
+    bnd["high"] = 22.5
+    bnd["bandpass"] = ""
     bnd["NET"] = 421.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
@@ -604,8 +619,9 @@ def sim_nominal():
 
     wafers = OrderedDict()
 
-    wtypes = ["SPLAT_ULF", "CHLAT_LF", "SPLAT_LF", "SAT_LF", "CHLAT_MF", "SPLAT_MF", "SAT_MFL", "SAT_MFH", "CHLAT_HF", "SPLAT_HF", "SAT_HF"]
+    wtypes = ["CHLAT_ULF","SPLAT_ULF", "CHLAT_LF", "SPLAT_LF", "SAT_LF", "CHLAT_MF", "SPLAT_MF", "SAT_MFL", "SAT_MFH", "CHLAT_HF", "SPLAT_HF", "SAT_HF"]
     wcnt = {
+        "CHLAT_ULF": 4*2,
         "SPLAT_ULF": 4,
         "CHLAT_LF": 8*2,
         "SPLAT_LF": 9,
@@ -614,11 +630,12 @@ def sim_nominal():
         "SPLAT_MF": 54,
         "SAT_MFL": (12) * 3,
         "SAT_MFH": (12) * 3,
-        "CHLAT_HF": 23*2,
+        "CHLAT_HF": 19*2,
         "SPLAT_HF": 18,
         "SAT_HF": (6 + 6) * 2,
     }
     wpac = {
+    	"CHLAT_ULF": "RP",
         "SPLAT_ULF": "RP",
         "CHLAT_LF": "RP",
         "SPLAT_LF": "RP",
@@ -632,6 +649,7 @@ def sim_nominal():
         "SAT_HF": "HP",
     }
     wnp = {
+        "CHLAT_ULF": 27,
         "SPLAT_ULF": 27,
         "CHLAT_LF": 48,
         "SPLAT_LF": 48,
@@ -645,6 +663,7 @@ def sim_nominal():
         "SAT_HF": 469,
     }
     wpixmm = {
+        "CHLAT_ULF": 21.1,
         "SPLAT_ULF": 21.1,
         "CHLAT_LF": 16.1,
         "SPLAT_LF": 16.1,
@@ -658,6 +677,7 @@ def sim_nominal():
         "SAT_HF": 5.2,
     }
     wrhombgap = {
+        "CHLAT_ULF": 2.827,
         "SPLAT_ULF": 2.827,
         "CHLAT_LF": 2.157,
         "SPLAT_LF": 2.157,
@@ -671,6 +691,7 @@ def sim_nominal():
         "SAT_HF": 0.71,
     }
     wbd = {
+        "CHLAT_ULF": ["CHLAT_f020"],
         "SPLAT_ULF": ["SPLAT_f020"],
         "CHLAT_LF": ["CHLAT_f030", "CHLAT_f040"],
         "SPLAT_LF": ["SPLAT_f030", "SPLAT_f040"],
@@ -685,6 +706,7 @@ def sim_nominal():
     }
     #location positions of mechanical pin holes that kill pixels on the wafers
     pins = {
+        "CHLAT_ULF": [],
         "SPLAT_ULF": [],
         "CHLAT_LF": [],
         "SPLAT_LF": [],
@@ -720,6 +742,7 @@ def sim_nominal():
     tubes = OrderedDict()
 
     woff = {
+        "CHLAT_ULF": 0,
         "SPLAT_ULF": 0,
         "CHLAT_LF": 0,
         "SPLAT_LF": 0,
@@ -760,8 +783,6 @@ def sim_nominal():
         "CHLAT_MF",
         "CHLAT_MF",
         "CHLAT_MF",
-        "CHLAT_HF",
-        "CHLAT_HF",
         "CHLAT_MF",
         "CHLAT_MF",
         "CHLAT_MF",
@@ -769,8 +790,8 @@ def sim_nominal():
         "CHLAT_MF",
         "CHLAT_MF",
         "CHLAT_MF",
-        "CHLAT_HF",
-        "CHLAT_HF",
+        "CHLAT_MF",
+        "CHLAT_MF",
         "CHLAT_MF",
         "CHLAT_MF",
         "CHLAT_MF",
@@ -802,96 +823,10 @@ def sim_nominal():
         "CHLAT_MF",
         "CHLAT_LF",
         "CHLAT_MF",
-        "CHLAT_MF",
         "CHLAT_LF",
+        "CHLAT_ULF",
         "CHLAT_LF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_LF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_LF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_LF",
-        "CHLAT_LF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_LF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_HF",
-        "CHLAT_HF",
-        "CHLAT_HF",
-        "CHLAT_HF",
-        "CHLAT_HF",
-        "CHLAT_HF",
-        "CHLAT_HF",
-        "CHLAT_HF",
-        "CHLAT_HF",
-        "CHLAT_HF",
-        "CHLAT_HF",
-        "CHLAT_HF",
-        "CHLAT_HF",
-        "CHLAT_HF",
-        "CHLAT_HF",
-        "CHLAT_HF",
-        "CHLAT_HF",
-        "CHLAT_HF",
-        "CHLAT_HF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_HF",
-        "CHLAT_HF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_HF",
-        "CHLAT_HF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_LF",
-        "CHLAT_MF",
-        "CHLAT_MF",
-        "CHLAT_LF",
-        "CHLAT_LF",
-        "CHLAT_MF",
-        "CHLAT_MF",
+        "CHLAT_ULF",
         "CHLAT_LF",
         "CHLAT_MF",
         "CHLAT_MF",
@@ -899,12 +834,100 @@ def sim_nominal():
         "CHLAT_MF",
         "CHLAT_LF",
         "CHLAT_MF",
+        "CHLAT_LF",
+        "CHLAT_ULF",
+        "CHLAT_LF",
+        "CHLAT_ULF",
+        "CHLAT_LF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_HF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
         "CHLAT_MF",
         "CHLAT_LF",
+        "CHLAT_MF",
+        "CHLAT_LF",
+        "CHLAT_ULF",
+        "CHLAT_LF",
+        "CHLAT_ULF",
         "CHLAT_LF",
         "CHLAT_MF",
         "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
         "CHLAT_LF",
+        "CHLAT_MF",
+        "CHLAT_LF",
+        "CHLAT_ULF",
+        "CHLAT_LF",
+        "CHLAT_ULF",
+        "CHLAT_LF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
+        "CHLAT_MF",
         "CHLAT_MF",
         "CHLAT_MF",
         "SPLAT_MF",
@@ -1419,6 +1442,7 @@ def sim_nominal():
     telescopes = OrderedDict()
 
     lfwhm = OrderedDict()
+    lfwhm["CHLAT_f020"] = 9.6
     lfwhm["SPLAT_f020"] = 11.2
     lfwhm["CHLAT_f030"] = 7.8
     lfwhm["SPLAT_f030"] = 9.1
