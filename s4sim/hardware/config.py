@@ -632,17 +632,17 @@ def sim_nominal():
         "SAT_MFH": (12) * 3,
         "CHLAT_HF": 19*2,
         "SPLAT_HF": 18,
-        "SAT_HF": (6 + 6) * 2,
+        "SAT_HF": (12) * 2,
     }
     wpac = {
     	"CHLAT_ULF": "RP",
         "SPLAT_ULF": "RP",
         "CHLAT_LF": "RP",
         "SPLAT_LF": "RP",
-        "SAT_LF": "RP",
+        "SAT_LF": "HP",
         "CHLAT_MF": "RP",
         "SPLAT_MF": "RP",
-        "SAT_MFL": "RP",
+        "SAT_MFL": "HP",
         "SAT_MFH": "HP",
         "CHLAT_HF": "HP",
         "SPLAT_HF": "HP",
@@ -653,11 +653,11 @@ def sim_nominal():
         "SPLAT_ULF": 27,
         "CHLAT_LF": 48,
         "SPLAT_LF": 48,
-        "SAT_LF": 12,
+        "SAT_LF": 19,
         "CHLAT_MF": 432,
         "SPLAT_MF": 432,
-        "SAT_MFL": 147,
-        "SAT_MFH": 169,
+        "SAT_MFL": 217,
+        "SAT_MFH": 271,
         "CHLAT_HF": 469,
         "SPLAT_HF": 469,
         "SAT_HF": 469,
@@ -667,11 +667,11 @@ def sim_nominal():
         "SPLAT_ULF": 21.1,
         "CHLAT_LF": 16.1,
         "SPLAT_LF": 16.1,
-        "SAT_LF": 31.1,
+        "SAT_LF": 26.0,
         "CHLAT_MF": 5.3,
         "SPLAT_MF": 5.3,
-        "SAT_MFL": 9.5,
-        "SAT_MFH": 8.94,
+        "SAT_MFL": 7.65,
+        "SAT_MFH": 6.85,
         "CHLAT_HF": 5.2,
         "SPLAT_HF": 5.2,
         "SAT_HF": 5.2,
@@ -713,8 +713,8 @@ def sim_nominal():
         "SAT_LF": [],
         "CHLAT_MF": [210,220],
         "SPLAT_MF": [210,220],
-        "SAT_MFL": [70,75],
-        "SAT_MFH": [0,91],
+        "SAT_MFL": [0,127],
+        "SAT_MFH": [0,169],
         "CHLAT_HF": [0,331],
         "SPLAT_HF": [0,331],
         "SAT_HF": [0,331],
@@ -1308,14 +1308,14 @@ def sim_nominal():
         tubes[nm] = tb
 
     stubes = [
-        "SAT_MFH",
-        "SAT_MFH",
-        "SAT_HF",
         "SAT_MFL",
         "SAT_MFH",
         "SAT_HF",
         "SAT_MFL",
+        "SAT_MFH",
+        "SAT_HF",
         "SAT_MFL",
+        "SAT_MFH",
         "SAT_LF",
     ]
     stube_toasthex_pos = [0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -1351,7 +1351,7 @@ def sim_nominal():
                 30.0,
             ]
             # 30 deg, 10008 detectors/band
-            tb["platescale"] = 0.069437
+            tb["platescale"] = 0.070093/0.9909
             tb["FOV_cut"] = 30.0
         elif ttyp == "SAT_MFL":
             for tw in range(12):
@@ -1364,21 +1364,21 @@ def sim_nominal():
                             break
                         off += 1
             tb["wafer_angle"] = [ # Degrees
-                0.0,
-                0.0,
-                0.0,
-                -60.0,
-                -60.0,
-                0.0,
-                0.0,
-                60.0,
-                60.0,
-                180.0,
-                180.0,
-                0.0,
+                30.0,
+                30.0,
+                30.0,
+                -150.0,
+                -150.0,
+                30.0,
+                30.0,
+                30.0,
+                -30.0,
+                90.0,
+                30.0,
+                30.0,
             ]
             # 30 deg, 3048 detectors/band
-            tb["platescale"] = 0.0699
+            tb["platescale"] = 0.070093/0.9905
             tb["FOV_cut"] = 30.0
         elif ttyp == "SAT_MFH":
             for tw in range(12):
@@ -1405,7 +1405,7 @@ def sim_nominal():
                 30.0,
             ]
             # 30 deg, 3552 det/band
-            tb["platescale"] = 0.069777
+            tb["platescale"] = 0.070093/0.9931
             tb["FOV_cut"] = 30.0
         else:
             for tw in range(12):
@@ -1418,21 +1418,21 @@ def sim_nominal():
                             break
                         off += 1
             tb["wafer_angle"] = [ # Degrees
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
-                0.0,
+                30.0,
+                30.0,
+                30.0,
+                -150.0,
+                -150.0,
+                30.0,
+                30.0,
+                30.0,
+                -30.0,
+                90.0,
+                30.0,
+                30.0,
             ]
             # 30 deg, 252 det/band
-            tb["platescale"] = 0.070946
+            tb["platescale"] = 0.070093/0.9855
             tb["FOV_cut"] = 30.0
         tb["toast_hex_pos"] = stube_toasthex_pos[tindx]
         tubes[nm] = tb

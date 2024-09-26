@@ -417,7 +417,7 @@ def sim_telescope_detectors(hw, tele, tubes=None):
 
             # Simulate the offset layout
             offset = qa.mult(
-                qa.rotation(XAXIS, -np.radians(waferspace * platescale / 2)),
+                qa.rotation(XAXIS, -np.radians(waferspace * platescale / np.sqrt(3))),
                 qa.rotation(ZAXIS, -thirty),
             )
             wcenters = hex_layout(
