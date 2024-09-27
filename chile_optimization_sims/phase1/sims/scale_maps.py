@@ -164,7 +164,17 @@ for flavor in "lat_wide", "lat_delensing", "lat_delensing_core":
         vmin = np.amin(depth[depth != 0])
         vmax = 2 * vmin
         depth[depth == 0] = hp.UNSEEN
-        hp.mollview(depth, min=vmin, max=vmax, title=band, sub=[nrow, ncol, iplot], cmap="inferno")
+        hp.mollview(
+            depth,
+            min=vmin,
+            max=vmax,
+            title=band,
+            sub=[nrow, ncol, iplot],
+            cmap="inferno",
+            unit="$\mu$K.arcmin",
+            xsize=1600,
+            format="%.3f"
+        )
 
     # Save plot
 
