@@ -26,6 +26,14 @@
     class = "toast.ops.sim_tod_noise.SimNoise"
     enabled = false # If True, this class instance is marked as enabled
 
+[operators.flag_sso]
+    class = "toast.ops.flag_sso.FlagSSO"
+    enabled = true # If True, this class instance is marked as enabled
+    sso_names = "['Moon']" # Names of the SSOs, must be recognized by pyEphem
+    sso_radii = "[Quantity('15 deg')]" # Radii around the sources to flag
+    times = "times" # Observation shared key for timestamps
+    view = "None" # Use this view of the data in all observations
+
 [operators.mapmaker]
     class = "toast.ops.mapmaker.MapMaker"
     enabled = true # If True, this class instance is marked as enabled

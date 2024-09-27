@@ -1,6 +1,5 @@
 #!/bin/bash
-#SBATCH --partition=debug
-###SBATCH --qos=premium
+#SBATCH --qos=regular
 #SBATCH --time=00:30:00
 #SBATCH --nodes=4
 #SBATCH --job-name=CMBS4_phase1
@@ -44,8 +43,12 @@ echo "       ntask_node = ${ntask_node}"
 echo "            ntask = ${ntask}"
 echo "        groupsize = ${groupsize}"
 
-bands=( f020 f030 f040 f090 f150 f220 f280 )
+# bands=( f020 f030 f040 f090 f150 f220 f280 )
+bands=( f090 f150 f220 f280 )
 fproot=../focalplanes/focalplane_LAT0_CHLAT
+
+# Random wait time to reduce clashes
+sleep $((RANDOM % 15))
 
 for flavor in lat_wide lat_delensing lat_delensing_core; do
     args=()
@@ -59,12 +62,12 @@ for flavor in lat_wide lat_delensing lat_delensing_core; do
             scan_rate="Quantity('0.5 deg / s')"
 	    ;;
 	lat_delensing)
-            schedule_in="../scan_strategy/lat_wide/schedule_lat_delensing.txt"
-            args+=" --sim_ground.scan_rate_az Quantity('1.0 deg / s')"
+            schedule_in="../scan_strategy/lat_delensing/schedule_lat_delensing.txt"
+            scan_rate="Quantity('1.0 deg / s')"
 	    ;;
 	lat_delensing_core)
-            schedule_in="../scan_strategy/lat_wide/schedule_lat_delensing_core.txt"
-            args+=" --sim_ground.scan_rate_az Quantity('1.0 deg / s')"
+            schedule_in="../scan_strategy/lat_delensing/schedule_lat_delensing_core.txt"
+            scan_rate="Quantity('1.0 deg / s')"
 	    ;;
     esac
     schedule=$(basename $schedule_in)
@@ -81,11 +84,11 @@ for flavor in lat_wide lat_delensing lat_delensing_core; do
 		;;
 	    f220|f280)
                 pwv_limit=2.0
-                args+=" --thinfp 8"
+                args+=" --thinfp 16"
 		;;
 	    *)
                 pwv_limit=2.0
-                args+=" --thinfp 8"
+                args+=" --thinfp 16"
 		;;
 	esac
 	args+=" --focalplane ${fproot}_${band}.h5"
@@ -100,6 +103,11 @@ for flavor in lat_wide lat_delensing lat_delensing_core; do
 
 	if [[ -e $outdir/mapmaker_cov.fits ]]; then
 	    echo "$flavor $band already complete! Skipping..."
+	    continue
+	fi
+
+	if [[ -e $logfile ]]; then
+	    echo "$logfile exists! Skipping..."
 	    continue
 	fi
 
