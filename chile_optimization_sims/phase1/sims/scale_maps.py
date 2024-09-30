@@ -123,9 +123,8 @@ for flavor in "lat_wide", "lat_delensing", "lat_delensing_core":
     fig = plt.figure(figsize=[4 * ncol, 4 * nrow])
     fig.suptitle(flavor)
     iplot = 0
-    telescope = flavor[:3]
     for band in f_total[flavor].keys():
-        fname_in = f"outputs/{telescope}/{flavor}/{band}/mapmaker_cov.fits"
+        fname_in = f"outputs/{flavor}/{band}/mapmaker_cov.fits"
         print(f"Loading {fname_in}")
         cov = hp.read_map(fname_in, None)
 

@@ -96,10 +96,10 @@ for flavor in lat_wide lat_delensing lat_delensing_core; do
         args+=" --sample_rate 1"
         args+=" --pixels_healpix_radec.nside 512"
 
-	outdir=outputs/lat/$flavor/$band
+	outdir=outputs/$flavor/$band
         args+=" --out $outdir"
 	mkdir -p $outdir
-	logfile=$outdir/log.${flavor}.${band}
+	logfile=$outdir/log
 
 	if [[ -e $outdir/mapmaker_cov.fits ]]; then
 	    echo "$flavor $band already complete! Skipping..."
