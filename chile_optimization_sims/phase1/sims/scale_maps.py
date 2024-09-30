@@ -24,7 +24,6 @@ n_year = 10
 
 f_season = 0.75
 f_field = {}
-f_scanset = {}
 
 # Weather cut is approximately included in the sim but we want to remove
 # it and replace with the factor included in f_total
@@ -36,16 +35,15 @@ f_weather_sim = {}
 # on 09/27/2024
 
 f_total["lat_wide"] = {
-    "f020" : 0.31,
-    "f030" : 0.31,
-    "f040" : 0.31,
-    "f090" : 0.31,
-    "f150" : 0.31,
-    "f220" : 0.27,
-    "f280" : 0.19,
+    "f020" : 0.29,
+    "f030" : 0.29,
+    "f040" : 0.29,
+    "f090" : 0.29,
+    "f150" : 0.29,
+    "f220" : 0.25,
+    "f280" : 0.18,
 }
-f_field["lat_wide"] = 0.979
-f_scanset["lat_wide"] = 0.92
+f_field["lat_wide"] = 0.908
 
 # LAT delensing f_total from
 # https://docs.google.com/spreadsheets/d/116Xa1vHrIwO6xTLsZalXo-QK7aKRQJnTE5LhkSl9eig/edit?gid=226211982#gid=226211982
@@ -57,25 +55,23 @@ f_total["lat_delensing"] = {
     "f040" : 0.30,
     "f090" : 0.30,
     "f150" : 0.30,
-    "f220" : 0.27,
+    "f220" : 0.26,
     "f280" : 0.18,
 }
-f_field["lat_delensing"] = 0.998
-f_scanset["lat_delensing"] = 0.92
+f_field["lat_delensing"] = 0.972
 
 # LAT delensing_core is a variant of LAT delensing
 
 f_total["lat_delensing_core"] = {
-    "f020" : 0.30,
-    "f030" : 0.30,
-    "f040" : 0.30,
-    "f090" : 0.30,
-    "f150" : 0.30,
+    "f020" : 0.29,
+    "f030" : 0.29,
+    "f040" : 0.29,
+    "f090" : 0.29,
+    "f150" : 0.29,
     "f220" : 0.26,
     "f280" : 0.18,
 }
-f_field["lat_delensing_core"] = 0.929
-f_scanset["lat_delensing_core"] = 0.92
+f_field["lat_delensing_core"] = 0.971
 
 # f_weather from the simulation logs on 09/27/2024
 
@@ -147,7 +143,6 @@ for flavor in "lat_wide", "lat_delensing", "lat_delensing_core":
         scale *= f_weather_sim[flavor][band]
         scale *= f_season
         scale *= f_field[flavor]
-        scale *= f_scanset[flavor]
         # Now apply f_total
         scale /= f_total[flavor][band]
         # Scale
