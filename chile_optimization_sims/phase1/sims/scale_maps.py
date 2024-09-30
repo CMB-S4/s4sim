@@ -75,32 +75,38 @@ f_field["lat_delensing_core"] = 0.971
 
 # f_weather from the simulation logs on 09/27/2024
 
+cut_3mm = 1 - 1169 / 6255
+cut_2mm = 1 - 1980 / 6255
 f_weather_sim["lat_wide"] = {
-    "f020" : 1 - 1163 / 6214,
-    "f030" : 1 - 1163 / 6214,
-    "f040" : 1 - 1163 / 6214,
-    "f090" : 1 - 1163 / 6214,
-    "f150" : 1 - 1163 / 6214,
-    "f220" : 1 - 1968 / 6214,
-    "f280" : 1 - 1968 / 6214,
+    "f020" : cut_3mm,
+    "f030" : cut_3mm,
+    "f040" : cut_3mm,
+    "f090" : cut_3mm,
+    "f150" : cut_3mm,
+    "f220" : cut_2mm,
+    "f280" : cut_2mm,
 }
+cut_3mm = 1 - 1514 / 8361
+cut_2mm = 1 - 2592 / 8361
 f_weather_sim["lat_delensing"] = {
-    "f020" : 1 - 1533 / 8366,
-    "f030" : 1 - 1533 / 8366,
-    "f040" : 1 - 1533 / 8366,
-    "f090" : 1 - 1533 / 8366,
-    "f150" : 1 - 1533 / 8366,
-    "f220" : 1 - 2621 / 8366,
-    "f280" : 1 - 2621 / 8366,
+    "f020" : cut_3mm,
+    "f030" : cut_3mm,
+    "f040" : cut_3mm,
+    "f090" : cut_3mm,
+    "f150" : cut_3mm,
+    "f220" : cut_2mm,
+    "f280" : cut_2mm,
 }
+cut_3mm = 1 - 1543 / 8481
+cut_2mm = 1 - 2655 / 8481
 f_weather_sim["lat_delensing_core"] = {
-    "f020" : 1 - 1538 / 8438,
-    "f030" : 1 - 1538 / 8438,
-    "f040" : 1 - 1538 / 8438,
-    "f090" : 1 - 1538 / 8438,
-    "f150" : 1 - 1538 / 8438,
-    "f220" : 1 - 2639 / 8438,
-    "f280" : 1 - 2639 / 8438,
+    "f020" : cut_3mm,
+    "f030" : cut_3mm,
+    "f040" : cut_3mm,
+    "f090" : cut_3mm,
+    "f150" : cut_3mm,
+    "f220" : cut_2mm,
+    "f280" : cut_2mm,
 }
 
 # Focalplane decimation factors must be compensated for
