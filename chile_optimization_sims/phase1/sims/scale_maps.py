@@ -26,8 +26,9 @@ f_season = 0.75
 f_field = {}
 f_scanset = {}
 
-# Weather cut is approximately include in the sim but we want to remove
+# Weather cut is approximately included in the sim but we want to remove
 # it and replace with the factor included in f_total
+
 f_weather_sim = {}
 
 # LAT wide f_total from
@@ -126,17 +127,23 @@ for flavor in "lat_wide", "lat_delensing", "lat_delensing_core":
 
         # Scale the white noise covariance
 
-        cov /= thinfp[band]
-        cov /= yield_
-        cov /= f_weight
-        cov /= n_year
-        cov /= (
-            f_total[flavor][band]
-            / f_season
-            / f_field[flavor]
-            / f_scanset[flavor]
-            * f_weather_sim[flavor][band]
-        )
+        scale = 1.
+        # Compensate for focalplane decimation
+        scale /= thinfp[band]
+        # Account for full mission length
+        scale /= n_year
+        # Yield and f_weight are not in f_total
+        scale /= yield_
+        scale /= f_weight
+        # Eliminate factors from simulation (included in f_total)
+        scale *= f_weather_sim[flavor][band]
+        scale *= f_season
+        scale *= f_field[flavor]
+        scale *= f_scanset[flavor]
+        # Now apply f_total
+        scale /= f_total[flavor][band]
+        # Scale
+        cov *= scale
 
         # Save the scaled covariance
 
