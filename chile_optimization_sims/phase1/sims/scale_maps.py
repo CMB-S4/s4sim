@@ -68,7 +68,7 @@ f_total["lat_delensing_core"] = {
     "f040" : 0.29,
     "f090" : 0.29,
     "f150" : 0.29,
-    "f220" : 0.26,
+    "f220" : 0.25,
     "f280" : 0.18,
 }
 f_field["lat_delensing_core"] = 0.971
