@@ -65,9 +65,17 @@ f_scanset["lat_delensing"] = 0.92
 
 # LAT delensing_core is a variant of LAT delensing
 
-f_total["lat_delensing_core"] = f_total["lat_delensing"]
-f_field["lat_delensing_core"] = f_field["lat_delensing"]
-f_scanset["lat_delensing_core"] = f_scanset["lat_delensing"]
+f_total["lat_delensing_core"] = {
+    "f020" : 0.30,
+    "f030" : 0.30,
+    "f040" : 0.30,
+    "f090" : 0.30,
+    "f150" : 0.30,
+    "f220" : 0.26,
+    "f280" : 0.18,
+}
+f_field["lat_delensing_core"] = 0.929
+f_scanset["lat_delensing_core"] = 0.92
 
 # f_weather from the simulation logs on 09/27/2024
 
