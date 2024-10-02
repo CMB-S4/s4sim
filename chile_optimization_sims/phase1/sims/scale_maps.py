@@ -17,7 +17,6 @@ f_total = {}
 
 yield_ = 0.8
 f_weight = 0.8
-n_year = 10
 
 # Efficiency factors already applied in the simulation must
 # not be double-counted in f_total
@@ -121,79 +120,94 @@ thinfp = {
     "f280" : 16,
 }
 
+# Number of telescope years is a parameter
+
+n_years = {
+    "lat_wide" : [14],
+    "lat_delensing" : [16, 26, 36],
+    "lat_delensing_core" : [16, 26, 36],
+}
+
 
 # Loop over all covariance matrices
 
 for flavor in "lat_wide", "lat_delensing", "lat_delensing_core":
-    nrow, ncol = 2, 4
-    fig = plt.figure(figsize=[4 * ncol, 4 * nrow])
-    fig.suptitle(flavor)
-    iplot = 0
-    for band in f_total[flavor].keys():
-        fname_in = f"outputs/{flavor}/{band}/mapmaker_cov.fits"
-        print(f"Loading {fname_in}")
-        cov = hp.read_map(fname_in, None)
+    for n_year in n_years[flavor]:
+        nrow, ncol = 2, 4
+        fig = plt.figure(figsize=[4 * ncol, 4 * nrow])
+        fig.suptitle(f"{flavor} {n_year} years")
+        iplot = 0
+        for band in f_total[flavor].keys():
+            fname_in = f"outputs/{flavor}/{band}/mapmaker_cov.fits"
+            print(f"Loading {fname_in}")
+            cov = hp.read_map(fname_in, None)
 
-        # Scale the white noise covariance
+            # Scale the white noise covariance
 
-        scale = 1.
-        # Compensate for focalplane decimation
-        scale /= thinfp[band]
-        # Account for full mission length
-        scale /= n_year
-        # Yield and f_weight are not in f_total
-        scale /= yield_
-        scale /= f_weight
-        # Eliminate factors from simulation (included in f_total)
-        scale *= f_weather_sim[flavor][band]
-        scale *= f_season
-        scale *= f_field[flavor]
-        # Now apply f_total
-        scale /= f_total[flavor][band]
-        # Scale
-        cov *= scale
+            scale = 1.
+            # Compensate for focalplane decimation
+            scale /= thinfp[band]
+            # Account for full mission length
+            scale /= n_year
+            # Yield and f_weight are not in f_total
+            scale /= yield_
+            scale /= f_weight
+            # Eliminate factors from simulation (included in f_total)
+            scale *= f_weather_sim[flavor][band]
+            scale *= f_season
+            scale *= f_field[flavor]
+            # Now apply f_total
+            scale /= f_total[flavor][band]
+            # Scale
+            cov *= scale
 
-        # Save the scaled covariance
+            # Save the scaled covariance
 
-        outdir = f"scaled_outputs"
-        os.makedirs(outdir, exist_ok=True)
-        fname_out = f"{outdir}/{flavor}_{band}_cov.fits"
-        print(f"Writing {fname_out}")
-        hp.write_map(fname_out, cov, dtype=np.float32, coord="C", overwrite=True)
+            outdir = f"scaled_outputs"
+            os.makedirs(outdir, exist_ok=True)
+            fname_out = f"{outdir}/{flavor}_{band}_{n_year}years_cov.fits"
+            print(f"Writing {fname_out}")
+            hp.write_map(fname_out, cov, dtype=np.float32, coord="C", overwrite=True)
 
-        # Derive depth from the covariance and save
+            # Derive depth from the covariance and save
 
-        nside = hp.get_nside(cov)
-        pix_area = hp.nside2pixarea(nside, degrees=True) * 3600  # arcmin^2
-        depth_I = np.sqrt(cov[0] * pix_area) * 1e6  # uK.arcmin
-        depth_Q = np.sqrt(cov[3] * pix_area) * 1e6  # uK.arcmin
-        depth_U = np.sqrt(cov[5] * pix_area) * 1e6  # uK.arcmin
-        fname_out = f"{outdir}/{flavor}_{band}_depth.fits"
-        print(f"Writing {fname_out}")
-        hp.write_map(fname_out, [depth_I, depth_Q, depth_U], dtype=np.float32, coord="C", overwrite=True)
+            nside = hp.get_nside(cov)
+            pix_area = hp.nside2pixarea(nside, degrees=True) * 3600  # arcmin^2
+            depth_I = np.sqrt(cov[0] * pix_area) * 1e6  # uK.arcmin
+            depth_Q = np.sqrt(cov[3] * pix_area) * 1e6  # uK.arcmin
+            depth_U = np.sqrt(cov[5] * pix_area) * 1e6  # uK.arcmin
+            fname_out = f"{outdir}/{flavor}_{band}_{n_year}years_depth.fits"
+            print(f"Writing {fname_out}")
+            hp.write_map(
+                fname_out,
+                [depth_I, depth_Q, depth_U],
+                dtype=np.float32,
+                coord="C",
+                overwrite=True,
+            )
 
-        # Plot depth
+            # Plot depth
 
-        iplot += 1
-        depth = depth_I
-        vmin = np.amin(depth[depth != 0])
-        vmax = 2 * vmin
-        depth[depth == 0] = hp.UNSEEN
-        hp.mollview(
-            depth,
-            min=vmin,
-            max=vmax,
-            title=band,
-            sub=[nrow, ncol, iplot],
-            cmap="inferno",
-            unit="$\mu$K.arcmin",
-            xsize=1600,
-            format="%.3f"
-        )
+            iplot += 1
+            depth = depth_I
+            vmin = np.amin(depth[depth != 0])
+            vmax = 2 * vmin
+            depth[depth == 0] = hp.UNSEEN
+            hp.mollview(
+                depth,
+                min=vmin,
+                max=vmax,
+                title=band,
+                sub=[nrow, ncol, iplot],
+                cmap="inferno",
+                unit="$\mu$K.arcmin",
+                xsize=1600,
+                format="%.3f"
+            )
 
-    # Save plot
+        # Save plot
 
-    os.makedirs("plots", exist_ok=True)
-    fname_plot = f"plots/{flavor}.png"
-    fig.savefig(fname_plot)
-    print(f"Plot saved in {fname_plot}")
+        os.makedirs("plots", exist_ok=True)
+        fname_plot = f"plots/{flavor}_{n_year}years.png"
+        fig.savefig(fname_plot)
+        print(f"Plot saved in {fname_plot}")
