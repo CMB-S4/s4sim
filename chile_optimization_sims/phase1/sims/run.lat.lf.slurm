@@ -7,13 +7,6 @@
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107a
 
-ulimit -c unlimited
-export PYTHONSTARTUP=""
-export PYTHONNOUSERSITE=1
-export HOME=$SCRATCH
-export TOAST_FUNCTIME=1
-export HDF5_USE_FILE_LOCKING=FALSE
-
 # Python environment
 ulimit -c unlimited
 export PYTHONSTARTUP=""
