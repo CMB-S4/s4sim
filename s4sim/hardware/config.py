@@ -1745,7 +1745,7 @@ def sim_nominal():
     tele["fwhm"] = lfwhm
     telescopes["LAT2"] = tele
 
-    #from the DSR
+    #SAT beams
     sfwhm = OrderedDict()
     sfwhm["SAT_f030"] = 100.9
     sfwhm["SAT_f040"] = 74.4
