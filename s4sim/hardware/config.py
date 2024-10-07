@@ -1747,14 +1747,14 @@ def sim_nominal():
 
     #from the DSR
     sfwhm = OrderedDict()
-    sfwhm["SAT_f030"] = 85.2
-    sfwhm["SAT_f040"] = 61.6
-    sfwhm["SAT_f085"] = 24.6
-    sfwhm["SAT_f145"] = 15.8
-    sfwhm["SAT_f095"] = 22.4
-    sfwhm["SAT_f155"] = 14.3
-    sfwhm["SAT_f220"] = 9.4
-    sfwhm["SAT_f280"] = 7.7
+    sfwhm["SAT_f030"] = 100.9
+    sfwhm["SAT_f040"] = 74.4
+    sfwhm["SAT_f085"] = 29.5
+    sfwhm["SAT_f145"] = 18.1
+    sfwhm["SAT_f095"] = 26.4
+    sfwhm["SAT_f155"] = 16.9
+    sfwhm["SAT_f220"] = 11.3
+    sfwhm["SAT_f280"] = 10.1
 
     tele = OrderedDict()
     tele["tubes"] = ["ST0", "ST1", "ST2"]
