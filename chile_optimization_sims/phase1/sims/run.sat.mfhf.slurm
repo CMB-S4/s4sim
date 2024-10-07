@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --qos=regular
 #SBATCH --time=01:00:00
-#SBATCH --nodes=4
+#SBATCH --nodes=8
 #SBATCH --job-name=CMBS4_phase1
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
@@ -18,7 +18,7 @@ export HDF5_USE_FILE_LOCKING=FALSE
 export TOAST_FUNCTIME=1
 
 # Parallelization
-export OMP_NUM_THREADS=8
+export OMP_NUM_THREADS=2
 export OMP_PLACES=threads
 export OMP_PROC_BIND=spread
 let nnode=$SLURM_JOB_NUM_NODES
@@ -26,7 +26,7 @@ let nnode=$SLURM_JOB_NUM_NODES
 let ntask_node=256/$OMP_NUM_THREADS
 let ntask=$nnode*$ntask_node
 let ncore=$OMP_NUM_THREADS
-let groupsize=1
+let groupsize=8
 
 echo "Start: " `date`
 echo "Running with"
@@ -62,7 +62,7 @@ for band in f085 f095 f145 f155 f220 f280; do
             # args+=" --thinfp 16"
 	    ;;
 	f220|f280)
-	    fpfile=../focalplanes/focalplane_SAT1_SAT_${band}_ST1.h5
+	    fpfile=../focalplanes/focalplane_SAT1_SAT_${band}_ST2.h5
 	    pwv_limit=2.0
             # args+=" --thinfp 16"
 	    ;;
@@ -93,6 +93,7 @@ for band in f085 f095 f145 f155 f220 f280; do
     echo "${args[@]}"
     srun -N $nnode -n $ntask -c $ncore --cpu_bind=cores \
          toast_sim_ground.py ${args[@]} \
+         --binner.sync_type "allreduce" \
          >& $logfile
     
     exit

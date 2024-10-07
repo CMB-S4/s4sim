@@ -57,7 +57,7 @@ f_field["sat"] = 0.54
 # f_weather from the simulation logs on 10/07/2024
 
 cut_3mm = 1 - 903 / 5157
-cut_2mm = None
+cut_2mm = 1 - 1525 / 5157
 f_weather_sim["sat"] = {
     "f030" : cut_3mm,
     "f040" : cut_3mm,
@@ -84,19 +84,20 @@ thinfp = {
 
 # Number of telescope years is a parameter
 
-ntube_lf = 3
-ntube_mf = 9
-ntube_hf = 6
+nsat = 9
+ntube_lf = nsat // 3
+ntube_mf = nsat
+ntube_hf = nsat // 3 * 2
 nyear = 10
 n_years = {
-    "f030" : [nyear * ntube_lf],
-    "f040" : [nyear * ntube_lf],
-    "f085" : [nyear * ntube_mf],
-    "f095" : [nyear * ntube_mf],
-    "f145" : [nyear * ntube_mf],
-    "f155" : [nyear * ntube_mf],
-    "f220" : [nyear * ntube_hf],
-    "f280" : [nyear * ntube_hf],
+    "f030" : nyear * ntube_lf,
+    "f040" : nyear * ntube_lf,
+    "f085" : nyear * ntube_mf,
+    "f095" : nyear * ntube_mf,
+    "f145" : nyear * ntube_mf,
+    "f155" : nyear * ntube_mf,
+    "f220" : nyear * ntube_hf,
+    "f280" : nyear * ntube_hf,
 }
 
 
@@ -105,7 +106,7 @@ n_years = {
 for flavor in "sat",:
     nrow, ncol = 2, 4
     fig = plt.figure(figsize=[4 * ncol, 4 * nrow])
-    fig.suptitle(f"{flavor} {n_year} years")
+    fig.suptitle(f"{flavor}, {nsat * 3} tubes")
     iplot = 0
     for band in f_total[flavor].keys():
         fname_in = f"outputs/{flavor}/{band}/mapmaker_cov.fits"
@@ -169,7 +170,7 @@ for flavor in "sat",:
             depth,
             min=vmin,
             max=vmax,
-            title=band,
+            title=f"{band}, {n_year} tube years",
             sub=[nrow, ncol, iplot],
             cmap="inferno",
             unit="$\mu$K.arcmin",
@@ -177,9 +178,9 @@ for flavor in "sat",:
             format="%.3f"
         )
 
-        # Save plot
+    # Save plot
 
-        os.makedirs("plots", exist_ok=True)
-        fname_plot = f"plots/{flavor}_{n_year}years.png"
-        fig.savefig(fname_plot)
-        print(f"Plot saved in {fname_plot}")
+    os.makedirs("plots", exist_ok=True)
+    fname_plot = f"plots/{flavor}.png"
+    fig.savefig(fname_plot)
+    print(f"Plot saved in {fname_plot}")
