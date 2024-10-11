@@ -384,10 +384,10 @@ def sim_nominal():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.16528
-    bnd["C"] = 0.78412
+    bnd["A"] = 0.11488
+    bnd["C"] = 0.85083
     bnd["NET_corr"] = 1.02
-    bnd["pwv_poly"] = 0.897869, 0.102015, 0.000842
+    bnd["pwv_poly"] =  0.933680, 0.063919, 0.002889
     bands["SAT_f030"] = bnd
 
     bnd = OrderedDict()
@@ -399,10 +399,10 @@ def sim_nominal():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.26123
-    bnd["C"] = 0.65913
+    bnd["A"] = 0.21849
+    bnd["C"] = 0.71629
     bnd["NET_corr"] = 1.04
-    bnd["pwv_poly"] = 0.980612, 0.019172, 0.000355
+    bnd["pwv_poly"] =  0.984664, 0.015093, 0.000353
     bands["SAT_f040"] = bnd
 
     bnd = OrderedDict()
@@ -474,10 +474,10 @@ def sim_nominal():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.29948
-    bnd["C"] = 0.60926
+    bnd["A"] = 0.26241
+    bnd["C"] = 0.65892
     bnd["NET_corr"] = 1.02
-    bnd["pwv_poly"] = 0.947782, 0.051301, 0.001293
+    bnd["pwv_poly"] = 0.956092, 0.042784, 0.001444
     bands["SAT_f085"] = bnd
 
     bnd = OrderedDict()
@@ -489,10 +489,10 @@ def sim_nominal():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.22746
-    bnd["C"] = 0.70314
+    bnd["A"] = 0.20697
+    bnd["C"] = 0.73043
     bnd["NET_corr"] = 1.01
-    bnd["pwv_poly"] = 0.829576, 0.167357, 0.004298
+    bnd["pwv_poly"] = 0.848750, 0.146717, 0.005639
     bands["SAT_f145"] = bnd
 
     bnd = OrderedDict()
@@ -504,10 +504,10 @@ def sim_nominal():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.24287
-    bnd["C"] = 0.68291
+    bnd["A"] = 0.21106
+    bnd["C"] = 0.72533
     bnd["NET_corr"] = 1.02
-    bnd["pwv_poly"] = 0.930327, 0.068508, 0.001668
+    bnd["pwv_poly"] = 0.941450, 0.056990, 0.001986
     bands["SAT_f095"] = bnd
 
     bnd = OrderedDict()
@@ -519,10 +519,10 @@ def sim_nominal():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.24578
-    bnd["C"] = 0.67924
+    bnd["A"] = 0.22432
+    bnd["C"] = 0.70785
     bnd["NET_corr"] = 1.02
-    bnd["pwv_poly"] = 0.777297, 0.219235, 0.005073
+    bnd["pwv_poly"] = 0.801865, 0.192474, 0.007107
     bands["SAT_f155"] = bnd
 
     bnd = OrderedDict()
@@ -594,10 +594,10 @@ def sim_nominal():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.31587
-    bnd["C"] = 0.58833
+    bnd["A"] = 0.29945
+    bnd["C"] = 0.61031
     bnd["NET_corr"] = 1.01
-    bnd["pwv_poly"] = 0.710954, 0.278116, 0.013059
+    bnd["pwv_poly"] = 0.731418, 0.255791, 0.014788
     bands["SAT_f220"] = bnd
 
     bnd = OrderedDict()
@@ -609,10 +609,10 @@ def sim_nominal():
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.37748
-    bnd["C"] = 0.50869
+    bnd["A"] = 0.36317
+    bnd["C"] = 0.52786
     bnd["NET_corr"] = 1.01
-    bnd["pwv_poly"] = 0.642882, 0.337500, 0.022291
+    bnd["pwv_poly"] = 0.662106, 0.316561, 0.023882
     bands["SAT_f280"] = bnd
 
     cnf["bands"] = bands
