@@ -13,6 +13,10 @@ import numpy as np
 
 f_total = {}
 
+# fsky for measurement requirement
+
+fskies = {}
+
 # Factors not included in f_total
 
 yield_ = 0.8
@@ -43,6 +47,7 @@ f_total["lat_wide"] = {
     "f280" : 0.18,
 }
 f_field["lat_wide"] = 0.908
+fskies["lat_wide"] = 0.6
 
 # LAT delensing f_total from
 # https://docs.google.com/spreadsheets/d/116Xa1vHrIwO6xTLsZalXo-QK7aKRQJnTE5LhkSl9eig/edit?gid=226211982#gid=226211982
@@ -58,6 +63,7 @@ f_total["lat_delensing"] = {
     "f280" : 0.18,
 }
 f_field["lat_delensing"] = 0.972
+fskies["lat_delensing"] = 0.03
 
 # LAT delensing_core is a variant of LAT delensing
 
@@ -71,6 +77,7 @@ f_total["lat_delensing_core"] = {
     "f280" : 0.18,
 }
 f_field["lat_delensing_core"] = 0.971
+fskies["lat_delensing_core"] = 0.03
 
 # f_weather from the simulation logs on 09/27/2024
 
@@ -192,12 +199,20 @@ for flavor in "lat_wide", "lat_delensing", "lat_delensing_core":
             depth = depth_I
             vmin = np.amin(depth[depth != 0])
             vmax = 2 * vmin
+            #
+            sorted_depth = depth.copy()
+            sorted_depth[sorted_depth == 0] = 1e10
+            sorted_depth = np.sort(sorted_depth)
+            fsky = fskies[flavor]
+            lim = int(depth.size * fsky)
+            mean_depth = np.mean(sorted_depth[:lim])
+            #
             depth[depth == 0] = hp.UNSEEN
             hp.mollview(
                 depth,
                 min=vmin,
                 max=vmax,
-                title=band,
+                title=f"{band}, mean = {mean_depth:.2f} (fsky={fsky})",
                 sub=[nrow, ncol, iplot],
                 cmap="inferno",
                 unit="$\mu$K.arcmin",
