@@ -690,7 +690,7 @@ def sim_nominal():
         "SPLAT_MF": 432,
         "SAT_MFL": 217,
         "SAT_MFH": 271,
-        "SAT_MF": 217,
+        "SAT_MF": 271,
         "CHLAT_HF": 469,
         "SPLAT_HF": 469,
         "SAT_HF": 469,
@@ -705,7 +705,7 @@ def sim_nominal():
         "SPLAT_MF": 5.3,
         "SAT_MFL": 7.65,
         "SAT_MFH": 6.85,
-        "SAT_MF": 7.65,
+        "SAT_MF": 6.85,
         "CHLAT_HF": 5.2,
         "SPLAT_HF": 5.2,
         "SAT_HF": 5.2,
@@ -720,7 +720,7 @@ def sim_nominal():
         "SPLAT_MF": 0.71,
         "SAT_MFL": 1.273,
         "SAT_MFH": 0.71,
-        "SAT_MF": 1.273,
+        "SAT_MF": 0.71,
         "CHLAT_HF": 0.71,
         "SPLAT_HF": 0.71,
         "SAT_HF": 0.71,
@@ -751,7 +751,7 @@ def sim_nominal():
         "SPLAT_MF": [210,220],
         "SAT_MFL": [0,127],
         "SAT_MFH": [0,169],
-        "SAT_MF": [0,127],
+        "SAT_MF": [0,169],
         "CHLAT_HF": [0,331],
         "SPLAT_HF": [0,331],
         "SAT_HF": [0,331],
@@ -1469,8 +1469,8 @@ def sim_nominal():
                 30.0,
                 30.0,
             ]
-            # 30 deg, 3048 detectors/band
-            tb["platescale"] = 0.070093/0.9905
+            # 30 deg, 3552 det/band
+            tb["platescale"] = 0.070093/0.9931
             tb["FOV_cut"] = 30.0
         else:
             for tw in range(12):
