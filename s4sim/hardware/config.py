@@ -380,14 +380,14 @@ def sim_nominal():
     bnd["low"] = 21.5
     bnd["high"] = 28.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 246.0
+    bnd["NET"] = 212.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.11488
-    bnd["C"] = 0.85083
+    bnd["A"] = 0.13859
+    bnd["C"] = 0.82000
     bnd["NET_corr"] = 1.02
-    bnd["pwv_poly"] =  0.933680, 0.063919, 0.002889
+    bnd["pwv_poly"] =  0.919331, 0.077864, 0.003397
     bands["SAT_f030"] = bnd
 
     bnd = OrderedDict()
@@ -395,14 +395,14 @@ def sim_nominal():
     bnd["low"] = 28.0
     bnd["high"] = 45.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 155.0
+    bnd["NET"] = 152.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.21849
-    bnd["C"] = 0.71629
+    bnd["A"] = 0.22291
+    bnd["C"] = 0.71053
     bnd["NET_corr"] = 1.04
-    bnd["pwv_poly"] =  0.984664, 0.015093, 0.000353
+    bnd["pwv_poly"] =  0.984349, 0.015404, 0.000360
     bands["SAT_f040"] = bnd
 
     bnd = OrderedDict()
@@ -470,14 +470,14 @@ def sim_nominal():
     bnd["low"] = 74.8
     bnd["high"] = 95.2
     bnd["bandpass"] = ""
-    bnd["NET"] = 259.0
+    bnd["NET"] = 256.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.26241
-    bnd["C"] = 0.65892
+    bnd["A"] = 0.26592
+    bnd["C"] = 0.65435
     bnd["NET_corr"] = 1.02
-    bnd["pwv_poly"] = 0.956092, 0.042784, 0.001444
+    bnd["pwv_poly"] =  0.955532, 0.043328, 0.001464
     bands["SAT_f085"] = bnd
 
     bnd = OrderedDict()
@@ -485,14 +485,14 @@ def sim_nominal():
     bnd["low"] = 129.1
     bnd["high"] = 161.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 311.0
+    bnd["NET"] = 315.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.20697
-    bnd["C"] = 0.73043
+    bnd["A"] = 0.20508
+    bnd["C"] = 0.73289
     bnd["NET_corr"] = 1.01
-    bnd["pwv_poly"] = 0.848750, 0.146717, 0.005639
+    bnd["pwv_poly"] = 0.850088, 0.145438, 0.005569
     bands["SAT_f145"] = bnd
 
     bnd = OrderedDict()
