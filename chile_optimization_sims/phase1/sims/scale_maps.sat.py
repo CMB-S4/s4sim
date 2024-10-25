@@ -13,6 +13,10 @@ import numpy as np
 
 f_total = {}
 
+# fsky for measurement requirement
+
+fsky = 0.03
+
 # Factors not included in f_total
 
 yield_ = 0.8
@@ -106,7 +110,7 @@ n_years = {
 for flavor in "sat",:
     nrow, ncol = 2, 4
     fig = plt.figure(figsize=[4 * ncol, 4 * nrow])
-    fig.suptitle(f"{flavor}, {nsat * 3} tubes")
+    fig.suptitle(f"{flavor}, {nsat * 3} tubes, fsky = {fsky}")
     iplot = 0
     for band in f_total[flavor].keys():
         fname_in = f"outputs/{flavor}/{band}/mapmaker_cov.fits"
@@ -162,15 +166,22 @@ for flavor in "sat",:
         # Plot depth
 
         iplot += 1
-        depth = depth_I
+        depth = depth_I * np.sqrt(2)  # depth_P
         vmin = np.amin(depth[depth != 0])
         vmax = 2 * vmin
+        #
+        sorted_depth = depth.copy()
+        sorted_depth[sorted_depth == 0] = 1e10
+        sorted_depth = np.sort(sorted_depth)
+        lim = int(depth.size * fsky)
+        mean_depth = np.mean(sorted_depth[:lim])
+        #
         depth[depth == 0] = hp.UNSEEN
         hp.mollview(
             depth,
             min=vmin,
             max=vmax,
-            title=f"{band}, {n_year} tube years",
+            title=f"{band}, {n_year} tube years, mean = {mean_depth:.2f}",
             sub=[nrow, ncol, iplot],
             cmap="inferno",
             unit="$\mu$K.arcmin",

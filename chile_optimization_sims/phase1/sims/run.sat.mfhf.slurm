@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --qos=regular
-#SBATCH --time=01:00:00
+#SBATCH --time=00:30:00
 #SBATCH --nodes=8
 #SBATCH --job-name=CMBS4_phase1
 #SBATCH --licenses=SCRATCH

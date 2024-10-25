@@ -26,7 +26,7 @@ let nnode=$SLURM_JOB_NUM_NODES
 let ntask_node=256/$OMP_NUM_THREADS
 let ntask=$nnode*$ntask_node
 let ncore=$OMP_NUM_THREADS
-let groupsize=1
+let groupsize=8
 
 echo "Start: " `date`
 echo "Running with"
