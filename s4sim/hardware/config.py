@@ -387,7 +387,7 @@ def sim_nominal():
     bnd["A"] = 0.13859
     bnd["C"] = 0.82000
     bnd["NET_corr"] = 1.02
-    bnd["pwv_poly"] =  0.933680, 0.063919, 0.002889
+    bnd["pwv_poly"] = 0.919331, 0.077864, 0.003397
     bands["SAT_f030"] = bnd
 
     bnd = OrderedDict()
@@ -402,7 +402,7 @@ def sim_nominal():
     bnd["A"] = 0.22291
     bnd["C"] = 0.71053
     bnd["NET_corr"] = 1.04
-    bnd["pwv_poly"] =  0.984664, 0.015093, 0.000353
+    bnd["pwv_poly"] = 0.984349, 0.015404, 0.000360
     bands["SAT_f040"] = bnd
 
     bnd = OrderedDict()
@@ -537,7 +537,7 @@ def sim_nominal():
     bnd["A"] = 0.23184
     bnd["C"] = 0.69845
     bnd["NET_corr"] = 1.03
-    bnd["pwv_poly"] = 0.947204, 0.051402, 0.001779
+    bnd["pwv_poly"] = 0.946653, 0.051935, 0.001800
     bands["SAT_f090"] = bnd
 
     bnd = OrderedDict()
@@ -552,7 +552,7 @@ def sim_nominal():
     bnd["A"] = 0.21391
     bnd["C"] = 0.72140
     bnd["NET_corr"] = 1.02
-    bnd["pwv_poly"] =  0.829419, 0.165570, 0.006258
+    bnd["pwv_poly"] = 0.834630, 0.160602, 0.005976
     bands["SAT_f150"] = bnd
 
     bnd = OrderedDict()
