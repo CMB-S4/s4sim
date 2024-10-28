@@ -380,14 +380,14 @@ def sim_nominal():
     bnd["low"] = 21.5
     bnd["high"] = 28.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 212.0
+    bnd["NET"] = 197.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.13859
-    bnd["C"] = 0.82000
-    bnd["NET_corr"] = 1.02
-    bnd["pwv_poly"] = 0.919331, 0.077864, 0.003397
+    bnd["A"] = 0.15298
+    bnd["C"] = 0.80128
+    bnd["NET_corr"] = 1.03
+    bnd["pwv_poly"] = 0.910439, 0.086590, 0.003628
     bands["SAT_f030"] = bnd
 
     bnd = OrderedDict()
@@ -395,14 +395,14 @@ def sim_nominal():
     bnd["low"] = 28.0
     bnd["high"] = 45.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 152.0
+    bnd["NET"] = 146.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.22291
-    bnd["C"] = 0.71053
-    bnd["NET_corr"] = 1.04
-    bnd["pwv_poly"] = 0.984349, 0.015404, 0.000360
+    bnd["A"] = 0.23643
+    bnd["C"] = 0.69289
+    bnd["NET_corr"] = 1.01
+    bnd["pwv_poly"] = 0.983379, 0.016362, 0.000379
     bands["SAT_f040"] = bnd
 
     bnd = OrderedDict()
@@ -470,14 +470,14 @@ def sim_nominal():
     bnd["low"] = 74.8
     bnd["high"] = 95.2
     bnd["bandpass"] = ""
-    bnd["NET"] = 259.0
+    bnd["NET"] = 245.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.26241
-    bnd["C"] = 0.65892
-    bnd["NET_corr"] = 1.02
-    bnd["pwv_poly"] = 0.956092, 0.042784, 0.001444
+    bnd["A"] = 0.27782
+    bnd["C"] = 0.63888
+    bnd["NET_corr"] = 1.04
+    bnd["pwv_poly"] = 0.953624, 0.045185, 0.001529
     bands["SAT_f085"] = bnd
 
     bnd = OrderedDict()
@@ -485,14 +485,14 @@ def sim_nominal():
     bnd["low"] = 129.1
     bnd["high"] = 161.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 311.0
+    bnd["NET"] = 302.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.20697
-    bnd["C"] = 0.73043
+    bnd["A"] = 0.21203
+    bnd["C"] = 0.72385
     bnd["NET_corr"] = 1.01
-    bnd["pwv_poly"] = 0.848750, 0.146717, 0.005639
+    bnd["pwv_poly"] = 0.845158, 0.150156, 0.005818
     bands["SAT_f145"] = bnd
 
     bnd = OrderedDict()
@@ -500,14 +500,14 @@ def sim_nominal():
     bnd["low"] = 83.6
     bnd["high"] = 106.4
     bnd["bandpass"] = ""
-    bnd["NET"] = 240.0
+    bnd["NET"] = 228.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.21106
-    bnd["C"] = 0.72533
-    bnd["NET_corr"] = 1.02
-    bnd["pwv_poly"] = 0.941450, 0.056990, 0.001986
+    bnd["A"] = 0.22131
+    bnd["C"] = 0.71200
+    bnd["NET_corr"] = 1.03
+    bnd["pwv_poly"] = 0.938631, 0.059726, 0.002090
     bands["SAT_f095"] = bnd
 
     bnd = OrderedDict()
@@ -515,14 +515,14 @@ def sim_nominal():
     bnd["low"] = 138.0
     bnd["high"] = 172.1
     bnd["bandpass"] = ""
-    bnd["NET"] = 365.0
+    bnd["NET"] = 345.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.22432
-    bnd["C"] = 0.70785
-    bnd["NET_corr"] = 1.02
-    bnd["pwv_poly"] = 0.801865, 0.192474, 0.007107
+    bnd["A"] = 0.23468
+    bnd["C"] = 0.69439
+    bnd["NET_corr"] = 1.00
+    bnd["pwv_poly"] = 0.792946, 0.200998, 0.007569
     bands["SAT_f155"] = bnd
 
     bnd = OrderedDict()
@@ -620,14 +620,14 @@ def sim_nominal():
     bnd["low"] = 198.0
     bnd["high"] = 256.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 731.0
+    bnd["NET"] = 720.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.29945
-    bnd["C"] = 0.61031
+    bnd["A"] = 0.30314
+    bnd["C"] = 0.60552
     bnd["NET_corr"] = 1.01
-    bnd["pwv_poly"] = 0.731418, 0.255791, 0.014788
+    bnd["pwv_poly"] = 0.728284, 0.258698, 0.015039
     bands["SAT_f220"] = bnd
 
     bnd = OrderedDict()
@@ -635,14 +635,14 @@ def sim_nominal():
     bnd["low"] = 256.0
     bnd["high"] = 315.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 1845.0
+    bnd["NET"] = 1817.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.36317
-    bnd["C"] = 0.52786
-    bnd["NET_corr"] = 1.01
-    bnd["pwv_poly"] = 0.662106, 0.316561, 0.023882
+    bnd["A"] = 0.36697
+    bnd["C"] = 0.52293
+    bnd["NET_corr"] = 1.00
+    bnd["pwv_poly"] = 0.658761, 0.319594, 0.024221
     bands["SAT_f280"] = bnd
 
     cnf["bands"] = bands
@@ -658,9 +658,9 @@ def sim_nominal():
         "SAT_LF": (12) * 1,
         "CHLAT_MF": 54*2,
         "SPLAT_MF": 54,
-        "SAT_MFL": 0,
-        "SAT_MFH": 0,
-        "SAT_MF": (12) * 6,
+        "SAT_MFL": (12) * 3,
+        "SAT_MFH": (12) * 3,
+        "SAT_MF": 0,
         "CHLAT_HF": 19*2,
         "SPLAT_HF": 18,
         "SAT_HF": (12) * 2,
@@ -1346,14 +1346,14 @@ def sim_nominal():
         tubes[nm] = tb
 
     stubes = [
-        "SAT_MF",
-        "SAT_MF",
+        "SAT_MFL",
+        "SAT_MFH",
         "SAT_HF",
-        "SAT_MF",
-        "SAT_MF",
+        "SAT_MFL",
+        "SAT_MFH",
         "SAT_HF",
-        "SAT_MF",
-        "SAT_MF",
+        "SAT_MFL",
+        "SAT_MFH",
         "SAT_LF",
     ]
     stube_toasthex_pos = [0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -1812,16 +1812,16 @@ def sim_nominal():
 
     #SAT beams
     sfwhm = OrderedDict()
-    sfwhm["SAT_f030"] = 100.9
-    sfwhm["SAT_f040"] = 74.4
-    sfwhm["SAT_f085"] = 29.5
-    sfwhm["SAT_f145"] = 18.1
-    sfwhm["SAT_f095"] = 26.4
-    sfwhm["SAT_f155"] = 16.9
+    sfwhm["SAT_f030"] = 81.0
+    sfwhm["SAT_f040"] = 60.8
+    sfwhm["SAT_f085"] = 23.6
+    sfwhm["SAT_f145"] = 15.0
+    sfwhm["SAT_f095"] = 21.2
+    sfwhm["SAT_f155"] = 13.9
     sfwhm["SAT_f090"] = 27.3
     sfwhm["SAT_f150"] = 17.6
-    sfwhm["SAT_f220"] = 11.3
-    sfwhm["SAT_f280"] = 10.1
+    sfwhm["SAT_f220"] = 9.5
+    sfwhm["SAT_f280"] = 8.5
 
     tele = OrderedDict()
     tele["tubes"] = ["ST0", "ST1", "ST2"]
