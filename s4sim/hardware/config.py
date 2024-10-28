@@ -526,6 +526,36 @@ def sim_nominal():
     bands["SAT_f155"] = bnd
 
     bnd = OrderedDict()
+    bnd["center"] = 91.5
+    bnd["low"] = 77.0
+    bnd["high"] = 106.0
+    bnd["bandpass"] = ""
+    bnd["NET"] = 215.0
+    bnd["fknee"] = 50.0
+    bnd["fmin"] = 0.01
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.23184
+    bnd["C"] = 0.69845
+    bnd["NET_corr"] = 1.03
+    bnd["pwv_poly"] = 0.947204, 0.051402, 0.001779
+    bands["SAT_f090"] = bnd
+
+    bnd = OrderedDict()
+    bnd["center"] = 148.5
+    bnd["low"] = 128.0
+    bnd["high"] = 169.0
+    bnd["bandpass"] = ""
+    bnd["NET"] = 305.0
+    bnd["fknee"] = 50.0
+    bnd["fmin"] = 0.01
+    bnd["alpha"] = 1.0
+    bnd["A"] = 0.21391
+    bnd["C"] = 0.72140
+    bnd["NET_corr"] = 1.02
+    bnd["pwv_poly"] =  0.829419, 0.165570, 0.006258
+    bands["SAT_f150"] = bnd
+
+    bnd = OrderedDict()
     bnd["center"] = 227.0
     bnd["low"] = 198.0
     bnd["high"] = 256.0
@@ -619,7 +649,7 @@ def sim_nominal():
 
     wafers = OrderedDict()
 
-    wtypes = ["CHLAT_ULF","SPLAT_ULF", "CHLAT_LF", "SPLAT_LF", "SAT_LF", "CHLAT_MF", "SPLAT_MF", "SAT_MFL", "SAT_MFH", "CHLAT_HF", "SPLAT_HF", "SAT_HF"]
+    wtypes = ["CHLAT_ULF","SPLAT_ULF", "CHLAT_LF", "SPLAT_LF", "SAT_LF", "CHLAT_MF", "SPLAT_MF", "SAT_MFL", "SAT_MFH", "SAT_MF", "CHLAT_HF", "SPLAT_HF", "SAT_HF"]
     wcnt = {
         "CHLAT_ULF": 4*2,
         "SPLAT_ULF": 4,
@@ -628,8 +658,9 @@ def sim_nominal():
         "SAT_LF": (12) * 1,
         "CHLAT_MF": 54*2,
         "SPLAT_MF": 54,
-        "SAT_MFL": (12) * 3,
-        "SAT_MFH": (12) * 3,
+        "SAT_MFL": 0,
+        "SAT_MFH": 0,
+        "SAT_MF": (12) * 6,
         "CHLAT_HF": 19*2,
         "SPLAT_HF": 18,
         "SAT_HF": (12) * 2,
@@ -644,6 +675,7 @@ def sim_nominal():
         "SPLAT_MF": "RP",
         "SAT_MFL": "HP",
         "SAT_MFH": "HP",
+        "SAT_MF": "HP",
         "CHLAT_HF": "HP",
         "SPLAT_HF": "HP",
         "SAT_HF": "HP",
@@ -658,6 +690,7 @@ def sim_nominal():
         "SPLAT_MF": 432,
         "SAT_MFL": 217,
         "SAT_MFH": 271,
+        "SAT_MF": 271,
         "CHLAT_HF": 469,
         "SPLAT_HF": 469,
         "SAT_HF": 469,
@@ -672,6 +705,7 @@ def sim_nominal():
         "SPLAT_MF": 5.3,
         "SAT_MFL": 7.65,
         "SAT_MFH": 6.85,
+        "SAT_MF": 6.85,
         "CHLAT_HF": 5.2,
         "SPLAT_HF": 5.2,
         "SAT_HF": 5.2,
@@ -686,6 +720,7 @@ def sim_nominal():
         "SPLAT_MF": 0.71,
         "SAT_MFL": 1.273,
         "SAT_MFH": 0.71,
+        "SAT_MF": 0.71,
         "CHLAT_HF": 0.71,
         "SPLAT_HF": 0.71,
         "SAT_HF": 0.71,
@@ -700,6 +735,7 @@ def sim_nominal():
         "SPLAT_MF": ["SPLAT_f090", "SPLAT_f150"],
         "SAT_MFL": ["SAT_f085", "SAT_f145"],
         "SAT_MFH": ["SAT_f095", "SAT_f155"],
+        "SAT_MF": ["SAT_f090", "SAT_f150"],
         "CHLAT_HF": ["CHLAT_f220", "CHLAT_f280"],
         "SPLAT_HF": ["SPLAT_f220", "SPLAT_f280"],
         "SAT_HF": ["SAT_f220", "SAT_f280"],
@@ -715,6 +751,7 @@ def sim_nominal():
         "SPLAT_MF": [210,220],
         "SAT_MFL": [0,127],
         "SAT_MFH": [0,169],
+        "SAT_MF": [0,169],
         "CHLAT_HF": [0,331],
         "SPLAT_HF": [0,331],
         "SAT_HF": [0,331],
@@ -751,6 +788,7 @@ def sim_nominal():
         "SPLAT_MF": 0,
         "SAT_MFL": 0,
         "SAT_MFH": 0,
+        "SAT_MF": 0,
         "CHLAT_HF": 0,
         "SPLAT_HF": 0,
         "SAT_HF": 0,
@@ -1308,14 +1346,14 @@ def sim_nominal():
         tubes[nm] = tb
 
     stubes = [
-        "SAT_MFL",
-        "SAT_MFH",
+        "SAT_MF",
+        "SAT_MF",
         "SAT_HF",
-        "SAT_MFL",
-        "SAT_MFH",
+        "SAT_MF",
+        "SAT_MF",
         "SAT_HF",
-        "SAT_MFL",
-        "SAT_MFH",
+        "SAT_MF",
+        "SAT_MF",
         "SAT_LF",
     ]
     stube_toasthex_pos = [0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -1381,6 +1419,33 @@ def sim_nominal():
             tb["platescale"] = 0.070093/0.9905
             tb["FOV_cut"] = 30.0
         elif ttyp == "SAT_MFH":
+            for tw in range(12):
+                off = 0
+                for w, props in cnf["wafers"].items():
+                    if props["type"] == ttyp:
+                        if off == woff[ttyp]:
+                            tb["wafers"].append(w)
+                            woff[ttyp] += 1
+                            break
+                        off += 1
+            tb["wafer_angle"] = [ # Degrees
+                30.0,
+                30.0,
+                30.0,
+                -150.0,
+                -150.0,
+                30.0,
+                30.0,
+                30.0,
+                -30.0,
+                90.0,
+                30.0,
+                30.0,
+            ]
+            # 30 deg, 3552 det/band
+            tb["platescale"] = 0.070093/0.9931
+            tb["FOV_cut"] = 30.0
+        elif ttyp == "SAT_MF":
             for tw in range(12):
                 off = 0
                 for w, props in cnf["wafers"].items():
@@ -1753,6 +1818,8 @@ def sim_nominal():
     sfwhm["SAT_f145"] = 18.1
     sfwhm["SAT_f095"] = 26.4
     sfwhm["SAT_f155"] = 16.9
+    sfwhm["SAT_f090"] = 27.3
+    sfwhm["SAT_f150"] = 17.6
     sfwhm["SAT_f220"] = 11.3
     sfwhm["SAT_f280"] = 10.1
 
