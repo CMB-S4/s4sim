@@ -380,12 +380,12 @@ def sim_nominal():
     bnd["low"] = 21.5
     bnd["high"] = 28.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 246.0
+    bnd["NET"] = 212.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.11488
-    bnd["C"] = 0.85083
+    bnd["A"] = 0.13859
+    bnd["C"] = 0.82000
     bnd["NET_corr"] = 1.02
     bnd["pwv_poly"] =  0.933680, 0.063919, 0.002889
     bands["SAT_f030"] = bnd
@@ -395,12 +395,12 @@ def sim_nominal():
     bnd["low"] = 28.0
     bnd["high"] = 45.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 155.0
+    bnd["NET"] = 152.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.21849
-    bnd["C"] = 0.71629
+    bnd["A"] = 0.22291
+    bnd["C"] = 0.71053
     bnd["NET_corr"] = 1.04
     bnd["pwv_poly"] =  0.984664, 0.015093, 0.000353
     bands["SAT_f040"] = bnd
@@ -530,13 +530,13 @@ def sim_nominal():
     bnd["low"] = 77.0
     bnd["high"] = 106.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 218.0
+    bnd["NET"] = 215.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.22935
-    bnd["C"] = 0.70169
-    bnd["NET_corr"] = 1.01
+    bnd["A"] = 0.23184
+    bnd["C"] = 0.69845
+    bnd["NET_corr"] = 1.03
     bnd["pwv_poly"] = 0.947204, 0.051402, 0.001779
     bands["SAT_f090"] = bnd
 
@@ -545,13 +545,13 @@ def sim_nominal():
     bnd["low"] = 128.0
     bnd["high"] = 169.0
     bnd["bandpass"] = ""
-    bnd["NET"] = 293.0
+    bnd["NET"] = 305.0
     bnd["fknee"] = 50.0
     bnd["fmin"] = 0.01
     bnd["alpha"] = 1.0
-    bnd["A"] = 0.22090
-    bnd["C"] = 0.71231
-    bnd["NET_corr"] = 1.01
+    bnd["A"] = 0.21391
+    bnd["C"] = 0.72140
+    bnd["NET_corr"] = 1.02
     bnd["pwv_poly"] =  0.829419, 0.165570, 0.006258
     bands["SAT_f150"] = bnd
 
@@ -1818,8 +1818,8 @@ def sim_nominal():
     sfwhm["SAT_f145"] = 18.1
     sfwhm["SAT_f095"] = 26.4
     sfwhm["SAT_f155"] = 16.9
-    sfwhm["SAT_f090"] = 27.95
-    sfwhm["SAT_f150"] = 17.5
+    sfwhm["SAT_f090"] = 27.3
+    sfwhm["SAT_f150"] = 17.6
     sfwhm["SAT_f220"] = 11.3
     sfwhm["SAT_f280"] = 10.1
 
