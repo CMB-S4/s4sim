@@ -54,13 +54,13 @@ for freq in f_total:
     fp = pickle.load(open(fname_fp, "rb"))
     ndet = len(fp.detectors)
     net = np.mean(fp.detector_data["psd_net"].to_value()) * 1e6
-    anet = net / np.sqrt(ndet)
+    anet = net / np.sqrt(ndet * ntube[freq])
 
     # Relative depth number to compare
-    depth = anet / np.sqrt(ftot * fsen * ntube[freq])
+    depth = anet / np.sqrt(ftot * fsen)
     depths[freq] = depth
 
-    print(f"{freq:3} : {ftot:.3f} * {fsen:.3f} = {ftot * fsen:.3f}, array_net = {anet:6.3f}, depth = {depth:7.3f}")
+    print(f"{freq:3} : {ftot:.3f} * {fsen:.3f} = {ftot * fsen:.3f}, array_net = {anet:6.3f}, depth = {depth:7.3f}, ndet = {ndet}")
 
 freqs = sorted(f_total.keys())
 for ifreq1, freq1 in enumerate(freqs):
