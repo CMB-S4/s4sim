@@ -2,13 +2,22 @@
 
 # Run all the schedules
 
-toast_ground_schedule \
-    @chile_schedule_sat.par \
-    @patches_sat.txt \
-    --block-out 01/01-04/01 \
-    --out schedules/solar90.txt \
-    --sun-avoidance-angle 90 \
-    >& log.solar90
+# Twilight types:
+# -18 deg : Astronomical twilight (scheduler default)
+# -12 deg : nautical twilight
+# -6 deg : civil twilight
+# 0 deg : sunrise
+
+for avoid_el in -18 -12 -6 0 1 2 3 4 5 10 15; do
+    toast_ground_schedule \
+	@chile_schedule_sat.par \
+	@patches_sat.txt \
+	--block-out 01/01-04/01 \
+	--out schedules/solar90.${avoid_el}.txt \
+	--sun-avoidance-angle 90 \
+	--sun-avoidance-altitude-deg " ${avoid_el}" \
+	>& log.solar90.$avoid_el &
+done
 
 exit
 
