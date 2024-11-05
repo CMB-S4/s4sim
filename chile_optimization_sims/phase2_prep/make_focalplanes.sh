@@ -22,7 +22,7 @@ s4_hardware_to_toast3.py --telescope SAT3 --by-tube
 
 cd ../.. && git checkout split7 && pip install . --prefix=$PREFIX
 mkdir -p temp/focalplanes_split7
-cd focalplanes_split7
+cd temp/focalplanes_split7
 s4_hardware_to_toast3.py --telescope SAT1 --by-tube
 s4_hardware_to_toast3.py --telescope SAT3 --by-tube
 
@@ -30,7 +30,7 @@ s4_hardware_to_toast3.py --telescope SAT3 --by-tube
 
 cd ../.. && git checkout split89 && pip install . --prefix=$PREFIX
 mkdir -p temp/focalplanes_split8
-cd focalplanes_split8
+cd temp/focalplanes_split8
 s4_hardware_to_toast3.py --telescope SAT1 --by-tube
 s4_hardware_to_toast3.py --telescope SAT3 --by-tube
 
@@ -39,9 +39,9 @@ s4_hardware_to_toast3.py --telescope SAT3 --by-tube
 
 cd ../.. && git checkout master && pip install . --prefix=$PREFIX
 mkdir -p temp/focalplanes_split0
-cd focalplanes_split0
+cd temp/focalplanes_split0
 s4_hardware_to_toast3.py --telescope LAT0
 s4_hardware_to_toast3.py --telescope SAT1 --by-tube
 s4_hardware_to_toast3.py --telescope SAT3 --by-tube
-cd chile_optimization_sims/phase2_prep
+cd ../../chile_optimization_sims/phase2_prep
 rsync -avrP ../../temp/focalplanes_split? .
