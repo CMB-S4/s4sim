@@ -1416,7 +1416,7 @@ def sim_nominal():
                 0.0,
             ]
             # 30 deg, 3048 detectors/band
-            tb["platescale"] = 0.070093/0.9905
+            tb["platescale"] = 0.070093/0.9931
             tb["FOV_cut"] = 34.9
         elif ttyp == "SAT_MFH":
             for tw in range(12):
