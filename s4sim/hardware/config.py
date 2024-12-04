@@ -1813,7 +1813,7 @@ def sim_nominal():
     #SAT beams
     sfwhm = OrderedDict()
     sfwhm["SAT_f030"] = 79.2
-    sfwhm["SAT_f040"] = 59.4
+    sfwhm["SAT_f040"] = 56.6
     sfwhm["SAT_f085"] = 23.6
     sfwhm["SAT_f145"] = 15.0
     sfwhm["SAT_f095"] = 21.2
@@ -1821,7 +1821,7 @@ def sim_nominal():
     sfwhm["SAT_f090"] = 21.4
     sfwhm["SAT_f150"] = 14.0
     sfwhm["SAT_f220"] = 9.4
-    sfwhm["SAT_f280"] = 8.3
+    sfwhm["SAT_f280"] = 7.8
 
     tele = OrderedDict()
     tele["tubes"] = ["ST0", "ST1", "ST2"]
