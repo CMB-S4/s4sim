@@ -11,7 +11,7 @@ LAT
 --patch-coord
 C
 --el-min
-30
+35
 --el-max
 70
 --sun-el-max
@@ -26,16 +26,20 @@ C
 2031-01-01 00:00:00
 --gap-s
 0
---gap-small-s
+--gap-small
 0
 --ces-max-time
 3600
 --fp-radius
 0
---patch
-RISING_SCAN_40,HORIZONTAL,1.00,30.00,150.00,40.00,1440
---patch
-SETTING_SCAN_40,HORIZONTAL,1.00,210.00,330.00,40.00,1440
+--ra-period
+5
+--ra-amplitude
+5
+--dec-period
+5
+--dec-amplitude
+5
 --boresight-angle-step
 180
 --boresight-angle-time
