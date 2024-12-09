@@ -227,7 +227,7 @@ for pwv_limit in pwv_limits:
 
     # write out the observations that survive the cuts
 
-    with open(fname_out, "w") as schedule_out:
+    with open(fname_out.replace(".txt", ".season.txt"), "w") as schedule_out:
         for line in header:
             schedule_out.write(line)
         for pwv, time, line, flag in zip(pwvs, times, lines, good):
