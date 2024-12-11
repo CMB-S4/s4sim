@@ -145,13 +145,14 @@ for pwv_limit in pwv_limits:
     nrow, ncol = 3, 1
 
     ax = fig.add_subplot(nrow, ncol, 1)
-    ax.plot(times / 86400, pwvs, '.')
-    ax.plot(break_times / 86400, break_pwvs, '.')
+    ax.plot(times / 86400, pwvs, '.', label=f"{pwvs.size}")
+    ax.plot(break_times / 86400, break_pwvs, '.', label=f"{break_pwvs.size}")
     ax.axhline(pwv_limit, color='k', linestyle="--")
     ax.set_xlabel("DOY")
     ax.set_ylabel("PWV [mm]")
     ax.set_title(f"All {len(lengths) + len(break_lengths)} observations")
     ax.set_xlim([0, 366])
+    plt.legend(loc="best")
 
     ax = fig.add_subplot(nrow, ncol, 2)
     good = pwvs < pwv_limit
@@ -182,6 +183,7 @@ for pwv_limit in pwv_limits:
 
     all_times = np.hstack([break_times, times])
     all_lengths = np.hstack([break_lengths, lengths])
+    all_sun_els = np.hstack([break_sun_els, sun_els])
     good_times = np.hstack([break_times[good_break], times[good]])
     good_lengths = np.hstack([break_lengths[good_break], lengths[good]])
     t_month = 30.5 * 86400
@@ -225,32 +227,64 @@ for pwv_limit in pwv_limits:
 
     # write out the observations that survive the cuts
 
+    obs_time_day = 0
+    obs_time_night = 0
     with open(fname_out.replace(".txt", ".season.txt"), "w") as schedule_out:
         for line in header:
             schedule_out.write(line)
-        for pwv, time, line, flag in zip(pwvs, times, lines, good):
+        for pwv, length, line, flag, sun_el in zip(pwvs, lengths, lines, good, sun_els):
             if not flag:
                 continue
+            if sun_el > 0:
+                obs_time_day += length
+            else:
+                obs_time_night += length
             schedule_out.write(line)
 
+    obs_time_break_day = 0
+    obs_time_break_night = 0
     with open(fname_out.replace(".txt", ".break.txt"), "w") as schedule_out:
         for line in header:
             schedule_out.write(line)
-        for pwv, time, line, flag in zip(
+        for pwv, length, line, flag, sun_el in zip(
                 break_pwvs,
-                break_times,
+                break_lengths,
                 break_lines,
                 good_break,
+                break_sun_els,
         ):
             if not flag:
                 continue
+            if sun_el > 0:
+                obs_time_break_day += length
+            else:
+                obs_time_break_night += length
             schedule_out.write(line)
 
     break_length = (break_stop - break_start).total_seconds()
     year_length = 365 * 86400
+
+    year_length_day = year_length * 0.5
+    year_length_night = year_length * 0.5
+    f_field_total = np.sum(all_lengths) / year_length
+    f_field_total_day = np.sum(all_lengths[all_sun_els > 0]) / year_length_day
+    f_field_total_night = np.sum(all_lengths[all_sun_els < 0]) / year_length_night
+    
     f_field_total = np.sum(all_lengths) / year_length
     f_field_season = np.sum(lengths) / (year_length - break_length)
     f_field_break = np.sum(break_lengths) / break_length
-    print(f"f_field(total)  = {f_field_total}")
+    print(f"f_field(total)  = {f_field_total:.3f} (day: {f_field_total_day:.3f}, night: {f_field_total_night:.3f})")
     print(f"f_field(season) = {f_field_season}")
     print(f"f_field(break)  = {f_field_break}")
+
+    day = 86400
+    print(
+        f"Surviving observing time (season): "
+        f"{(obs_time_day + obs_time_night) / day:.3f} days "
+        f"(day: {obs_time_day / 86400:.3f}, night: {obs_time_night / day:.3f})"
+    )
+    print(
+        f"Surviving observing time (break): "
+        f"{(obs_time_break_day + obs_time_break_night) / day:.3f} days "
+        f"(day: {obs_time_break_day / 86400:.3f}, night: {obs_time_break_night / day:.3f})"
+    )

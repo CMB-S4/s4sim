@@ -43,7 +43,7 @@ fproot=../focalplanes/focalplane_LAT0_CHLAT
 # Random wait time to reduce clashes
 sleep $((RANDOM % 15))
 
-for flavor in lat_wide lat_delensing; do
+for flavor in lat_wide lat_delensing lat_delensing_core; do
     args=()
     args+="--config params.lat.toml"
     args+=" --telescope LAT"
@@ -71,6 +71,10 @@ for flavor in lat_wide lat_delensing; do
 	            ;;
 	        lat_delensing)
                     schedule="../scan_strategy/lat_delensing/schedule_lat_delensing.${pwv_limit}mm.${period}.txt"
+                    scan_rate="Quantity('1.0 deg / s')"
+	            ;;
+	        lat_delensing_core)
+                    schedule="../scan_strategy/lat_delensing_core/schedule_lat_delensing_core.${pwv_limit}mm.${period}.txt"
                     scan_rate="Quantity('1.0 deg / s')"
 	            ;;
             esac
