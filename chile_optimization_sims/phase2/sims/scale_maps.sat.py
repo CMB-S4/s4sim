@@ -27,7 +27,7 @@ f_weight = 1.0
 
 f_season = {
     "season" : 0.75,
-    "break" : 0.05,
+    "break" : 0.25,  # Cannot use 0.05 or will double-correct
 }
 f_field = {
     "sun90" : {
@@ -47,60 +47,60 @@ f_weather_sim = {}
 
 # CHSAT f_total from
 # https://docs.google.com/spreadsheets/d/1QtA3dp0GGRWWO1WEGKVnvEYFx-MhwpxRN3enGbCDOi8/edit?pli=1&gid=774702783#gid=774702783
-# on 12/10/2024
+# on 12/11/2024
 
 f_sensitivity = yield_ * f_weight
 f_total = {
     "sun90" : {
         "season" : {
-            "f030" : 0.14 / f_sensitivity,
-            "f040" : 0.14 / f_sensitivity,
-            "f085" : 0.14 / f_sensitivity,
-            "f090" : 0.14 / f_sensitivity,
-            "f095" : 0.14 / f_sensitivity,
-            "f145" : 0.14 / f_sensitivity,
-            "f150" : 0.14 / f_sensitivity,
-            "f155" : 0.14 / f_sensitivity,
-            "f220" : 0.09 / f_sensitivity,
-            "f280" : 0.04 / f_sensitivity,
+            "f030" : 0.140 / f_sensitivity,
+            "f040" : 0.140 / f_sensitivity,
+            "f085" : 0.140 / f_sensitivity,
+            "f090" : 0.140 / f_sensitivity,
+            "f095" : 0.140 / f_sensitivity,
+            "f145" : 0.140 / f_sensitivity,
+            "f150" : 0.140 / f_sensitivity,
+            "f155" : 0.140 / f_sensitivity,
+            "f220" : 0.086 / f_sensitivity,
+            "f280" : 0.060 / f_sensitivity,
         },
         "break" : {
-            "f030" : 0.01 / f_sensitivity,
-            "f040" : 0.01 / f_sensitivity,
-            "f085" : 0.01 / f_sensitivity,
-            "f090" : 0.01 / f_sensitivity,
-            "f095" : 0.01 / f_sensitivity,
-            "f145" : 0.01 / f_sensitivity,
-            "f150" : 0.01 / f_sensitivity,
-            "f155" : 0.01 / f_sensitivity,
-            "f220" : 0.01 / f_sensitivity,
+            "f030" : 0.011 / f_sensitivity,
+            "f040" : 0.011 / f_sensitivity,
+            "f085" : 0.011 / f_sensitivity,
+            "f090" : 0.011 / f_sensitivity,
+            "f095" : 0.011 / f_sensitivity,
+            "f145" : 0.010 / f_sensitivity,
+            "f150" : 0.010 / f_sensitivity,
+            "f155" : 0.010 / f_sensitivity,
+            "f220" : 0.006 / f_sensitivity,
             "f280" : 0.004 / f_sensitivity,
         }
     },
     "sun45" : {
         "season" : {
-            "f030" : 0.20 / f_sensitivity,
-            "f040" : 0.20 / f_sensitivity,
-            "f085" : 0.20 / f_sensitivity,
-            "f090" : 0.20 / f_sensitivity,
-            "f095" : 0.20 / f_sensitivity,
-            "f145" : 0.20 / f_sensitivity,
-            "f150" : 0.20 / f_sensitivity,
-            "f155" : 0.20 / f_sensitivity,
-            "f220" : 0.13 / f_sensitivity,
-            "f280" : 0.09 / f_sensitivity,
+            "f030" : 0.203 / f_sensitivity,
+            "f040" : 0.203 / f_sensitivity,
+            "f085" : 0.203 / f_sensitivity,
+            "f090" : 0.203 / f_sensitivity,
+            "f095" : 0.203 / f_sensitivity,
+            "f145" : 0.200 / f_sensitivity,
+            "f150" : 0.200 / f_sensitivity,
+            "f155" : 0.200 / f_sensitivity,
+            "f220" : 0.125 / f_sensitivity,
+            "f280" : 0.087 / f_sensitivity,
         },
         "break" : {
-            "f030" : 0.02 / f_sensitivity,
-            "f040" : 0.02 / f_sensitivity,
-            "f085" : 0.02 / f_sensitivity,
-            "f090" : 0.02 / f_sensitivity,
-            "f095" : 0.02 / f_sensitivity,
-            "f145" : 0.02 / f_sensitivity,
-            "f150" : 0.02 / f_sensitivity,
-            "f155" : 0.02 / f_sensitivity,
-            "f220" : 0.01 / f_sensitivity,
-            "f280" : 0.01 / f_sensitivity,
+            "f030" : 0.015 / f_sensitivity,
+            "f040" : 0.015 / f_sensitivity,
+            "f085" : 0.015 / f_sensitivity,
+            "f090" : 0.015 / f_sensitivity,
+            "f095" : 0.015 / f_sensitivity,
+            "f145" : 0.015 / f_sensitivity,
+            "f150" : 0.015 / f_sensitivity,
+            "f155" : 0.015 / f_sensitivity,
+            "f220" : 0.008 / f_sensitivity,
+            "f280" : 0.006 / f_sensitivity,
         }
     },
 }

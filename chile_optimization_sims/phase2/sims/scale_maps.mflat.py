@@ -1,3 +1,5 @@
+# Assume that delensing LATs only have MF tubes
+
 # This script scales the simulated noise covariances with efficiency and
 # survey factors that were not included in the simulation
 
@@ -287,14 +289,25 @@ n_years = {
 
 # Loop over all covariance matrices
 
-for flavor in "lat_wide", "lat_delensing", "lat_delensing_core", "lat_delensing_tiled":
+#for flavor in "lat_wide", "lat_delensing", "lat_delensing_core", "lat_delensing_tiled":
+for flavor in "lat_delensing", "lat_delensing_core", "lat_delensing_tiled":
     for n_year in n_years[flavor]:
         nrow, ncol = 2, 4
         fig = plt.figure(figsize=[4 * ncol, 4 * nrow])
-        fig.suptitle(f"{flavor} {n_year} years")
+        fig.suptitle(f"mf{flavor} {n_year} years")
         iplot = 0
         for band in f_total[flavor]["season"].keys():
             covs = []
+            if flavor.startswith("lat_delensing"):
+                if band in ["f090", "f150"]:
+                    # MF tube on a delensing LAT
+                    n_year_band = 6 + (n_year - 6) * (85 / 54)
+                else:
+                    # Non MF tube. Only present on wide LAT
+                    # doing delensing
+                    n_year_band = 6
+            else:
+                n_year_band = n_year
             for period in "season", "break":
                 fname_in = f"outputs/{flavor}/{band}/{period}/mapmaker_cov.fits"
                 print(f"Loading {fname_in}")
@@ -306,7 +319,7 @@ for flavor in "lat_wide", "lat_delensing", "lat_delensing_core", "lat_delensing_
                 # Compensate for focalplane decimation
                 scale /= thinfp[band]
                 # Account for full mission length
-                scale /= n_year
+                scale /= n_year_band
                 # Yield and f_weight are not in f_total
                 scale /= yield_
                 scale /= f_weight
@@ -332,12 +345,12 @@ for flavor in "lat_wide", "lat_delensing", "lat_delensing_core", "lat_delensing_
             cov = np.zeros_like(invcov_sum)
             good = invcov_sum != 0
             cov[good] = 1 / invcov_sum[good]
-  
+
             # Save the scaled covariance
 
             outdir = f"scaled_outputs"
             os.makedirs(outdir, exist_ok=True)
-            fname_out = f"{outdir}/{flavor}_{band}_{n_year}years_cov.fits"
+            fname_out = f"{outdir}/mf{flavor}_{band}_{n_year}years_cov.fits"
             print(f"Writing {fname_out}")
             hp.write_map(fname_out, cov, dtype=np.float32, coord="C", overwrite=True)
 
@@ -348,7 +361,7 @@ for flavor in "lat_wide", "lat_delensing", "lat_delensing_core", "lat_delensing_
             depth_I = np.sqrt(cov[0] * pix_area) * 1e6  # uK.arcmin
             depth_Q = np.sqrt(cov[1] * pix_area) * 1e6  # uK.arcmin
             depth_U = np.sqrt(cov[2] * pix_area) * 1e6  # uK.arcmin
-            fname_out = f"{outdir}/{flavor}_{band}_{n_year}years_depth.fits"
+            fname_out = f"{outdir}/mf{flavor}_{band}_{n_year}years_depth.fits"
             print(f"Writing {fname_out}")
             hp.write_map(
                 fname_out,
@@ -388,6 +401,6 @@ for flavor in "lat_wide", "lat_delensing", "lat_delensing_core", "lat_delensing_
         # Save plot
 
         os.makedirs("plots", exist_ok=True)
-        fname_plot = f"plots/{flavor}_{n_year}years.png"
+        fname_plot = f"plots/mf{flavor}_{n_year}years.png"
         fig.savefig(fname_plot)
         print(f"Plot saved in {fname_plot}")
