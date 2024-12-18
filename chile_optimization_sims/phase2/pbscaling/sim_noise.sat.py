@@ -1,0 +1,187 @@
+import glob
+import os
+import sys
+
+import astropy.units as u
+import healpy as hp
+import matplotlib.pyplot as plt
+from mpi4py import MPI
+import numpy as np
+
+
+comm = MPI.COMM_WORLD
+ntask = comm.size
+rank = comm.rank
+
+if rank == 0:
+    print(f"Running with {ntask} MPI tasks")
+prefix = f"{rank:04} : "
+
+rootdir1 = "/global/cfs/cdirs/cmbs4/chile_optimization/simulations/phase1"
+rootdir2 = "/global/cfs/cdirs/cmbs4/chile_optimization/simulations/phase2"
+
+outdir_fullsky = "noise_fullsky"
+os.makedirs(outdir_fullsky, exist_ok=True)
+
+outdir_rhits = "rhits"
+os.makedirs(outdir_rhits, exist_ok=True)
+
+
+bc_to_band = {
+    25.00 : "f030",
+    40.00 : "f040",
+    85.00 : "f085",
+    95.00 : "f095",
+    145.0 : "f145",
+    155.0 : "f155",
+    220.0 : "f220",
+    280.0 : "f280",
+}
+
+arr = np.genfromtxt(
+    "noise_sims/params_sat.dat",
+    comments="%",
+    names=[
+        "BC", "BW", "FWHM",
+        "TTnoise", "TTknee", "TTalpha",
+        "EEnoise", "EEknee", "EEalpha",
+        "BBnoise", "BBknee", "BBalpha",
+        "ellmin", "nside",
+    ],
+)
+
+reldetyrs = np.genfromtxt(
+    "noise_sims/reldetyrs_phase1_chsat.dat",
+    comments="%",
+    names=["band", "years"],
+)
+
+def invert_map(m):
+    """Invert non-zero pixels"""
+    result = np.zeros_like(m)
+    good = m != 0
+    result[good] = 1 / m[good]
+    return result
+
+# Load the SPSAT relative hit map, used as the basis of the SAT noise scaling
+
+rhit0 = hp.read_map("noise_sims/alt1_hits_sat.fits", None)
+fsky = np.sum(rhit0**2) / rhit0.size
+good = rhit0 != 0
+rhit0_scale = invert_map(rhit0)**.5
+
+# ref_map = hp.read_map("/global/cfs/cdirs/cmbs4/awg/lowellbb/expt_xx/12a1lat/noise/map/noise_f020_b11.40_ellmin70_map_2048_mc_0000.fits", None)
+#ref_cl = hp.anafast(ref_map * rhit0_scale * rhit0, lmax=4096, iter=0) / fsky
+# ref_cl = hp.anafast(ref_map, lmax=4096, iter=0)
+
+# Loop over each frequency
+
+ijob = -1
+for irow, row in enumerate(arr):
+    bc, bw, fwhm, ttnoise, ttknee, ttalpha, eenoise, eeknee, eealpha, bbnoise, bbknee, bbalpha, ellmin, nside = row
+    band = bc_to_band[bc]
+    ellmin = int(ellmin)
+    nside = int(nside)
+    npix = 12 * nside**2
+    lmax = 2 * nside
+    ell = np.arange(lmax + 1)
+
+    fname_rhit = f"{outdir_rhits}/rhits_sat_{band}.fits"
+    if rank == 0 and not os.path.isfile(fname_rhit):
+        # We'll use Colin's reldetyrs from Phase1 so we need the relative
+        # survey weight between Phase1 and Phase2
+
+        fname = glob.glob(f"{rootdir1}/noise_depth/sat_{band}_*years_cov.fits")[0]
+        cov0 = hp.read_map(fname)
+        cov = hp.read_map(fname.replace(rootdir1, rootdir2).replace("sat", "sun90"))
+        invcov0 = invert_map(cov0)
+        invcov = invert_map(cov)
+        relative_weight = np.sum(invcov) / np.sum(invcov0)
+
+        # Colin's relative detector years from Phase-1 scale the results to
+        # 10 years of 9 SATs.
+
+        rel_years = reldetyrs[irow]["years"]
+
+        # Scale from SPSAT to Phase-1 and to Phase-2
+
+        def invcov_to_rhit(invcov):
+            # invcov = hp.ud_grade(invcov, 512)
+            return invcov * np.sum(rhit0) / np.sum(invcov)
+
+        rhit = invcov_to_rhit(invcov) * rel_years * relative_weight
+
+        # Scale from 10 years to one year
+
+        rhit /= 10
+
+        # Save the relative hitmaps for future
+
+        args = {
+            "coord" : "C",
+            "column_units" : "RHIT",
+            "dtype" : np.float32,
+            "overwrite" : True,
+            "extra_header" : [
+                ("nyear", 1, "Number of observing years"),
+                ("rweight", relative_weight, "Phase2/Phase1 survey weight"),
+            ]
+        }
+        hp.write_map(fname_rhit, rhit, **args)
+        print(prefix + f"Wrote {fname_rhit}")
+
+    for mc in range(10):
+        ijob += 1
+        if ijob % ntask != rank:
+            continue
+
+        # Different seed for each frequency and MC
+        np.random.seed(936546 + int(bc) * 1000 + mc)
+    
+        fname_full = f"{outdir_fullsky}/noise_sat_full_sky_{band}_mc_{mc:04}.fits"
+
+        if os.path.isfile(fname_full):
+            print(prefix + f"{fname_full} exists. Skipping.")
+            continue
+
+        print(prefix + f"MC == {mc:04}")
+
+        # Start from a unit variance white noise map
+
+        noisemap_in = np.random.randn(3 * npix).reshape(3,-1)
+        print(prefix + f"Map to Alm")
+        alm = hp.map2alm(noisemap_in, lmax=lmax, iter=0)
+
+        # Measure weighted noise in the patch to determine appropriate scaling
+
+        print(prefix + f"Anafast")
+        cl = hp.anafast(noisemap_in * rhit0_scale * rhit0, lmax=lmax, iter=0) / fsky
+        for i, noise in enumerate([ttnoise, eenoise, bbnoise]):
+            noiselevel = (noise * 1e-6 / 60 * np.pi / 180)**2  # uK.arcmin -> (K.rad)**2
+            # This scaling will recover the prescribed noise level
+            scale = np.sqrt(noiselevel / np.mean(cl[i, 2:]))
+            alm[i] *= scale
+
+        # Add 1/ell noise and high-pass
+
+        for i, (knee, alpha) in enumerate([
+                (ttknee, ttalpha), (eeknee, eealpha), (bbknee, bbalpha)
+        ]):
+            scale = np.zeros(lmax + 1)
+            scale[ellmin:] = np.sqrt(1 + (ell[ellmin:] / knee)**alpha)
+            hp.almxfl(alm[i], scale, inplace=True)
+
+        print(prefix + f"Alm to Map")
+        noisemap_full = hp.alm2map(alm, nside, lmax=lmax)
+        # cl_out = hp.anafast(noisemap_full * rhit0_scale * rhit0, lmax=lmax, iter=0) / fsky
+        # cl_out = hp.anafast(noisemap_full, lmax=lmax, iter=0)
+
+        hp.write_map(
+            fname_full,
+            noisemap_full,
+            coord="C",
+            column_units="K_CMB",
+            dtype=np.float32,
+            overwrite=True,
+        )
+        print(prefix + f"Wrote {fname_full}")

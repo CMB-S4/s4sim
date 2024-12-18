@@ -374,7 +374,7 @@ for flavor in "lat_delensing", "lat_delensing_core", "lat_delensing_tiled":
             # Plot depth
 
             iplot += 1
-            depth = depth_I
+            depth = depth_I * np.sqrt(2)  # depth_P
             vmin = np.amin(depth[depth != 0])
             vmax = 2 * vmin
             #
