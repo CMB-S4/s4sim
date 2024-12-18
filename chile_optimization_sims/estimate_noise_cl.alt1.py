@@ -40,6 +40,10 @@ nmc = 4
 # fsky = 0.03
 fsky = 0.01
 
+nyear_cov = 7  # ab initio survey length
+nyear_sim = 9  # performance-based simulation survey length
+nyear_target = 10  # scale both to this survey length
+
 ijob = -1
 cldir = "noise_cl_alt1"
 os.makedirs(cldir, exist_ok=True)
@@ -55,6 +59,7 @@ for config in "sat",:
         fname_cov = f"/global/cfs/cdirs/cmbs4/AoA/August2022/scaled_outputs/alternative_1/spsat_baseline_deep/cov_{alt_band[-3:]}.fits"
         # print(f"Loading {fname_cov}")
         cov = hp.read_map(fname_cov, [0, 3, 5])
+        cov *= nyear_cov / nyear_target
         nside_in = hp.get_nside(cov)
         nside_out = 512
         cov = hp.ud_grade(cov, nside_out) * (nside_out / nside_in)**2
@@ -95,6 +100,7 @@ for config in "sat",:
                     print(prefix + f"    Loading {fname_in}")
                     m = hp.read_map(fname_in, None, dtype=np.float64)
                     m[:, np.logical_not(mask)] = 0
+                    m *= np.sqrt(nyear_sim / nyear_target)
                     print(prefix + f"    Computing {fname_out}")
                     cl = hp.anafast(m, lmax=3 * hp.get_nside(m), iter=0) / fsky
                     cl_white = hp.anafast(white_noise, lmax=3 * hp.get_nside(white_noise), iter=0) / fsky
