@@ -39,7 +39,7 @@ bc_to_band = {
 }
 
 arr = np.genfromtxt(
-    "noise_sims/params_sat.dat",
+    rootdir2 + "/noise_sims/params_sat.dat",
     comments="%",
     names=[
         "BC", "BW", "FWHM",
@@ -51,7 +51,7 @@ arr = np.genfromtxt(
 )
 
 reldetyrs = np.genfromtxt(
-    "noise_sims/reldetyrs_phase1_chsat.dat",
+    rootdir2 + "/noise_sims/reldetyrs_phase1_chsat.dat",
     comments="%",
     names=["band", "years"],
 )
@@ -65,7 +65,7 @@ def invert_map(m):
 
 # Load the SPSAT relative hit map, used as the basis of the SAT noise scaling
 
-rhit0 = hp.read_map("noise_sims/alt1_hits_sat.fits", None)
+rhit0 = hp.read_map(rootdir2 + "/noise_sims/alt1_hits_sat.fits", None)
 fsky = np.sum(rhit0**2) / rhit0.size
 good = rhit0 != 0
 rhit0_scale = invert_map(rhit0)**.5
@@ -78,7 +78,13 @@ rhit0_scale = invert_map(rhit0)**.5
 
 ijob = -1
 for irow, row in enumerate(arr):
-    bc, bw, fwhm, ttnoise, ttknee, ttalpha, eenoise, eeknee, eealpha, bbnoise, bbknee, bbalpha, ellmin, nside = row
+    (
+        bc, bw, fwhm,
+        ttnoise, ttknee, ttalpha,
+        eenoise, eeknee, eealpha,
+        bbnoise, bbknee, bbalpha,
+        ellmin, nside,
+    ) = row
     band = bc_to_band[bc]
     ellmin = int(ellmin)
     nside = int(nside)
@@ -136,7 +142,7 @@ for irow, row in enumerate(arr):
             continue
 
         # Different seed for each frequency and MC
-        np.random.seed(936546 + int(bc) * 1000 + mc)
+        rng = np.random.default_rng(93654635812 + int(bc) * 10000 + mc)
     
         fname_full = f"{outdir_fullsky}/noise_sat_full_sky_{band}_mc_{mc:04}.fits"
 
@@ -148,19 +154,26 @@ for irow, row in enumerate(arr):
 
         # Start from a unit variance white noise map
 
-        noisemap_in = np.random.randn(3 * npix).reshape(3,-1)
+        def raw_noise():
+            return rng.standard_normal(3 * npix).reshape(3,-1)
+
+        noisemap = raw_noise()
         print(prefix + f"Map to Alm")
-        alm = hp.map2alm(noisemap_in, lmax=lmax, iter=0)
+        alm = hp.map2alm(raw_noise(), lmax=lmax, iter=0)
 
         # Measure weighted noise in the patch to determine appropriate scaling
 
         print(prefix + f"Anafast")
-        cl = hp.anafast(noisemap_in * rhit0_scale * rhit0, lmax=lmax, iter=0) / fsky
+        cl = hp.anafast(noisemap * rhit0_scale * rhit0, lmax=lmax, iter=0) / fsky
+        scales = []
         for i, noise in enumerate([ttnoise, eenoise, bbnoise]):
             noiselevel = (noise * 1e-6 / 60 * np.pi / 180)**2  # uK.arcmin -> (K.rad)**2
             # This scaling will recover the prescribed noise level
             scale = np.sqrt(noiselevel / np.mean(cl[i, 2:]))
             alm[i] *= scale
+            scales.append(scale)
+        noisemap[0] *= scales[0]
+        noisemap[1:] *= scales[2]
 
         # Add 1/ell noise and high-pass
 
@@ -168,20 +181,24 @@ for irow, row in enumerate(arr):
                 (ttknee, ttalpha), (eeknee, eealpha), (bbknee, bbalpha)
         ]):
             scale = np.zeros(lmax + 1)
-            scale[ellmin:] = np.sqrt(1 + (ell[ellmin:] / knee)**alpha)
+            # Scale the a_lm to create 1/ell noise
+            scale[ellmin:] = np.sqrt((ell[ellmin:] / knee)**alpha)
             hp.almxfl(alm[i], scale, inplace=True)
 
         print(prefix + f"Alm to Map")
-        noisemap_full = hp.alm2map(alm, nside, lmax=lmax)
-        # cl_out = hp.anafast(noisemap_full * rhit0_scale * rhit0, lmax=lmax, iter=0) / fsky
-        # cl_out = hp.anafast(noisemap_full, lmax=lmax, iter=0)
+        noisemap += hp.alm2map(alm, nside, lmax=lmax)
 
         hp.write_map(
             fname_full,
-            noisemap_full,
+            noisemap,
             coord="C",
             column_units="K_CMB",
             dtype=np.float32,
             overwrite=True,
         )
         print(prefix + f"Wrote {fname_full}")
+
+comm.Barrier()
+if rank == 0:
+    print("All done!")
+comm.Barrier()

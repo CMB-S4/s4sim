@@ -39,7 +39,7 @@ bc_to_band = {
 }
 
 arr = np.genfromtxt(
-    "noise_sims/params_lat.dat",
+    rootdir2 + "/noise_sims/params_lat.dat",
     comments="%",
     names=[
         "BC", "BW", "FWHM",
@@ -51,11 +51,11 @@ arr = np.genfromtxt(
 )
 
 reldetyrs_delens = np.genfromtxt(
-    "noise_sims/reldetyrs_phase1_delens_1chlatyr.dat",
+    rootdir2 + "/noise_sims/reldetyrs_phase1_delens_1chlatyr.dat",
     names=["band", "years"],
 )
 reldetyrs_wide = np.genfromtxt(
-    "noise_sims/reldetyrs_phase1_wide_1chlatyr.dat",
+    rootdir2 + "/noise_sims/reldetyrs_phase1_wide_1chlatyr.dat",
     names=["band", "years"],
 )
 
@@ -68,7 +68,7 @@ def invert_map(m):
 
 # Load the SPLAT relative hit map, used as the basis of the LAT noise scaling
 
-rhit0 = hp.read_map("noise_sims/alt1_hits_splat_n2048.fits", None)
+rhit0 = hp.read_map(rootdir2 + "/noise_sims/alt1_hits_splat_n2048.fits", None)
 fsky = np.sum(rhit0**2) / rhit0.size
 good = rhit0 != 0
 rhit0_scale = invert_map(rhit0)**.5
@@ -81,7 +81,13 @@ rhit0_scale = invert_map(rhit0)**.5
 
 ijob = -1
 for irow, row in enumerate(arr):
-    bc, bw, fwhm, ttnoise, ttknee, ttalpha, eenoise, eeknee, eealpha, bbnoise, bbknee, bbalpha, ellmin, nside, rseed = row
+    (
+        bc, bw, fwhm,
+        ttnoise, ttknee, ttalpha,
+        eenoise, eeknee, eealpha,
+        bbnoise, bbknee, bbalpha,
+        ellmin, nside, rseed,
+    ) = row
     band = bc_to_band[bc]
     ellmin = int(ellmin)
     nside = int(nside)
@@ -107,14 +113,20 @@ for irow, row in enumerate(arr):
         invcov_wide = invert_map(cov_wide)
         relative_weight_wide = np.sum(invcov_wide) / np.sum(invcov0_wide)
 
-        cov0_delens = hp.read_map(f"{rootdir1}/noise_depth/lat_delensing_{band}_16years_cov.fits")
+        cov0_delens = hp.read_map(
+            f"{rootdir1}/noise_depth/lat_delensing_{band}_16years_cov.fits"
+        )
         invcov0_delens = invert_map(cov0_delens)
 
-        cov_delens_tiled = hp.read_map(f"{rootdir2}/noise_depth/lat_delensing_tiled_{band}_16years_cov.fits")
+        cov_delens_tiled = hp.read_map(
+            f"{rootdir2}/noise_depth/lat_delensing_tiled_{band}_16years_cov.fits"
+        )
         invcov_delens_tiled = invert_map(cov_delens_tiled)
         relative_weight_delens_tiled = np.sum(invcov_delens_tiled) / np.sum(invcov0_delens)
 
-        cov_delens_core = hp.read_map(f"{rootdir2}/noise_depth/lat_delensing_core_{band}_16years_cov.fits")
+        cov_delens_core = hp.read_map(
+            f"{rootdir2}/noise_depth/lat_delensing_core_{band}_16years_cov.fits"
+        )
         invcov_delens_core = invert_map(cov_delens_core)
         relative_weight_delens_core = np.sum(invcov_delens_core) / np.sum(invcov0_delens)
 
@@ -171,52 +183,88 @@ for irow, row in enumerate(arr):
             continue
 
         # Different seed for each frequency and MC
-        np.random.seed(347164 + int(bc) * 1000 + mc)
-    
-        fname_full = f"{outdir_fullsky}/noise_lat_full_sky_{band}_mc_{mc:04}.fits"
+        rng = np.random.default_rng(34716456207428 + int(bc) * 10000 + mc)
 
-        if os.path.isfile(fname_full):
-            print(prefix + f"{fname_full} exists. Skipping.")
+        fname_wide = f"{outdir_fullsky}/noise_lat_wide_full_sky_{band}_mc_{mc:04}.fits"
+        fname_delens = f"{outdir_fullsky}/" \
+            f"noise_lat_delens_full_sky_{band}_mc_{mc:04}.fits"
+        fname_delens_tiled = f"{outdir_fullsky}/" \
+            f"noise_lat_delens_tiled_full_sky_{band}_mc_{mc:04}.fits"
+
+        if (
+                os.path.isfile(fname_wide) and
+                os.path.isfile(fname_delens) and
+                os.path.isfile(fname_delens_tiled)
+        ):
+            print(prefix + f"{fname_wide} exists. Skipping.")
             continue
 
         print(prefix + f"MC == {mc:04}")
 
         # Start from a unit variance white noise map
 
-        noisemap_in = np.random.randn(3 * npix).reshape(3,-1)
+        def raw_noise():
+            return rng.standard_normal(3 * npix).reshape(3,-1)
+
+        noisemap_wide = raw_noise()
+        noisemap_delens = raw_noise()
+        noisemap_delens_tiled = raw_noise()
         print(prefix + f"Map to Alm")
-        alm = hp.map2alm(noisemap_in, lmax=lmax, iter=0)
+        alm_wide = hp.map2alm(raw_noise(), lmax=lmax, iter=0)
+        alm_delens = hp.map2alm(raw_noise(), lmax=lmax, iter=0)
+        alm_delens_tiled = hp.map2alm(raw_noise(), lmax=lmax, iter=0)
 
         # Measure weighted noise in the patch to determine appropriate scaling
 
         print(prefix + f"Anafast")
-        cl = hp.anafast(noisemap_in * rhit0_scale * rhit0, lmax=lmax, iter=0) / fsky
+        cl = hp.anafast(noisemap_wide * rhit0_scale * rhit0, lmax=lmax, iter=0) / fsky
+        scales = []
         for i, noise in enumerate([ttnoise, eenoise, bbnoise]):
             noiselevel = (noise * 1e-6 / 60 * np.pi / 180)**2  # uK.arcmin -> (K.rad)**2
             # This scaling will recover the prescribed noise level
             scale = np.sqrt(noiselevel / np.mean(cl[i, 2:]))
-            alm[i] *= scale
+            for alm in [alm_wide, alm_delens, alm_delens_tiled]:
+                alm[i] *= scale
+            scales.append(scale)
+        # Scale the white noise map
+        for noisemap in [noisemap_wide, noisemap_delens, noisemap_delens_tiled]:
+            noisemap[0] *= scales[0]
+            noisemap[1:] *= scales[2]
 
         # Add 1/ell noise and high-pass
 
         for i, (knee, alpha) in enumerate([
-                (ttknee, ttalpha), (eeknee, eealpha), (bbknee, bbalpha)
+                (ttknee, ttalpha), (eeknee, eealpha), (bbknee, bbalpha),
         ]):
             scale = np.zeros(lmax + 1)
-            scale[ellmin:] = np.sqrt(1 + (ell[ellmin:] / knee)**alpha)
-            hp.almxfl(alm[i], scale, inplace=True)
+            # Scale the a_lm to create 1/ell noise
+            scale[ellmin:] = np.sqrt((ell[ellmin:] / knee)**alpha)
+            for alm in [alm_wide, alm_delens, alm_delens_tiled]:
+                hp.almxfl(alm[i], scale, inplace=True)
 
         print(prefix + f"Alm to Map")
-        noisemap_full = hp.alm2map(alm, nside, lmax=lmax)
-        # cl_out = hp.anafast(noisemap_full * rhit0_scale * rhit0, lmax=lmax, iter=0) / fsky
-        # cl_out = hp.anafast(noisemap_full, lmax=lmax, iter=0)
+        # Combine pixel-domain white noise with 1/ell from harmonic domain
+        for noisemap, alm in zip(
+                [noisemap_wide, noisemap_delens, noisemap_delens_tiled],
+                [alm_wide, alm_delens, alm_delens_tiled]
+        ):
+            noisemap += hp.alm2map(alm, nside, lmax=lmax)
 
-        hp.write_map(
-            fname_full,
-            noisemap_full,
-            coord="C",
-            column_units="K_CMB",
-            dtype=np.float32,
-            overwrite=True,
-        )
-        print(prefix + f"Wrote {fname_full}")
+        for fname_out, noisemap in zip(
+                [fname_wide, fname_delens, fname_delens_tiled],
+                [noisemap_wide, noisemap_delens, noisemap_delens_tiled]
+        ):
+            hp.write_map(
+                fname_out,
+                noisemap,
+                coord="C",
+                column_units="K_CMB",
+                dtype=np.float32,
+                overwrite=True,
+            )
+            print(prefix + f"Wrote {fname_out}")
+
+comm.Barrier()
+if rank == 0:
+    print("All done!")
+comm.Barrier()

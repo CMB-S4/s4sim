@@ -4,7 +4,7 @@
 #SBATCH --nodes=4
 #SBATCH --ntasks-per-node=16
 #SBATCH --cpus-per-task=16
-#SBATCH --job-name=CMBS4_rescale_phase1
+#SBATCH --job-name=CMBS4_phase2
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
 #SBATCH --account=mp107a
@@ -14,3 +14,4 @@ export OMP_PLACES=threads
 export OMP_NUM_THREADS=8
 
 srun python -u sim_noise.lat.py
+srun python -u sim_noise.sat.py
