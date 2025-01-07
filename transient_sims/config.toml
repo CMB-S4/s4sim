@@ -6,7 +6,7 @@
     fix_rate_on_sky = true # If True, `scan_rate_az` is given in sky coordinates and azimuthal rate on mount will be adjusted to meet it.  If False, `scan_rate_az` is used as the mount azimuthal rate.
     randomize_phase = true # If True, the Constant Elevation Scan will begin at a randomized phase.
     scan_cosecant_modulation = true # Modulate the scan rate according to 1/sin(az) for uniform depth
-    scan_rate_az = "Quantity('0.5 deg / ')" # The sky azimuth scanning rate
+    scan_rate_az = "Quantity('0.5 deg / s')" # The sky azimuth scanning rate
     weather = "atacama" # Name of built-in weather site (e.g. 'atacama', 'south_pole') or path to HDF5 file
 
 [operators.gain_scrambler]
@@ -23,7 +23,7 @@
     add_loading = true # Add elevation-dependent loading.
     cache_dir = "atm_cache" # Directory to use for loading / saving atmosphere realizations
     enabled = true # If True, this class instance is marked as enabled
-    field_of_view = "9 deg" # Override the focalplane field of view
+    field_of_view = "Quantity('9 deg')" # Override the focalplane field of view
     gain = 4e-5 # Scaling applied to the simulated TOD
     lmax_center = "Quantity('1.0 m')" # Kolmogorov turbulence injection scale center
     lmax_sigma = "Quantity('0.1 m')" # Kolmogorov turbulence injection scale sigma
@@ -49,7 +49,7 @@
 [operators.flag_sso]
     class = "toast.ops.flag_sso.FlagSSO"
     enabled = true # If True, this class instance is marked as enabled
-    sso_names = ["Moon"] # Names of the SSOs, must be recognized by pyEphem
+    sso_names = "['Moon',]" # Names of the SSOs, must be recognized by pyEphem
     sso_radii = "[Quantity('5.0 deg'),]" # Radii around the sources to flag
 
 [operators.groundfilter]
