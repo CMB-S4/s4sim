@@ -1,0 +1,94 @@
+[operators]
+
+[operators.sim_ground]
+    class = "toast.ops.sim_ground.SimGround"
+    enabled = true # If True, this class instance is marked as enabled
+    fix_rate_on_sky = true # If True, `scan_rate_az` is given in sky coordinates and azimuthal rate on mount will be adjusted to meet it.  If False, `scan_rate_az` is used as the mount azimuthal rate.
+    randomize_phase = true # If True, the Constant Elevation Scan will begin at a randomized phase.
+    scan_cosecant_modulation = true # Modulate the scan rate according to 1/sin(az) for uniform depth
+    scan_rate_az = "Quantity('0.5 deg / ')" # The sky azimuth scanning rate
+    weather = "atacama" # Name of built-in weather site (e.g. 'atacama', 'south_pole') or path to HDF5 file
+
+[operators.gain_scrambler]
+    class = "toast.ops.gainscrambler.GainScrambler"
+    enabled = true # If True, this class instance is marked as enabled
+    sigma = 0.01 # Gain distribution width
+
+[operators.sim_noise]
+    class = "toast.ops.sim_tod_noise.SimNoise"
+    enabled = true # If True, this class instance is marked as enabled
+
+[operators.sim_atmosphere]
+    class = "toast.ops.sim_tod_atm.SimAtmosphere"
+    add_loading = true # Add elevation-dependent loading.
+    cache_dir = "atm_cache" # Directory to use for loading / saving atmosphere realizations
+    enabled = true # If True, this class instance is marked as enabled
+    field_of_view = "9 deg" # Override the focalplane field of view
+    gain = 4e-5 # Scaling applied to the simulated TOD
+    lmax_center = "Quantity('1.0 m')" # Kolmogorov turbulence injection scale center
+    lmax_sigma = "Quantity('0.1 m')" # Kolmogorov turbulence injection scale sigma
+    nelem_sim_max = 10000 # Controls the size of the simulation slices
+    sample_rate = "Quantity('10 Hz')" # Rate at which to sample atmospheric TOD before interpolation.  Default is no interpolation.
+    wind_dist = "Quantity('1000 m')" # Maximum wind drift before discarding the volume and creating a new one
+    xstep = "Quantity('4 m')" # Size of volume elements in X direction
+    ystep = "Quantity('4 m')" # Size of volume elements in Y direction
+    zmax = "Quantity('200 m')" # Atmosphere extent for water vapor integration
+    zstep = "Quantity('4 m')" # Size of volume elements in Z direction
+
+[operators.pixels_healpix_radec]
+    class = "toast.ops.pixels_healpix.pixels_healpix.PixelsHealpix"
+    enabled = true # If True, this class instance is marked as enabled
+    nside = 4096 # The NSIDE resolution
+
+[operators.processing_mask]
+    class = "toast.ops.scan_healpix.ScanHealpixMask"
+    enabled = false # If True, this class instance is marked as enabled
+    file = "None" # Path to healpix FITS file
+    mask_bits = 255 # The number to bitwise-and with each mask value to form the result
+
+[operators.flag_sso]
+    class = "toast.ops.flag_sso.FlagSSO"
+    enabled = true # If True, this class instance is marked as enabled
+    sso_names = ["Moon"] # Names of the SSOs, must be recognized by pyEphem
+    sso_radii = "[Quantity('5.0 deg'),]" # Radii around the sources to flag
+
+[operators.groundfilter]
+    class = "toast.ops.groundfilter.GroundFilter"
+    detrend = false # Subtract the fitted trend along with the ground template
+    enabled = true # If True, this class instance is marked as enabled
+    filter_order = 5 # Order of a Legendre polynomial to fit as a function of azimuth.
+
+[operators.polyfilter1D]
+    class = "toast.ops.polyfilter.polyfilter.PolyFilter"
+    enabled = true # If True, this class instance is marked as enabled
+    order = 1 # Polynomial order
+
+[operators.common_mode_filter]
+    class = "toast.ops.polyfilter.polyfilter.CommonModeFilter"
+    enabled = true # If True, this class instance is marked as enabled
+    focalplane_key = "tube" # Which focalplane key to match
+
+[operators.binner]
+    class = "toast.ops.mapmaker_binning.BinMap"
+    enabled = true # If True, this class instance is marked as enabled
+
+[operators.mapmaker]
+    class = "toast.ops.mapmaker.MapMaker"
+    enabled = true # If True, this class instance is marked as enabled
+    map_rcond_threshold = 1e-08 # For final map, minimum value for inverse pixel condition number cut.
+    output_dir = "." # Write output data products to this directory
+    template_matrix = "None" # This must be an instance of a template matrix operator
+    write_binmap = true # If True, write the projected map *before* template subtraction
+    write_cov = true # If True, write the white noise covariance matrices.
+    write_hdf5 = true # If True, outputs are in HDF5 rather than FITS format.
+    write_hdf5_serial = true # If True, force serial HDF5 write of output maps.
+    write_hits = true # If True, write the hits map
+    write_invcov = true # If True, write the inverse white noise covariance matrices.
+    write_map = false # If True, write the projected map
+    write_noiseweighted_map = true # If True, write the noise-weighted map
+    write_rcond = false # If True, write the reciprocal condition numbers.
+
+[templates]
+[templates.baselines]
+    class = "toast.templates.offset.offset.Offset"
+    enabled = false # If True, this class instance is marked as enabled
