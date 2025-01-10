@@ -1,3 +1,6 @@
+# TODO: LAT high pass : 70 -> 30, use cosine profile,
+# TODO: use r=0 for all realizations
+
 # 2024-11-20: original version based on Reijo Keskitalo's scale_and_combine_maps.py
 # 2024-11-20: revised version with fixes for beam smoothing and pixel windows of the foregrounds implemented by Shamik Ghosh
 # 2024-11-27: RKe: modified to use 1-year noise simulations and separate wide/delens maps from Clem.

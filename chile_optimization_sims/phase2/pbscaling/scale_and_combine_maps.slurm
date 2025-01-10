@@ -13,5 +13,5 @@ export OMP_PROC_BIND=spread
 export OMP_PLACES=threads
 export OMP_NUM_THREADS=8
 
-srun python -u scale_and_combine_maps.fullsky.py
-# srun python -u scale_and_combine_maps.mflat.py
+# srun python -u scale_and_combine_maps.fullsky.py
+srun python -u scale_and_combine_maps.mflat.py
