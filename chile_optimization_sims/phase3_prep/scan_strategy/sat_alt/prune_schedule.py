@@ -15,12 +15,11 @@ np.random.seed(673653982)
 realization = 0
 
 pwv_limits = [2, 3]
-fname_in = "schedule_sat.sun90.txt"
-# fname_in = "schedule_sat.sun45.txt"
+fname_in = "schedule.txt"
 
-first_time = dateutil.parser.parse(f"2030-01-01 00:00:00 00:00:00 +0000")
-break_start = dateutil.parser.parse(f"2030-01-01 00:00:00 00:00:00 +0000")
-break_stop = dateutil.parser.parse(f"2030-04-01 00:00:00 00:00:00 +0000")
+first_time = dateutil.parser.parse(f"2034-01-01 00:00:00 00:00:00 +0000")
+break_start = dateutil.parser.parse(f"2034-01-01 00:00:00 00:00:00 +0000")
+break_stop = dateutil.parser.parse(f"2034-04-01 00:00:00 00:00:00 +0000")
 break_frac = 19 / 89  # adjust pwv_limit during the break to meet this efficiency
 
 for pwv_limit in pwv_limits:
