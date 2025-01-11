@@ -13,5 +13,6 @@ export OMP_PROC_BIND=spread
 export OMP_PLACES=threads
 export OMP_NUM_THREADS=8
 
-srun python -u sim_noise.lat.py
-srun python -u sim_noise.sat.py
+# srun python -u sim_noise.lat.py
+# srun python -u sim_noise.sat.py
+srun python -u sim_noise.no_pbscaling.py
