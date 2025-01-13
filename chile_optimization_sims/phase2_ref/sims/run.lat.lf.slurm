@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --qos=premium
-#SBATCH --time=01:00:00
-#SBATCH --nodes=4
+#SBATCH --time=02:00:00
+#SBATCH --nodes=1
 #SBATCH --job-name=CMBS4_phase2
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
@@ -37,14 +37,14 @@ echo "            ntask = ${ntask}"
 echo "        groupsize = ${groupsize}"
 
 # bands=( f020 f030 f040 f090 f150 f220 f280 )
-bands=( f090 f150 f220 f280 )
-fproot=../focalplanes/focalplane_LAT0_CHLAT
+bands=( f020 f030 f040 )
+fproot=../focalplanes/focalplane_LAT2_SPLAT
 
 # Random wait time to reduce clashes
 sleep $((RANDOM % 15))
 
 #for flavor in lat_wide lat_delensing lat_delensing_core lat_delensing_tiled; do
-for flavor in lat_wide lat_delensing_tiled lat_delensing_core; do
+for flavor in splat; do
     args=()
     args+="--config params.lat.toml"
     args+=" --telescope LAT"
@@ -59,28 +59,14 @@ for flavor in lat_wide lat_delensing_tiled lat_delensing_core; do
                 args+=" --thinfp 16"
 		;;
 	    *)
-                pwv_limit=3
+                pwv_limit=2
                 args+=" --thinfp 16"
 		;;
 	esac
         for period in season break; do
             case $flavor in
-	        lat_wide)
-                    schedule="../scan_strategy/lat_wide/schedule_lat_wide.${pwv_limit}mm.${period}.txt"
-                    args+=" --sim_ground.scan_cosecant_modulation"
-                    scan_rate="Quantity('0.5 deg / s')"
-	            ;;
-	        lat_delensing)
-                    schedule="../scan_strategy/lat_delensing/schedule_lat_delensing.${pwv_limit}mm.${period}.txt"
-                    scan_rate="Quantity('1.0 deg / s')"
-	            ;;
-	        lat_delensing_core)
-                    schedule="../scan_strategy/lat_delensing_core/schedule_lat_delensing_core.${pwv_limit}mm.${period}.txt"
-                    scan_rate="Quantity('1.0 deg / s')"
-	            ;;
-	        lat_delensing_tiled)
-                    schedule="../scan_strategy/lat_delensing_tiled/schedule_lat_delensing_tiled.${pwv_limit}mm.${period}.txt"
-                    scan_rate="Quantity('1.0 deg / s')"
+	        splat)
+                    schedule="../scan_strategy/splat/schedule_splat.${pwv_limit}mm.${period}.txt"
 	            ;;
             esac
             args+=" --schedule $schedule --sort_schedule"
@@ -108,9 +94,7 @@ for flavor in lat_wide lat_delensing_tiled lat_delensing_core; do
             echo "${args[@]}"
             srun -N $nnode -n $ntask -c $ncore --cpu_bind=cores \
                  toast_sim_ground.py ${args[@]} \
-                 --sim_ground.scan_rate_az "${scan_rate}" \
                  >& $logfile
-            # --sim_ground.scan_rate_az "Quantity('0.5 deg / s')" \
             exit
         done
     done
