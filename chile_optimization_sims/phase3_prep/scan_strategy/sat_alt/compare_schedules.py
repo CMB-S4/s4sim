@@ -22,9 +22,12 @@ avoidance = {
 
 schedule1 = toast.schedule.GroundSchedule()
 schedule1.read("schedule_sat.phase2_sun90.txt")
+#schedule1.read("../sat_aggressive/schedule_sat.sun90.no_partial.txt")
 
 schedule2 = toast.schedule.GroundSchedule()
 schedule2.read("schedule.txt")
+#schedule2.read("../sat_aggressive/schedule_sat.sun90.no_partial.txt")
+#schedule2.read("../sat_aggressive/schedule_sat.sun90.txt")
 
 # Create an observer at the site
 
@@ -37,7 +40,7 @@ observer.compute_pressure()
 
 # Plot Az, El and distance to the Sun and the Moon
 
-nrow, ncol = 2, 4
+nrow, ncol = 2, 5
 fig = plt.figure(figsize=[ncol * 4, nrow * 4])
 
 # plot el
@@ -65,24 +68,36 @@ for scan in schedule2.scans:
 # plot az
 
 ax = fig.add_subplot(nrow, ncol, 2)
-ax.set_title("Phase2 Az")
+az_mount = []
+az_sky = []
 for scan in schedule1.scans:
     tstart = scan.start.timestamp()
     tstop = scan.stop.timestamp()
     azmin = scan.az_min.to_value(u.deg)
     azmax = scan.az_max.to_value(u.deg)
-    el = scan.el.to_value(u.deg)
+    el = scan.el.to_value(u.rad)
+    az_mount.append(azmax - azmin)
+    az_sky.append((azmax - azmin) * np.sin(el))
     ax.fill_between([tstart, tstop], [azmin, azmin], [azmax, azmax])
+az_mount = np.mean(az_mount)
+az_sky = np.mean(az_sky)
+ax.set_title(f"Phase2 Az, throw = {az_mount:.3f} {az_sky:.3f}")
 
 ax = fig.add_subplot(nrow, ncol, 2 + ncol)
-ax.set_title("Alt Az")
+az_mount = []
+az_sky = []
 for scan in schedule2.scans:
     tstart = scan.start.timestamp()
     tstop = scan.stop.timestamp()
     azmin = scan.az_min.to_value(u.deg)
     azmax = scan.az_max.to_value(u.deg)
-    el = scan.el.to_value(u.deg)
+    el = scan.el.to_value(u.rad)
+    az_mount.append(azmax - azmin)
+    az_sky.append((azmax - azmin) * np.sin(el))
     ax.fill_between([tstart, tstop], [azmin, azmin], [azmax, azmax])
+az_mount = np.mean(az_mount)
+az_sky = np.mean(az_sky)
+ax.set_title(f"Alt Az, throw = {az_mount:.3f} {az_sky:.3f}")
 
 # plot solar distance
 
@@ -214,6 +229,39 @@ ax1.axhline(avoidance["Sun"].to_value(u.deg), linestyle="--", color="k")
 nbad, tbad = bad["Moon"]["count"], bad["Moon"]["time"]
 ax2.set_title(f"Alt Lunar dist {nbad} violations, {tbad / 3600:.1f} h")
 ax2.axhline(avoidance["Moon"].to_value(u.deg), linestyle="--", color="k")
+
+# plot daily and cumulative integration time
+
+ax1 = fig.add_subplot(nrow, ncol, 5)
+ax2 = fig.add_subplot(nrow, ncol, 5 + ncol)
+ax1.set_title("Cumulative integration time")
+ax2.set_title("Daily integration time")
+t0 = schedule1.scans[0].start.timestamp()
+x = [t0]
+y = [0]
+daily = np.zeros(366)
+for scan in schedule1.scans:
+    tstart = scan.start.timestamp()
+    tstop = scan.stop.timestamp()
+    daily[int((tstart - t0) / 86400)] += tstop - tstart
+    x.append(tstop)
+    y.append(tstop - tstart)
+ax1.plot(np.array(x) - t0, np.cumsum(y) / 86400, label="Phase2")
+ax2.plot(daily / 3600, label="Phase2")
+
+t0 = schedule2.scans[0].start.timestamp()
+x = [t0]
+y = [0]
+daily = np.zeros(366)
+for scan in schedule2.scans:
+    tstart = scan.start.timestamp()
+    tstop = scan.stop.timestamp()
+    daily[int((tstart - t0) / 86400)] += tstop - tstart
+    x.append(tstop)
+    y.append(tstop - tstart)
+ax1.plot(np.array(x) - t0, np.cumsum(y) / 86400, label="Alt")
+ax2.plot(daily / 3600, label="Alt")
+ax.legend(loc="best")
 
 fig.tight_layout()
 fig.savefig("schedule_comparison.png")
