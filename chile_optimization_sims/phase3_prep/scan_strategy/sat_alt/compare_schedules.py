@@ -21,13 +21,19 @@ avoidance = {
 # Load the schedules
 
 schedule1 = toast.schedule.GroundSchedule()
-schedule1.read("schedule_sat.phase2_sun90.txt")
-#schedule1.read("../sat_aggressive/schedule_sat.sun90.no_partial.txt")
+#schedule1.read("../sat_max/schedule_sat.sun90.test.txt"); name1 = "sun90.test"
+#schedule1.read("../sat_max/schedule_sat.sun45.v2.txt"); name1 = "sun45.v2"
+schedule1.read("../../../phase2/scan_strategy/sat/schedule_sat.sun90max3.txt"); name1 = "phase2.sun90max3"
 
 schedule2 = toast.schedule.GroundSchedule()
-schedule2.read("schedule.txt")
-#schedule2.read("../sat_aggressive/schedule_sat.sun90.no_partial.txt")
-#schedule2.read("../sat_aggressive/schedule_sat.sun90.txt")
+#schedule2.read("schedule.txt"); name2 = "Alt"
+schedule2.read("../../../phase2/scan_strategy/sat/schedule_sat.sun90.txt"); name2 = "phase2.sun90"
+#schedule2.read("../../../phase2/scan_strategy/sat/schedule_sat.sun45.txt"); name2 = "phase2.sun45"
+#schedule2.read("../sat_max/schedule_sat.sun90.v3.txt"); name2 = "sun90.v3"
+
+
+plotdir = f"plots_{name1}_vs_{name2}"
+os.makedirs(plotdir, exist_ok=True)
 
 # Create an observer at the site
 
@@ -46,7 +52,7 @@ fig = plt.figure(figsize=[ncol * 4, nrow * 4])
 # plot el
 
 ax = fig.add_subplot(nrow, ncol, 1)
-ax.set_title("Phase2 El")
+ax.set_title(f"{name1} El")
 for scan in schedule1.scans:
     tstart = scan.start.timestamp()
     tstop = scan.stop.timestamp()
@@ -56,7 +62,7 @@ for scan in schedule1.scans:
     ax.plot([tstart, tstop], [el, el])
 
 ax = fig.add_subplot(nrow, ncol, 1 + ncol)
-ax.set_title("Alt El")
+ax.set_title(f"{name2} El")
 for scan in schedule2.scans:
     tstart = scan.start.timestamp()
     tstop = scan.stop.timestamp()
@@ -81,7 +87,7 @@ for scan in schedule1.scans:
     ax.fill_between([tstart, tstop], [azmin, azmin], [azmax, azmax])
 az_mount = np.mean(az_mount)
 az_sky = np.mean(az_sky)
-ax.set_title(f"Phase2 Az, throw = {az_mount:.3f} {az_sky:.3f}")
+ax.set_title(f"{name1} Az, throw = {az_mount:.3f} {az_sky:.3f}")
 
 ax = fig.add_subplot(nrow, ncol, 2 + ncol)
 az_mount = []
@@ -97,7 +103,7 @@ for scan in schedule2.scans:
     ax.fill_between([tstart, tstop], [azmin, azmin], [azmax, azmax])
 az_mount = np.mean(az_mount)
 az_sky = np.mean(az_sky)
-ax.set_title(f"Alt Az, throw = {az_mount:.3f} {az_sky:.3f}")
+ax.set_title(f"{name2} Az, throw = {az_mount:.3f} {az_sky:.3f}")
 
 # plot solar distance
 
@@ -165,10 +171,10 @@ for scan in schedule1.scans:
     ax2.plot(times, min_dists["Moon"])
 
 nbad, tbad = bad["Sun"]["count"], bad["Sun"]["time"]
-ax1.set_title(f"Phase2 Solar dist {nbad} violations, {tbad / 3600:.1f} h")
+ax1.set_title(f"{name1} Solar dist {nbad} violations, {tbad / 3600:.1f} h")
 ax1.axhline(avoidance["Sun"].to_value(u.deg), linestyle="--", color="k")
 nbad, tbad = bad["Moon"]["count"], bad["Moon"]["time"]
-ax2.set_title(f"Phase2 Lunar dist {nbad} violations, {tbad / 3600:.1f} h")
+ax2.set_title(f"{name1} Lunar dist {nbad} violations, {tbad / 3600:.1f} h")
 ax2.axhline(avoidance["Moon"].to_value(u.deg), linestyle="--", color="k")
 
 ax1 = fig.add_subplot(nrow, ncol, 3 + ncol)
@@ -224,10 +230,10 @@ for scan in schedule2.scans:
     ax2.plot(times, min_dists["Moon"])
 
 nbad, tbad = bad["Sun"]["count"], bad["Sun"]["time"]
-ax1.set_title(f"Alt Solar dist {nbad} violations, {tbad / 3600:.1f} h")
+ax1.set_title(f"{name2} Solar dist {nbad} violations, {tbad / 3600:.1f} h")
 ax1.axhline(avoidance["Sun"].to_value(u.deg), linestyle="--", color="k")
 nbad, tbad = bad["Moon"]["count"], bad["Moon"]["time"]
-ax2.set_title(f"Alt Lunar dist {nbad} violations, {tbad / 3600:.1f} h")
+ax2.set_title(f"{name2} Lunar dist {nbad} violations, {tbad / 3600:.1f} h")
 ax2.axhline(avoidance["Moon"].to_value(u.deg), linestyle="--", color="k")
 
 # plot daily and cumulative integration time
@@ -246,8 +252,8 @@ for scan in schedule1.scans:
     daily[int((tstart - t0) / 86400)] += tstop - tstart
     x.append(tstop)
     y.append(tstop - tstart)
-ax1.plot(np.array(x) - t0, np.cumsum(y) / 86400, label="Phase2")
-ax2.plot(daily / 3600, label="Phase2")
+ax1.plot(np.array(x) - t0, np.cumsum(y) / 86400, label=name1)
+ax2.plot(daily / 3600, label=name1)
 
 t0 = schedule2.scans[0].start.timestamp()
 x = [t0]
@@ -259,9 +265,10 @@ for scan in schedule2.scans:
     daily[int((tstart - t0) / 86400)] += tstop - tstart
     x.append(tstop)
     y.append(tstop - tstart)
-ax1.plot(np.array(x) - t0, np.cumsum(y) / 86400, label="Alt")
-ax2.plot(daily / 3600, label="Alt")
-ax.legend(loc="best")
+ax1.plot(np.array(x) - t0, np.cumsum(y) / 86400, label=name2)
+ax2.plot(daily / 3600, label=name2)
+ax1.legend(loc="best")
+ax2.legend(loc="best")
 
 fig.tight_layout()
-fig.savefig("schedule_comparison.png")
+fig.savefig(f"{plotdir}/schedule_comparison.{name1}_vs_{name2}.png")
