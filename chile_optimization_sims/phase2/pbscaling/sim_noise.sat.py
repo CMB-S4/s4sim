@@ -31,8 +31,10 @@ bc_to_band = {
     25.00 : "f030",
     40.00 : "f040",
     85.00 : "f085",
+    90.00 : "f090",
     95.00 : "f095",
     145.0 : "f145",
+    150.0 : "f150",
     155.0 : "f155",
     220.0 : "f220",
     280.0 : "f280",
@@ -92,14 +94,24 @@ for irow, row in enumerate(arr):
     lmax = 2 * nside
     ell = np.arange(lmax + 1)
 
+    # Joint bands do not have a phase-1 reference so just use scale from the
+    # nearest available band
+    if band == "f090":
+        ref_band = "f085"
+    elif band == "f150":
+        ref_band = "f145"
+    else:
+        ref_band = band
+
     fname_rhit = f"{outdir_rhits}/rhits_sat_{band}.fits"
     if rank == 0 and not os.path.isfile(fname_rhit):
         # We'll use Colin's reldetyrs from Phase1 so we need the relative
         # survey weight between Phase1 and Phase2
 
-        fname = glob.glob(f"{rootdir1}/noise_depth/sat_{band}_*years_cov.fits")[0]
-        cov0 = hp.read_map(fname)
-        cov = hp.read_map(fname.replace(rootdir1, rootdir2).replace("sat", "sun90"))
+        fname0 = glob.glob(f"{rootdir1}/noise_depth/sat_{ref_band}_*years_cov.fits")[0]
+        cov0 = hp.read_map(fname0)
+        fname = glob.glob(f"{rootdir2}/noise_depth/sun90max_{band}_*years_cov.fits")[0]
+        cov = hp.read_map(fname)
         invcov0 = invert_map(cov0)
         invcov = invert_map(cov)
         relative_weight = np.sum(invcov) / np.sum(invcov0)
@@ -136,7 +148,7 @@ for irow, row in enumerate(arr):
         hp.write_map(fname_rhit, rhit, **args)
         print(prefix + f"Wrote {fname_rhit}")
 
-    for mc in range(10):
+    for mc in range(3):
         ijob += 1
         if ijob % ntask != rank:
             continue

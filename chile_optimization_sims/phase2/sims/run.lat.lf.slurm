@@ -44,7 +44,7 @@ fproot=../focalplanes/focalplane_LAT0_CHLAT
 sleep $((RANDOM % 15))
 
 #for flavor in lat_wide lat_delensing lat_delensing_core lat_delensing_tiled; do
-for flavor in lat_delensing_tiled; do
+for flavor in lat_delensing_max; do
     args=()
     args+="--config params.lat.toml"
     args+=" --telescope LAT"
@@ -80,6 +80,10 @@ for flavor in lat_delensing_tiled; do
 	            ;;
 	        lat_delensing_tiled)
                     schedule="../scan_strategy/lat_delensing_tiled/schedule_lat_delensing_tiled.${pwv_limit}mm.${period}.txt"
+                    scan_rate="Quantity('1.0 deg / s')"
+                    ;;
+	        lat_delensing_max)
+                    schedule="../scan_strategy/lat_delensing_max/schedule_lat_delensing_max.${pwv_limit}mm.${period}.txt"
                     scan_rate="Quantity('1.0 deg / s')"
 	            ;;
             esac

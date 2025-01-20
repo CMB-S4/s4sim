@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --qos=regular
-#SBATCH --time=01:00:00
+#SBATCH --qos=premium
+#SBATCH --time=00:30:00
 #SBATCH --nodes=8
 #SBATCH --job-name=CMBS4_phase2
 #SBATCH --licenses=SCRATCH
@@ -18,7 +18,7 @@ export HDF5_USE_FILE_LOCKING=FALSE
 export TOAST_FUNCTIME=1
 
 # Parallelization
-export OMP_NUM_THREADS=2
+export OMP_NUM_THREADS=4
 export OMP_PLACES=threads
 export OMP_PROC_BIND=spread
 let nnode=$SLURM_JOB_NUM_NODES
@@ -36,7 +36,7 @@ echo "       ntask_node = ${ntask_node}"
 echo "            ntask = ${ntask}"
 echo "        groupsize = ${groupsize}"
 
-flavors=(sun90 sun45)
+flavors=(sun90max sun45_supplement)
 #for band in f030 f040 f085 f095 f145 f155 f220 f280; do
 for flavor in ${flavors[*]}; do
     for band in f085 f090 f095 f145 f150 f155 f220 f280; do

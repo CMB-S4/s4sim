@@ -24,12 +24,12 @@ params = {
     "sat" : {
         "nside" : 512,
         "ellmin" : 30,
-        "flavors" : ["sun90", "sun45"],
+        "flavors" : ["sun90max"],
     },
     "lat" : {
         "nside" : 2048,
         "ellmin" : 30,
-        "flavors" : ["lat_delensing_core", "lat_delensing_tiled"],
+        "flavors" : ["wide", "lat_delensing_max"],
     }
 }
 
@@ -61,7 +61,7 @@ measurement_requirement = {
         "f150" : [   0.41,  3917,   -3.5,   0.41,   700,   -1.4,   0.41,   700,   -1.4],
         "f220" : [    1.3,  6740,   -3.5,    1.8,   700,   -1.4,    1.8,   700,   -1.4],
         "f280" : [    3.1,  6792,   -3.5,    4.3,   700,   -1.4,    4.3,   700,   -1.4],
-    }
+    },
 }
 
 rootdir = "/global/cfs/cdirs/cmbs4/chile_optimization/simulations/phase2"
@@ -112,7 +112,7 @@ for tele, teleparams in measurement_requirement.items():
                 f"/global/cfs/cdirs/cmbs4/chile_optimization/simulations/"
                 f"phase2/noise_depth/{flavor}_{band}_*years_cov.fits"
             )[0]
-            for mc in range(100):
+            for mc in range(3):
                 ijob += 1
                 if ijob % ntask != rank:
                     continue
@@ -131,7 +131,7 @@ for tele, teleparams in measurement_requirement.items():
                 print(prefix + f"Loading {fname_cov}")
                 cov = hp.read_map(fname_cov, None)
                 cov = hp.ud_grade(cov, nside, power=2)
-                cov *= 10  # Scale the one year instead of 10
+                cov *= 10  # Scale to one year instead of 10
 
                 # Save a copy of the rhit map
                 

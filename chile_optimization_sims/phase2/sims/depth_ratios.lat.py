@@ -12,7 +12,7 @@ import numpy as np
 
 radius = np.radians(10)
 
-cov = hp.read_map("scaled_outputs/lat_delensing_f150_36years_cov.fits")
+cov = hp.read_map("scaled_outputs/lat_delensing_max_f150_36years_cov.fits")
 bad = cov == 0
 cov[bad] = 1e10
 nside = hp.get_nside(cov)
@@ -23,8 +23,8 @@ centers = {}
 for lon_min, lon_max, name in [
         (100, 180, "Field2"),
         (0, 180, "Deep"),
-        (280, 330, "Field3"),
-        (180, 280, "Field4"),
+        #(280, 330, "Field3"),
+        #(180, 280, "Field4"),
 ]:
     temp = cov.copy()
     temp[lon < lon_min] = 1e10
@@ -70,7 +70,7 @@ for name, (lon, lat, mask) in centers.items():
     print(f"{name:>8}", end="")
     for band in bands:
         m1 = hp.read_map(f"{indir1}/lat_delensing_{band}_36years_depth.fits")
-        m2 = hp.read_map(f"{indir2}/lat_delensing_{band}_36years_depth.fits")
+        m2 = hp.read_map(f"{indir2}/lat_delensing_max_{band}_36years_depth.fits")
         ratio = np.median(m2[mask] / m1[mask])
         print(f"{ratio:8.3f}", end="")
     print()

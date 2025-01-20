@@ -1,3 +1,4 @@
+
 # This script scales the simulated noise covariances with efficiency and
 # survey factors that were not included in the simulation
 
@@ -7,6 +8,10 @@ import sys
 import healpy as hp
 import matplotlib.pyplot as plt
 import numpy as np
+
+# Factors copied from
+# https://docs.google.com/spreadsheets/d/1n2NyRSKN9OZRtLJp6FTTG66upSJUAcfMDarWwU9IYb0/edit?pli=1&gid=859341864#gid=859341864
+# on 2025/01/17
 
 
 # Total target efficiency factor
@@ -30,13 +35,13 @@ f_season = {
     "break" : 0.25,  # Cannot use 0.05 or will double-correct
 }
 f_field = {
-    "sun90" : {
-        "season" : 0.57,
-        "break" : 0.53,
+    "sun90max" : {
+        "season" : 0.37,
+        "break" : 0.40,
     },
-    "sun45" : {
-        "season" : 0.83,
-        "break" : 0.76,
+    "sun45_supplement" : {
+        "season" : 0.56,
+        "break" : 0.64,
     },
 }
 
@@ -45,73 +50,69 @@ f_field = {
 
 f_weather_sim = {}
 
-# CHSAT f_total from
-# https://docs.google.com/spreadsheets/d/1QtA3dp0GGRWWO1WEGKVnvEYFx-MhwpxRN3enGbCDOi8/edit?pli=1&gid=774702783#gid=774702783
-# on 12/11/2024
-
 f_sensitivity = yield_ * f_weight
 f_total = {
-    "sun90" : {
+    "sun90max" : {
         "season" : {
-            "f030" : 0.140 / f_sensitivity,
-            "f040" : 0.140 / f_sensitivity,
-            "f085" : 0.140 / f_sensitivity,
-            "f090" : 0.140 / f_sensitivity,
-            "f095" : 0.140 / f_sensitivity,
-            "f145" : 0.140 / f_sensitivity,
-            "f150" : 0.140 / f_sensitivity,
-            "f155" : 0.140 / f_sensitivity,
-            "f220" : 0.086 / f_sensitivity,
-            "f280" : 0.060 / f_sensitivity,
+            "f030" : 0.092 / f_sensitivity,
+            "f040" : 0.092 / f_sensitivity,
+            "f085" : 0.092 / f_sensitivity,
+            "f090" : 0.092 / f_sensitivity,
+            "f095" : 0.092 / f_sensitivity,
+            "f145" : 0.090 / f_sensitivity,
+            "f150" : 0.090 / f_sensitivity,
+            "f155" : 0.090 / f_sensitivity,
+            "f220" : 0.056 / f_sensitivity,
+            "f280" : 0.039 / f_sensitivity,
         },
         "break" : {
-            "f030" : 0.011 / f_sensitivity,
-            "f040" : 0.011 / f_sensitivity,
-            "f085" : 0.011 / f_sensitivity,
-            "f090" : 0.011 / f_sensitivity,
-            "f095" : 0.011 / f_sensitivity,
-            "f145" : 0.010 / f_sensitivity,
-            "f150" : 0.010 / f_sensitivity,
-            "f155" : 0.010 / f_sensitivity,
-            "f220" : 0.006 / f_sensitivity,
-            "f280" : 0.004 / f_sensitivity,
+            "f030" : 0.0079 / f_sensitivity,
+            "f040" : 0.0079 / f_sensitivity,
+            "f085" : 0.0079 / f_sensitivity,
+            "f090" : 0.0079 / f_sensitivity,
+            "f095" : 0.0079 / f_sensitivity,
+            "f145" : 0.0078 / f_sensitivity,
+            "f150" : 0.0078 / f_sensitivity,
+            "f155" : 0.0078 / f_sensitivity,
+            "f220" : 0.0043 / f_sensitivity,
+            "f280" : 0.0030 / f_sensitivity,
         }
     },
-    "sun45" : {
+    "sun45_supplement" : {
         "season" : {
-            "f030" : 0.203 / f_sensitivity,
-            "f040" : 0.203 / f_sensitivity,
-            "f085" : 0.203 / f_sensitivity,
-            "f090" : 0.203 / f_sensitivity,
-            "f095" : 0.203 / f_sensitivity,
-            "f145" : 0.200 / f_sensitivity,
-            "f150" : 0.200 / f_sensitivity,
-            "f155" : 0.200 / f_sensitivity,
-            "f220" : 0.125 / f_sensitivity,
-            "f280" : 0.087 / f_sensitivity,
+            "f030" : 0.14 / f_sensitivity,
+            "f040" : 0.14 / f_sensitivity,
+            "f085" : 0.14 / f_sensitivity,
+            "f090" : 0.14 / f_sensitivity,
+            "f095" : 0.14 / f_sensitivity,
+            "f145" : 0.14 / f_sensitivity,
+            "f150" : 0.14 / f_sensitivity,
+            "f155" : 0.14 / f_sensitivity,
+            "f220" : 0.085 / f_sensitivity,
+            "f280" : 0.059 / f_sensitivity,
         },
         "break" : {
-            "f030" : 0.015 / f_sensitivity,
-            "f040" : 0.015 / f_sensitivity,
-            "f085" : 0.015 / f_sensitivity,
-            "f090" : 0.015 / f_sensitivity,
-            "f095" : 0.015 / f_sensitivity,
-            "f145" : 0.015 / f_sensitivity,
-            "f150" : 0.015 / f_sensitivity,
-            "f155" : 0.015 / f_sensitivity,
-            "f220" : 0.008 / f_sensitivity,
-            "f280" : 0.006 / f_sensitivity,
+            "f030" : 0.013 / f_sensitivity,
+            "f040" : 0.013 / f_sensitivity,
+            "f085" : 0.013 / f_sensitivity,
+            "f090" : 0.013 / f_sensitivity,
+            "f095" : 0.013 / f_sensitivity,
+            "f145" : 0.013 / f_sensitivity,
+            "f150" : 0.013 / f_sensitivity,
+            "f155" : 0.013 / f_sensitivity,
+            "f220" : 0.0064 / f_sensitivity,
+            "f280" : 0.0045 / f_sensitivity,
         }
     },
 }
 
 # f_weather from prune_schedule.py
 
-cut_3mm_season = 6631 / 8099
-cut_2mm_season = 5593 / 8099
-cut_3mm_break = 498 / 2495
-cut_2mm_break = 378 / 2495
-f_weather_sim["sun45"] = {
+cut_3mm_season = 3006 / 3703
+cut_2mm_season = 2504 / 3703
+cut_3mm_break = 296 / 1385
+cut_2mm_break = 209 / 1385
+f_weather_sim["sun45_supplement"] = {
     "season" : {
         "f030" : cut_3mm_season,
         "f040" : cut_3mm_season,
@@ -138,11 +139,11 @@ f_weather_sim["sun45"] = {
     },
 }
 
-cut_3mm_season = 4429 / 5476
-cut_2mm_season = 3840 / 5476
-cut_3mm_break = 412 / 1612
-cut_2mm_break = 267 / 1612
-f_weather_sim["sun90"] = {
+cut_3mm_season = 1977 / 2454
+cut_2mm_season = 1661 / 2454
+cut_3mm_break = 233 / 854
+cut_2mm_break = 140 / 854
+f_weather_sim["sun90max"] = {
     "season" : {
         "f030" : cut_3mm_season,
         "f040" : cut_3mm_season,
@@ -196,7 +197,7 @@ n_years = {
 
 # Loop over all covariance matrices
 
-for flavor in "sun90", "sun45":
+for flavor in "sun90max", "sun45_supplement":
     nrow, ncol = 2, 5
     fig = plt.figure(figsize=[4 * ncol, 4 * nrow])
     fig.suptitle(f"{flavor}, {nsat * 3} tubes, fsky = {fsky}")

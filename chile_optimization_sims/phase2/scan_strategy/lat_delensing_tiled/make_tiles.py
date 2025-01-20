@@ -10,22 +10,27 @@ import numpy as np
 
 fname_out = "patches.txt"
 
+"""
 cov = hp.read_map(
     "/global/cfs/cdirs/cmbs4/chile_optimization/simulations/phase2/noise_depth/sun90_f155_90years_cov.fits"
 )
 rhits = np.zeros_like(cov)
 good = cov != 0
 rhits[good] = 1 / cov[good]
+"""
+rhits = hp.read_map("../../sims/outputs/sun90max/f085/season/mapmaker_hits.fits", dtype=float)
+rhits += hp.read_map("../../sims/outputs/sun90max/f085/break/mapmaker_hits.fits")
 rhits /= np.amax(rhits)
+rhits = rhits**2  # Use the square of the hits as weight
 
-nside = hp.get_nside(cov)
-npix = cov.size
+nside = hp.get_nside(rhits)
+npix = rhits.size
 pix = np.arange(npix)
 lons, lats = hp.pix2ang(nside, pix, lonlat=True)
 
 dlon = 5 # 10
 dlat = 10 # 20
-mask_sum = np.zeros(cov.size)
+mask_sum = np.zeros(rhits.size)
 lines = []
 for lat_min in range(-75, 75, 5):
     lat_max = lat_min + dlat
@@ -43,7 +48,8 @@ for lat_min in range(-75, 75, 5):
             mask[lons >= lon_max] = False
         hitmean = np.mean(rhits[mask])
         # if hitmean < .1:
-        if hitmean < .20:
+        # if hitmean < .20:
+        if hitmean < .01:
             continue
         # Lower priority number means more frequent targeting
         priority = 1 / hitmean

@@ -67,98 +67,36 @@ f_field["lat_wide"] = {
 }
 fskies["lat_wide"] = 0.6
 
-# LAT delensing f_total from
-# https://docs.google.com/spreadsheets/d/1QtA3dp0GGRWWO1WEGKVnvEYFx-MhwpxRN3enGbCDOi8/edit?pli=1&gid=845204240#gid=845204240
-# on 12/10/2024
+# LAT delensing_max f_total from
+# https://docs.google.com/spreadsheets/d/1n2NyRSKN9OZRtLJp6FTTG66upSJUAcfMDarWwU9IYb0/edit?pli=1&gid=516713372#gid=516713372
+# on 2025/01/17
 
 f_sensitivity = yield_ * f_weight
-f_total["lat_delensing"] = {
+f_total["lat_delensing_max"] = {
     "season" : {
-        "f020" : 0.243 / f_sensitivity,
-        "f030" : 0.243 / f_sensitivity,
-        "f040" : 0.243 / f_sensitivity,
-        "f090" : 0.243 / f_sensitivity,
-        "f150" : 0.243 / f_sensitivity,
-        "f220" : 0.211 / f_sensitivity,
-        "f280" : 0.146 / f_sensitivity,
+        "f020" : 0.193 / f_sensitivity,
+        "f030" : 0.193 / f_sensitivity,
+        "f040" : 0.193 / f_sensitivity,
+        "f090" : 0.193 / f_sensitivity,
+        "f150" : 0.193 / f_sensitivity,
+        "f220" : 0.168 / f_sensitivity,
+        "f280" : 0.116 / f_sensitivity,
     },
     "break" : {
-        "f020" : 0.021 / f_sensitivity,
-        "f030" : 0.021 / f_sensitivity,
-        "f040" : 0.021 / f_sensitivity,
-        "f090" : 0.021 / f_sensitivity,
-        "f150" : 0.021 / f_sensitivity,
-        "f220" : 0.016 / f_sensitivity,
-        "f280" : 0.011 / f_sensitivity,
+        "f020" : 0.0183 / f_sensitivity,
+        "f030" : 0.0183 / f_sensitivity,
+        "f040" : 0.0183 / f_sensitivity,
+        "f090" : 0.0183 / f_sensitivity,
+        "f150" : 0.0183 / f_sensitivity,
+        "f220" : 0.0131 / f_sensitivity,
+        "f280" : 0.0091 / f_sensitivity,
     },
 }
-f_field["lat_delensing"] = {
-    "season" : 0.990,
-    "break" : 0.974,
+f_field["lat_delensing_max"] = {
+    "season" : 0.803,
+    "break" : 0.835,
 }
-fskies["lat_delensing"] = 0.03
-
-# LAT delensing_core f_total from
-# https://docs.google.com/spreadsheets/d/1n2NyRSKN9OZRtLJp6FTTG66upSJUAcfMDarWwU9IYb0/edit?gid=627366244#gid=627366244
-# on 12/10/2024
-
-f_sensitivity = yield_ * f_weight
-f_total["lat_delensing_core"] = {
-    "season" : {
-        "f020" : 0.238 / f_sensitivity,
-        "f030" : 0.238 / f_sensitivity,
-        "f040" : 0.238 / f_sensitivity,
-        "f090" : 0.238 / f_sensitivity,
-        "f150" : 0.238 / f_sensitivity,
-        "f220" : 0.207 / f_sensitivity,
-        "f280" : 0.143 / f_sensitivity,
-    },
-    "break" : {
-        "f020" : 0.021 / f_sensitivity,
-        "f030" : 0.021 / f_sensitivity,
-        "f040" : 0.021 / f_sensitivity,
-        "f090" : 0.021 / f_sensitivity,
-        "f150" : 0.021 / f_sensitivity,
-        "f220" : 0.015 / f_sensitivity,
-        "f280" : 0.011 / f_sensitivity,
-    },
-}
-f_field["lat_delensing_core"] = {
-    "season" : 0.991,
-    "break" : 0.975,
-}
-fskies["lat_delensing_core"] = 0.03
-
-# LAT delensing_tiled f_total from
-# https://docs.google.com/spreadsheets/d/1n2NyRSKN9OZRtLJp6FTTG66upSJUAcfMDarWwU9IYb0/edit?gid=658466770#gid=658466770
-# on 12/12/2024
-
-f_sensitivity = yield_ * f_weight
-f_total["lat_delensing_tiled"] = {
-    "season" : {
-        "f020" : 0.235 / f_sensitivity,
-        "f030" : 0.235 / f_sensitivity,
-        "f040" : 0.235 / f_sensitivity,
-        "f090" : 0.235 / f_sensitivity,
-        "f150" : 0.235 / f_sensitivity,
-        "f220" : 0.205 / f_sensitivity,
-        "f280" : 0.141 / f_sensitivity,
-    },
-    "break" : {
-        "f020" : 0.021 / f_sensitivity,
-        "f030" : 0.021 / f_sensitivity,
-        "f040" : 0.021 / f_sensitivity,
-        "f090" : 0.021 / f_sensitivity,
-        "f150" : 0.021 / f_sensitivity,
-        "f220" : 0.016 / f_sensitivity,
-        "f280" : 0.011 / f_sensitivity,
-    },
-}
-f_field["lat_delensing_tiled"] = {
-    "season" : 0.999,
-    "break" : 0.999,
-}
-fskies["lat_delensing_tiled"] = 0.03
+fskies["lat_delensing_max"] = 0.03
 
 # f_weather from prune_schedule.py
 
@@ -187,62 +125,11 @@ f_weather_sim["lat_wide"] = {
     },
 }
 
-cut_3mm_season = 6965 / 8512
-cut_2mm_season = 5894 / 8512
-cut_3mm_break =  579 / 2727
-cut_2mm_break =  483 / 2727
-f_weather_sim["lat_delensing"] = {
-    "season" : {
-        "f020" : cut_3mm_season,
-        "f030" : cut_3mm_season,
-        "f040" : cut_3mm_season,
-        "f090" : cut_3mm_season,
-        "f150" : cut_3mm_season,
-        "f220" : cut_2mm_season,
-        "f280" : cut_2mm_season,
-    },
-    "break" : {
-        "f020" : cut_3mm_break,
-        "f030" : cut_3mm_break,
-        "f040" : cut_3mm_break,
-        "f090" : cut_3mm_break,
-        "f150" : cut_3mm_break,
-        "f220" : cut_2mm_break,
-        "f280" : cut_2mm_break,
-    },
-}
-
-cut_3mm_season = 7087 / 8662
-cut_2mm_season = 5965 / 8662
-cut_3mm_break =  592 / 2771
-cut_2mm_break =  483 / 2771
-f_weather_sim["lat_delensing_core"] = {
-    "season" : {
-        "f020" : cut_3mm_season,
-        "f030" : cut_3mm_season,
-        "f040" : cut_3mm_season,
-        "f090" : cut_3mm_season,
-        "f150" : cut_3mm_season,
-        "f220" : cut_2mm_season,
-        "f280" : cut_2mm_season,
-    },
-    "break" : {
-        "f020" : cut_3mm_break,
-        "f030" : cut_3mm_break,
-        "f040" : cut_3mm_break,
-        "f090" : cut_3mm_break,
-        "f150" : cut_3mm_break,
-        "f220" : cut_2mm_break,
-        "f280" : cut_2mm_break,
-    },
-}
-
-
-cut_3mm_season = 10329 / 12620
-cut_2mm_season = 8671 / 12620
-cut_3mm_break =  841 / 4057
-cut_2mm_break =  722 / 4057
-f_weather_sim["lat_delensing_tiled"] = {
+cut_3mm_season = 13011 / 15909
+cut_2mm_season = 10955 / 15909
+cut_3mm_break =  1158 / 5414
+cut_2mm_break =  908 / 5414
+f_weather_sim["lat_delensing_max"] = {
     "season" : {
         "f020" : cut_3mm_season,
         "f030" : cut_3mm_season,
@@ -279,15 +166,13 @@ thinfp = {
 
 n_years = {
     "lat_wide" : [14],
-    "lat_delensing" : [16, 26, 36],
-    "lat_delensing_core" : [16, 26, 36],
-    "lat_delensing_tiled" : [16, 26, 36],
+    "lat_delensing_max" : [16, 26, 36],
 }
 
 
 # Loop over all covariance matrices
 
-for flavor in "lat_wide", "lat_delensing", "lat_delensing_core", "lat_delensing_tiled":
+for flavor in "lat_wide", "lat_delensing_max":
     for n_year in n_years[flavor]:
         nrow, ncol = 2, 4
         fig = plt.figure(figsize=[4 * ncol, 4 * nrow])
