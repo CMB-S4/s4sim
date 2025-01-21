@@ -56,8 +56,10 @@ fwhms = {
 
 noisedir_in = f"noise_1year_no_pbscaling"
 
-fgroot = "/global/cfs/cdirs/cmbs4/chile_optimization/simulations/phase2/input_sky"
-fgdir = f"{fgroot}/combined_foregrounds_mediumcomplexity_norg"
+fgroot_lat = "/global/cfs/cdirs/cmbs4/chile_optimization/simulations/phase1/input_sky"
+fgroot_sat = "/global/cfs/cdirs/cmbs4/chile_optimization/simulations/phase2/input_sky"
+fgdir_lat = f"{fgroot_lat}/combined_foregrounds_mediumcomplexity_norg"
+fgdir_sat = f"{fgroot_sat}/combined_foregrounds_mediumcomplexity_norg"
 
 cmbdir = "/global/cfs/cdirs/cmb/data/generic/cmb/ffp10/mc/scalar"
 
@@ -115,19 +117,19 @@ for band, fwhm in fwhms.items():
     # Get the foregrounds
 
     if band.startswith("SAT"):
-        fname_fg = f"{fgdir}/" \
+        fname_fg = f"{fgdir_sat}/" \
             f"cmbs4_combined_foregrounds_mediumcomplexity_norg_uKCMB_{band}_nside512.fits"
         nside = 512
         lmax = 2 * nside
     else:
-        fname_fg = f"{fgdir}/" \
+        fname_fg = f"{fgdir_lat}/" \
             f"cmbs4_combined_foregrounds_mediumcomplexity_norg_uKCMB_{band}_nside4096.fits"
         nside = 2048
         lmax = 2 * nside
 
     fg = None
 
-    for mc in range(10):
+    for mc in range(3):
 
         ijob += 1
         if ijob % ntask != rank:
@@ -138,7 +140,7 @@ for band, fwhm in fwhms.items():
         survey_length = survey_lengths[-1]
         if band.startswith("SAT"):
             fname_total = f"no_pbscaling/total_{survey_length:02}_years/" \
-                f"phase2_total_{alt_band}_SAT_mc_{mc:04}.fits"
+                f"phase2_total_{alt_band}_SAT90+45_mc_{mc:04}.fits"
             if os.path.isfile(fname_total):
                 print(prefix + f"    {fname_total} exists, skipping mc = {mc}")
                 continue
@@ -147,9 +149,11 @@ for band, fwhm in fwhms.items():
         else:
             fname_total5 = f"no_pbscaling/total_{survey_length:02}_years/" \
                 f"phase2_total_{alt_band}_5LAT_mc_{mc:04}.fits"
-            if os.path.isfile(fname_total5) and False:
+            if os.path.isfile(fname_total5):
                 print(prefix + f"    {fname_total5} exists, skipping mc = {mc}")
                 continue
+            else:
+                print(prefix + f"    {fname_total5} does not exist.")
 
         # Proceed with the simulation
 
@@ -237,69 +241,104 @@ for band, fwhm in fwhms.items():
         sky = hp.alm2map(alms, nside)  # K_CMB
 
         if band.startswith("SAT"):
-            flavor = "sun90"
-            fname_noise_in = f"{noisedir_in}/noise_sat_{flavor}_{band[-4:]}_mc_{mc:04}.fits"
-            print(prefix + f"        Reading {fname_noise_in}")
-            noise_in = hp.read_map(fname_noise_in, None)
-            for survey_length in survey_lengths:
-                scale_sat = np.sqrt(survey_length_in / survey_length)
-                noise_sat = noise_in * scale_sat
-                noise_sat[noise_in == 0] = hp.UNSEEN
-                noisedir_out = f"no_pbscaling/noise_{survey_length:02}_years"
-                os.makedirs(noisedir_out, exist_ok=True)
-                # Save a copy of the pure noise map
-                fname_scaled_noise_sat = f"{noisedir_out}/phase2_noise_{alt_band}_SAT_mc_{mc:04}.fits"
-                args = {
-                    "dtype" : np.float32,
-                    "coord" : "C",
-                    "column_units" : "K_CMB",
-                    "extra_header" : [
-                        ("NOISE", fname_noise_fullsky, "Full sky noise"),
-                        ("NYEAR", survey_length),
-                    ],
-                    "overwrite" : True,
-                }
-                print(prefix + f"        Writing {fname_scaled_noise_sat}")
-                hp.write_map(fname_scaled_noise_sat, noise_sat, **args)
-                # Now assemble the total map
-                total_sat = sky + noise_sat
-                total_sat[noise_sat == hp.UNSEEN] = hp.UNSEEN
-                fname_total_sat = f"no_pbscaling/total_{survey_length:02}_years/" \
-                    f"phase2_total_{alt_band}_SAT_mc_{mc:04}.fits"
-                os.makedirs(os.path.dirname(fname_total_sat), exist_ok=True)
-                args = {
-                    "dtype" : np.float32,
-                    "coord" : "C",
-                    "column_units" : "K_CMB",
-                    "extra_header" : [
-                        ("FWHM", fwhm.to_value(u.arcmin), "arcminutes"),
-                        ("FOREGRND", fname_fg),
-                        ("CMB", fname_cmb),
-                        ("TENSOR", fname_tensor),
-                        ("R", r, "tensor-scalar ratio"),
-                        ("LMIN_CMB", lmin, "High-pass cut-off"),
-                        ("NOISE", fname_noise_fullsky),
-                    ],
-                    "overwrite" : True,
-                }
-                print(prefix + f"        Writing {fname_total_sat}")
-                hp.write_map(fname_total_sat, total_sat, **args)
+            fname_noise_90_in = f"{noisedir_in}/noise_sun90max_{band[-4:]}_mc_{mc:04}.fits"
+            fname_noise_45_in = f"{noisedir_in}/noise_sun45_supplement_{band[-4:]}_mc_{mc:04}.fits"
+            print(prefix + f"        Reading {fname_noise_90_in}")
+            noise_90_in = hp.read_map(fname_noise_90_in, None)
+            print(prefix + f"        Reading {fname_noise_45_in}")
+            noise_45_in = hp.read_map(fname_noise_45_in, None)
+
+            fname_rhits_90 = f"{noisedir_in}/rhits_sun90max_{band[-4:]}.fits"
+            fname_rhits_45 = f"{noisedir_in}/rhits_sun45_supplement_{band[-4:]}.fits"
+
+            rhits_90_in = hp.read_map(fname_rhits_90)
+            rhits_45_in = hp.read_map(fname_rhits_45)
+
+            for add_45 in False, True:
+                for survey_length in survey_lengths:
+                    scale_90 = np.sqrt(survey_length_in / survey_length)
+                    noise_90 = noise_90_in * scale_90
+                    rhits_90 = rhits_90_in / scale_90**2
+                    if add_45:
+                        scale_45 = np.sqrt(survey_length_in / survey_length)
+                        noise_45 = noise_45_in * scale_45
+                        rhits_45 = rhits_45_in / scale_45**2
+                    else:
+                        scale_45 = 0
+                        noise_45 = 0
+                        rhits_45 = 0
+                    noise_sat = (
+                        rhits_90 * noise_90 + rhits_45 * noise_45
+                    ) * inv_map(rhits_90 + rhits_45)
+                    noise_sat[noise_sat == 0] = hp.UNSEEN
+                    noisedir_out = f"no_pbscaling/noise_{survey_length:02}_years"
+                    os.makedirs(noisedir_out, exist_ok=True)
+                    # Save a copy of the pure noise map
+                    if add_45:
+                        fname_scaled_noise_sat = f"{noisedir_out}/phase2_noise_{alt_band}_SAT90+45_mc_{mc:04}.fits"
+                    else:
+                        fname_scaled_noise_sat = f"{noisedir_out}/phase2_noise_{alt_band}_SAT90_mc_{mc:04}.fits"
+                    args = {
+                        "dtype" : np.float32,
+                        "coord" : "C",
+                        "column_units" : "K_CMB",
+                        "extra_header" : [
+                            ("NOISE90", os.path.basename(fname_noise_90_in), "Sun90 noise"),
+                            ("NYEAR", survey_length),
+                        ],
+                        "overwrite" : True,
+                    }
+                    if add_45:
+                        args["extra_header"].append(
+                            ("NOISE45", os.path.basename(fname_noise_45_in), "Sun45 noise")
+                        )
+
+                    print(prefix + f"        Writing {fname_scaled_noise_sat}")
+                    hp.write_map(fname_scaled_noise_sat, noise_sat, **args)
+                    # Now assemble the total map
+                    total_sat = sky + noise_sat
+                    total_sat[noise_sat == hp.UNSEEN] = hp.UNSEEN
+                    fname_total_sat = f"no_pbscaling/total_{survey_length:02}_years/" \
+                        f"phase2_total_{alt_band}_SAT_mc_{mc:04}.fits"
+                    os.makedirs(os.path.dirname(fname_total_sat), exist_ok=True)
+                    args = {
+                        "dtype" : np.float32,
+                        "coord" : "C",
+                        "column_units" : "K_CMB",
+                        "extra_header" : [
+                            ("FWHM", fwhm.to_value(u.arcmin), "arcminutes"),
+                            ("FOREGRND", os.path.basename(fname_fg)),
+                            ("CMB", os.path.basename(fname_cmb)),
+                            ("TENSOR", fname_tensor),
+                            ("R", r, "tensor-scalar ratio"),
+                            ("LMIN_CMB", lmin, "High-pass cut-off"),
+                            ("NOISE90", os.path.basename(fname_noise_90_in), "Sun90 noise"),
+                        ],
+                        "overwrite" : True,
+                    }
+                    if add_45:
+                        args["extra_header"].append(
+                            ("NOISE45", os.path.basename(fname_noise_45_in), "Sun45 noise")
+                        )
+                    print(prefix + f"        Writing {fname_total_sat}")
+                    hp.write_map(fname_total_sat, total_sat, **args)
         else:
             fname_noise_wide = f"{noisedir_in}/noise_lat_wide_{band[-4:]}_mc_{mc:04}.fits"
-            fname_noise_delens = f"{noisedir_in}/noise_lat_delens_{band[-4:]}_mc_{mc:04}.fits"
+            fname_noise_delens = f"{noisedir_in}/noise_lat_delensing_max_{band[-4:]}_mc_{mc:04}.fits"
             print(prefix + f"        Reading {fname_noise_wide}")
             noise_wide_full = hp.read_map(fname_noise_wide, None)
             print(prefix + f"        Reading {fname_noise_delens}")
             noise_delens_full = hp.read_map(fname_noise_delens, None)
 
             fname_rhits_wide = f"{noisedir_in}/rhits_lat_wide_{band[-4:]}.fits"
-            fname_rhits_delens = f"{noisedir_in}/rhits_lat_delens_{band[-4:]}.fits"
+            fname_rhits_delens = f"{noisedir_in}/rhits_lat_delensing_max_{band[-4:]}.fits"
 
             rhits_wide_in = hp.read_map(fname_rhits_wide)
             rhits_delens_in = hp.read_map(fname_rhits_delens)
 
             for nlat in nlats:
                 for survey_length in survey_lengths:
+                    noisedir_out = f"no_pbscaling/noise_{survey_length:02}_years"
                     # 2 LATs dedicated to the wide survey until
                     # 14 LAT years are acquired
                     nyear_wide = min(2 * survey_length, wide_survey_max)
@@ -311,7 +350,7 @@ for band, fwhm in fwhms.items():
                     noise_wide = noise_wide_full * scale_wide
                     noise_delens = noise_delens_full * scale_delens
                     rhits_wide = rhits_wide_in / scale_wide**2
-                    rhits_delens = rhits_delens_in / scale_wide**2
+                    rhits_delens = rhits_delens_in / scale_delens**2
                     noise_lat = (
                         rhits_wide * noise_wide + rhits_delens * noise_delens
                     ) * inv_map(rhits_wide + rhits_delens)
@@ -333,6 +372,7 @@ for band, fwhm in fwhms.items():
                         "overwrite" : True,
                     }
                     print(prefix + f"        Writing {fname_scaled_noise_lat}")
+                    os.makedirs(os.path.dirname(fname_scaled_noise_lat), exist_ok=True)
                     hp.write_map(fname_scaled_noise_lat, noise_lat, **args)
                     # Now assemble the total map
                     total_lat = sky + noise_lat
@@ -352,7 +392,7 @@ for band, fwhm in fwhms.items():
                             ("R", r, "tensor-scalar ratio"),
                             ("LMIN_CMB", lmin, "High-pass cut-off"),
                             ("WNOISE", os.path.basename(fname_noise_wide)),
-                            ("DNOISE", os.path.basename(fname_noise_tiled), "Full sky delens noise")
+                            ("DNOISE", os.path.basename(fname_noise_delens), "Full sky delens noise")
                         ],
                         "overwrite" : True,
                     }

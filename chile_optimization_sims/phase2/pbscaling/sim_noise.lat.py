@@ -27,6 +27,19 @@ os.makedirs(outdir_fullsky, exist_ok=True)
 outdir_rhits = "rhits"
 os.makedirs(outdir_rhits, exist_ok=True)
 
+lmin = 30  # highpass cut-off
+
+
+def highpass(lmin, lmax):
+    highpass = np.ones(lmax + 1)
+    w = int(lmin / 10)
+    highpass[:lmin - w] = 0
+    ind = slice(lmin - w, lmin + w + 1)
+    n = highpass[ind].size
+    x = np.linspace(0, np.pi, n)
+    highpass[ind] = (1 - np.cos(x)) / 2
+    return highpass
+
 
 bc_to_band = {
     20.00 : "f020",
@@ -216,9 +229,10 @@ for irow, row in enumerate(arr):
         for i, (knee, alpha) in enumerate([
                 (ttknee, ttalpha), (eeknee, eealpha), (bbknee, bbalpha),
         ]):
-            scale = np.zeros(lmax + 1)
             # Scale the a_lm to create 1/ell noise
-            scale[ellmin:] = np.sqrt((ell[ellmin:] / knee)**alpha)
+            scale = np.zeros(lmax + 1)
+            scale[1:] = np.sqrt((ell[1:] / knee)**alpha)
+            scale *= np.sqrt(highpass(lmin, lmax))
             for alm in [alm_wide, alm_delens]:
                 hp.almxfl(alm[i], scale, inplace=True)
 

@@ -57,8 +57,10 @@ fwhms = {
 
 noisedir_in = f"noise_fullsky"
 
-fgroot = "/global/cfs/cdirs/cmbs4/chile_optimization/simulations/phase2/input_sky"
-fgdir = f"{fgroot}/combined_foregrounds_mediumcomplexity_norg"
+fgroot_lat = "/global/cfs/cdirs/cmbs4/chile_optimization/simulations/phase1/input_sky"
+fgroot_sat = "/global/cfs/cdirs/cmbs4/chile_optimization/simulations/phase2/input_sky"
+fgdir_lat = f"{fgroot_lat}/combined_foregrounds_mediumcomplexity_norg"
+fgdir_sat = f"{fgroot_sat}/combined_foregrounds_mediumcomplexity_norg"
 
 cmbdir = "/global/cfs/cdirs/cmb/data/generic/cmb/ffp10/mc/scalar"
 
@@ -118,14 +120,14 @@ for band, fwhm in fwhms.items():
     # Get the foregrounds
 
     if band.startswith("SAT"):
-        fname_fg = f"{fgdir}/" \
+        fname_fg = f"{fgdir_sat}/" \
             f"cmbs4_combined_foregrounds_mediumcomplexity_norg_uKCMB_{band}_nside512.fits"
         nside = 512
         lmax = 2 * nside
         fname_rhits_sat = f"rhits/rhits_sat_{band[-4:]}.fits"
         rhits_sat = None
     else:
-        fname_fg = f"{fgdir}/" \
+        fname_fg = f"{fgdir_lat}/" \
             f"cmbs4_combined_foregrounds_mediumcomplexity_norg_uKCMB_{band}_nside4096.fits"
         nside = 2048
         lmax = 2 * nside
@@ -136,7 +138,7 @@ for band, fwhm in fwhms.items():
 
     fg = None
 
-    for mc in range(10):
+    for mc in range(3):
 
         ijob += 1
         if ijob % ntask != rank:
@@ -146,7 +148,7 @@ for band, fwhm in fwhms.items():
 
         survey_length = survey_lengths[-1]
         if band.startswith("SAT"):
-            fname_total = f"total_{survey_length:02}_years/" \
+            fname_total = f"with_pbscaling/total_{survey_length:02}_years/" \
                 f"phase2_total_{alt_band}_SAT_mc_{mc:04}.fits"
             if os.path.isfile(fname_total):
                 print(prefix + f"    {fname_total} exists, skipping mc = {mc}")
@@ -154,9 +156,9 @@ for band, fwhm in fwhms.items():
             else:
                 print(prefix + f"    {fname_total} does not exist.")
         else:
-            fname_total5 = f"total_{survey_length:02}_years/" \
+            fname_total5 = f"with_pbscaling/total_{survey_length:02}_years/" \
                 f"phase2_total_{alt_band}_5LAT_mc_{mc:04}.fits"
-            if os.path.isfile(fname_total5) and False:
+            if os.path.isfile(fname_total5):
                 print(prefix + f"    {fname_total5} exists, skipping mc = {mc}")
                 continue
 
@@ -203,8 +205,9 @@ for band, fwhm in fwhms.items():
         # High-pass filter the CMB
 
         lmin = 30
-        fl = np.ones(lmax + 1)
-        fl[:lmin] = 0
+        fl = np.sqrt(highpass(lmin, lmax))
+        #fl = np.ones(lmax + 1)
+        #fl[:lmin] = 0
         for i in range(3):
             hp.almxfl(alms[i], fl, inplace=True)
 
@@ -343,7 +346,7 @@ for band, fwhm in fwhms.items():
                     # inverse variance weights
                     bad = rhits_wide + rhits_delens == 0
                     noise_wide = noise_wide_full * sqrt_inv(rhits_wide)
-                    noise_delens = noise_tiled_full * sqrt_inv(rhits_delens)
+                    noise_delens = noise_delens_full * sqrt_inv(rhits_delens)
                     noise_lat = (
                         rhits_wide * noise_wide + rhits_delens * noise_delens
                     ) * inv_map(rhits_wide + rhits_delens)
@@ -388,7 +391,7 @@ for band, fwhm in fwhms.items():
                             ("R", r, "tensor-scalar ratio"),
                             ("LMIN_CMB", lmin, "High-pass cut-off"),
                             ("WNOISE", os.path.basename(fname_noise_wide)),
-                            ("DNOISE", os.path.basename(fname_noise_tiled), "Full sky delens noise")
+                            ("DNOISE", os.path.basename(fname_noise_delens), "Full sky delens noise")
                         ],
                         "overwrite" : True,
                     }

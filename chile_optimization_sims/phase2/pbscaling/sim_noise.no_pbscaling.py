@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 from mpi4py import MPI
 import numpy as np
 
+from toast.utils import name_UID
+
 
 comm = MPI.COMM_WORLD
 ntask = comm.size
@@ -24,13 +26,20 @@ params = {
     "sat" : {
         "nside" : 512,
         "ellmin" : 30,
-        "flavors" : ["sun90max"],
+        "flavors" : ["sun90max", "sun45_supplement"],
     },
     "lat" : {
         "nside" : 2048,
         "ellmin" : 30,
-        "flavors" : ["wide", "lat_delensing_max"],
+        "flavors" : ["lat_wide", "lat_delensing_max"],
     }
+}
+
+nyear = {
+    "sun90max" : 10,
+    "sun45_supplement" : 10,
+    "lat_wide" : 14,
+    "lat_delensing_max" : 16,
 }
 
 measurement_requirement = {
@@ -108,19 +117,22 @@ for tele, teleparams in measurement_requirement.items():
             bbnoise, bbknee, bbalpha,
         ) = bandparams
         for flavor in flavors:
-            fname_cov = glob.glob(
-                f"/global/cfs/cdirs/cmbs4/chile_optimization/simulations/"
-                f"phase2/noise_depth/{flavor}_{band}_*years_cov.fits"
-            )[0]
+            pattern = f"/global/cfs/cdirs/cmbs4/chile_optimization/simulations/" \
+                + f"phase2/noise_depth/{flavor}_{band}_*years_cov.fits"
+            try:
+                fname_cov = sorted(glob.glob(pattern))[0]
+            except:
+                print(f"No matches to pattern '{pattern}'")
+                sys.exit()
             for mc in range(3):
                 ijob += 1
                 if ijob % ntask != rank:
                     continue
 
                 # Different seed for each frequency and MC
-                rng = np.random.default_rng(93654635812 + int(freq) * 10000 + mc)
+                rng = np.random.default_rng(name_UID(flavor + band) + mc)
 
-                fname_full = f"{outdir}/noise_{tele}_{flavor}_{band}_mc_{mc:04}.fits"
+                fname_full = f"{outdir}/noise_{flavor}_{band}_mc_{mc:04}.fits"
 
                 if os.path.isfile(fname_full):
                     print(prefix + f"{fname_full} exists. Skipping.")
@@ -131,14 +143,17 @@ for tele, teleparams in measurement_requirement.items():
                 print(prefix + f"Loading {fname_cov}")
                 cov = hp.read_map(fname_cov, None)
                 cov = hp.ud_grade(cov, nside, power=2)
-                cov *= 10  # Scale to one year instead of 10
+                cov *= nyear[flavor]  # Scale to one year instead of 10
 
                 # Save a copy of the rhit map
                 
-                fname_rhit = f"{outdir}/rhits_{tele}_{flavor}_{band}.fits"
+                fname_rhit = f"{outdir}/rhits_{flavor}_{band}.fits"
                 if not os.path.isfile(fname_rhit):
+                    # Don't normalize the inverse covariance.  We need
+                    # the absolute value to weight wide and delensing surveys
+                    # correctly
                     invcov = invert_map(cov[0])
-                    rhit = invcov / np.amax(invcov)
+                    rhit = invcov # / np.amax(invcov)
                     print(prefix + f"Writing {fname_rhit}")
                     hp.write_map(
                         fname_rhit,
