@@ -27,6 +27,9 @@ def get_cl(fname_noise, fname_rhit, lmax, recompute):
         print(f"Loading {fname_cl}")
         cl = hp.read_cl(fname_cl)
     else:
+        if not os.path.isfile(fname_rhit):
+            print(f"WARNING: file not found: '{fname_rhit}'")
+            return None
         print(f"Loading {fname_rhit}")
         rhit = hp.read_map(fname_rhit)
         rhit /= np.amax(rhit)  # ensure peak normalization
@@ -34,6 +37,9 @@ def get_cl(fname_noise, fname_rhit, lmax, recompute):
         limit = np.sort(rhit)[int(rhit.size * .97)]
         rhit[rhit < limit] = 0
         fsky = np.sum(rhit**2) / rhit.size
+        if not os.path.isfile(fname_noise):
+            print(f"WARNING: file not found: '{fname_noise}'")
+            return None
         print(f"Loading {fname_noise}")
         noise = hp.read_map(fname_noise, None)
         print(f"Running Anafast on {fname_noise}")
@@ -51,11 +57,14 @@ def noise_model(ell, level, knee, alpha):
 
 
 def fit_noise(cl):
+    if cl is None:
+        return (0, 0, 0)
+    bb = cl[2]
     # fit a noise model
-    ell = np.arange(cl.size)
-    ind = slice(40, int(2 * cl.size / 3))
-    p0 = (np.mean(cl[ind]), 100, -1)
-    popt, pcov = curve_fit(noise_model, ell[ind], cl[ind], p0=p0)
+    ell = np.arange(bb.size)
+    ind = slice(40, int(2 * bb.size / 3))
+    p0 = (np.mean(bb[ind]), 100, -1)
+    popt, pcov = curve_fit(noise_model, ell[ind], bb[ind], p0=p0)
     return popt
 
 
@@ -67,14 +76,16 @@ bands = {
     "f026" : "f030",
     "f039" : "f040",
     "f085" : "f085",
+    "f090" : "f090",
     "f095" : "f095",
     "f145" : "f145",
+    "f150" : "f150",
     "f155" : "f155",
     "f227" : "f220",
     "f286" : "f280",
 }
 
-nrow, ncol = 2, 4
+nrow, ncol = 2, 5
 fig = plt.figure(figsize=[ncol * 4, nrow * 3])
 fig.suptitle("SAT")
 iplot = 0
@@ -100,16 +111,16 @@ for alt_band, band in bands.items():
     cl2 = get_cl(fname2, fname_rhit, lmax, recompute)
     cl3 = get_cl(fname3, fname_rhit, lmax, recompute)
 
-    params0 = fit_noise(cl0[2])
-    params1 = fit_noise(cl1[2])
-    params2 = fit_noise(cl2[2])
-    params3 = fit_noise(cl3[2])
+    params0 = fit_noise(cl0)
+    params1 = fit_noise(cl1)
+    params2 = fit_noise(cl2)
+    params3 = fit_noise(cl3)
 
     level0 = params0[0]
     level1 = params1[0]
     level2 = params2[0]
     level3 = params3[0]
-    
+
     ratio10 = level1 / level0
     ratio21 = level2 / level1
     ratio32 = level3 / level2
@@ -126,8 +137,9 @@ for alt_band, band in bands.items():
         + f",{ratio21:.3f}"
         + f",{ratio32:.3f}"
     )
-    ax.loglog(cl0[2], label=f"Phase 1 : depth = {depth0:.3f}", color="tab:blue")
-    ax.loglog(ell, noise_model(ell, *params0), "--", color="tab:blue")
+    if cl0 is not None:
+        ax.loglog(cl0[2], label=f"Phase 1 : depth = {depth0:.3f}", color="tab:blue")
+        ax.loglog(ell, noise_model(ell, *params0), "--", color="tab:blue")
     ax.loglog(cl1[2], label=f"Phase 2 : depth = {depth1:.3f}", color="tab:orange")
     ax.loglog(ell, noise_model(ell, *params1), "--", color="tab:orange")
     ax.loglog(cl2[2], label=f"Phase 2 : depth = {depth2:.3f} (no PB)", color="tab:green")
@@ -136,7 +148,7 @@ for alt_band, band in bands.items():
     ax.loglog(ell, noise_model(ell, *params3), "--", color="tab:red")
     ax.legend(loc="best")
 
-    ax.set_ylim([1e-20, 1e-15])
+    ax.set_ylim([1e-21, 1e-15])
 
 fig.tight_layout()
 fig.savefig("sat_noise_comparison.png")

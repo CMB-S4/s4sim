@@ -69,27 +69,27 @@ fskies["lat_wide"] = 0.6
 
 # LAT delensing_max f_total from
 # https://docs.google.com/spreadsheets/d/1n2NyRSKN9OZRtLJp6FTTG66upSJUAcfMDarWwU9IYb0/edit?pli=1&gid=516713372#gid=516713372
-# on 2025/01/17
+# on 2025/01/20
 
 f_sensitivity = yield_ * f_weight
 f_total["lat_delensing_max"] = {
     "season" : {
-        "f020" : 0.193 / f_sensitivity,
-        "f030" : 0.193 / f_sensitivity,
-        "f040" : 0.193 / f_sensitivity,
-        "f090" : 0.193 / f_sensitivity,
-        "f150" : 0.193 / f_sensitivity,
-        "f220" : 0.168 / f_sensitivity,
-        "f280" : 0.116 / f_sensitivity,
+        "f020" : 0.198 / f_sensitivity,
+        "f030" : 0.198 / f_sensitivity,
+        "f040" : 0.198 / f_sensitivity,
+        "f090" : 0.198 / f_sensitivity,
+        "f150" : 0.198 / f_sensitivity,
+        "f220" : 0.172 / f_sensitivity,
+        "f280" : 0.119 / f_sensitivity,
     },
     "break" : {
-        "f020" : 0.0183 / f_sensitivity,
-        "f030" : 0.0183 / f_sensitivity,
-        "f040" : 0.0183 / f_sensitivity,
-        "f090" : 0.0183 / f_sensitivity,
-        "f150" : 0.0183 / f_sensitivity,
-        "f220" : 0.0131 / f_sensitivity,
-        "f280" : 0.0091 / f_sensitivity,
+        "f020" : 0.019 / f_sensitivity,
+        "f030" : 0.019 / f_sensitivity,
+        "f040" : 0.019 / f_sensitivity,
+        "f090" : 0.019 / f_sensitivity,
+        "f150" : 0.019 / f_sensitivity,
+        "f220" : 0.014 / f_sensitivity,
+        "f280" : 0.009 / f_sensitivity,
     },
 }
 f_field["lat_delensing_max"] = {

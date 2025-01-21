@@ -102,10 +102,6 @@ for alt_band, band in bands.items():
     level1 = params1[0]
     level2 = params2[0]
     
-    #level0 = np.mean(cl0[2, 2000:4000])
-    #level1 = np.mean(cl1[2, 2000:4000])
-    #level2 = np.mean(cl2[2, 2000:4000])
-
     ratio10 = level1 / level0
     ratio21 = level2 / level1
 
