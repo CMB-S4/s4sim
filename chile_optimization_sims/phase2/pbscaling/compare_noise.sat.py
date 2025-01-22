@@ -86,7 +86,7 @@ bands = {
 }
 
 nrow, ncol = 2, 5
-fig = plt.figure(figsize=[ncol * 4, nrow * 3])
+fig = plt.figure(figsize=[ncol * 4, nrow * 4])
 fig.suptitle("SAT")
 iplot = 0
 for alt_band, band in bands.items():
@@ -134,19 +134,23 @@ for alt_band, band in bands.items():
     ax.set_title(
         f"{band} : " + r"C$_\ell^\mathrm{BB}$"
         + f" ratios = {ratio10:.3f}"
-        + f",{ratio21:.3f}"
-        + f",{ratio32:.3f}"
+        + f", {ratio21:.3f}"
+        + f", {ratio32:.3f}"
     )
+    ind = slice(2, lmax + 1)
     if cl0 is not None:
-        ax.loglog(cl0[2], label=f"Phase 1 : depth = {depth0:.3f}", color="tab:blue")
-        ax.loglog(ell, noise_model(ell, *params0), "--", color="tab:blue")
-    ax.loglog(cl1[2], label=f"Phase 2 : depth = {depth1:.3f}", color="tab:orange")
-    ax.loglog(ell, noise_model(ell, *params1), "--", color="tab:orange")
-    ax.loglog(cl2[2], label=f"Phase 2 : depth = {depth2:.3f} (no PB)", color="tab:green")
-    ax.loglog(ell, noise_model(ell, *params2), "--", color="tab:green")
-    ax.loglog(cl3[2], label=f"Phase 2 : depth = {depth3:.3f} (no PB + 45)", color="tab:red")
-    ax.loglog(ell, noise_model(ell, *params3), "--", color="tab:red")
-    ax.legend(loc="best")
+        ax.loglog(ell[ind], cl0[2][ind], label=f"Phase 1 : depth = {depth0:.3f}", color="tab:blue")
+        ax.loglog(ell[ind], noise_model(ell[ind], *params0), "--", color="tab:blue")
+    ax.loglog(ell[ind], cl1[2][ind], label=f"Phase 2 : depth = {depth1:.3f}", color="tab:orange")
+    ax.loglog(ell[ind], noise_model(ell[ind], *params1), "--", color="tab:orange")
+    ax.loglog(ell[ind], cl2[2][ind], label=f"Phase 2 : depth = {depth2:.3f} (no BK)", color="tab:green")
+    ax.loglog(ell[ind], noise_model(ell[ind], *params2), "--", color="tab:green")
+    ax.loglog(ell[ind], cl3[2][ind], label=f"Phase 2 : depth = {depth3:.3f} (no BK + 45)", color="tab:red")
+    ax.loglog(ell[ind], noise_model(ell[ind], *params3), "--", color="tab:red")
+    if band in ["f030", "f040", "f220", "f280"]:
+        ax.legend(loc="lower left")
+    else:
+        ax.legend(loc="best")
 
     ax.set_ylim([1e-21, 1e-15])
 

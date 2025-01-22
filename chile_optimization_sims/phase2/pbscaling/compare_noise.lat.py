@@ -41,6 +41,9 @@ def get_cl(fname_noise, fname_rhit, lmax, recompute):
         cl = hp.anafast(rhit * noise, lmax=lmax, iter=0) / fsky
         print(f"Writing {fname_cl}")
         hp.write_cl(fname_cl, cl, overwrite=True)
+    if np.any(cl > 1):
+        msg = f"Anomalous cl in {fname_cl}. Check {fname_noise}"
+        raise RuntimeError(msg)
     return cl
 
 
@@ -71,56 +74,60 @@ bands = {
     "f286" : "f280",
 }
 
-nrow, ncol = 2, 4
-fig = plt.figure(figsize=[ncol * 4, nrow * 3])
-fig.suptitle("Delensing survey")
-iplot = 0
-for alt_band, band in bands.items():
-    iplot += 1
-    print(f"{alt_band} {band}")
-    fname_rhit = f"rhits/rhits_delens_{band}.fits"
-    fname_rhit0 = "/global/cfs/cdirs/cmbs4/chile_optimization/simulations/" \
-        "phase1/noise_sims/phase1_hits_5chlat.fits"
+for nlat in 3, 4, 5:
 
-    nyear = 10
-    fname0 = f"/global/cfs/cdirs/cmbs4/chile_optimization/simulations/" \
-        f"phase1/noise_{nyear:02}_years/phase1_noise_{alt_band}_5LAT_mc_0000.fits"
-    fname1 = f"with_pbscaling/noise_{nyear:02}_years/" \
-        f"phase2_noise_{alt_band}_5LAT_mc_0000.fits"
-    fname2 = f"no_pbscaling/noise_{nyear:02}_years/" \
-        f"phase2_noise_{alt_band}_5LAT_mc_0000.fits"
+    nrow, ncol = 2, 4
+    fig = plt.figure(figsize=[ncol * 4, nrow * 4])
+    fig.suptitle(f"Delensing survey, {nlat}LAT")
+    iplot = 0
+    for alt_band, band in bands.items():
+        iplot += 1
+        print(f"{alt_band} {band}")
+        fname_rhit = f"rhits/rhits_delens_{band}.fits"
+        fname_rhit0 = "/global/cfs/cdirs/cmbs4/chile_optimization/simulations/" \
+            f"phase1/noise_sims/phase1_hits_{nlat}chlat.fits"
 
-    cl0 = get_cl(fname0, fname_rhit0, lmax, recompute)
-    cl1 = get_cl(fname1, fname_rhit, lmax, recompute)
-    cl2 = get_cl(fname2, fname_rhit, lmax, recompute)
+        nyear = 10
+        fname0 = f"/global/cfs/cdirs/cmbs4/chile_optimization/simulations/" \
+            f"phase1/noise_{nyear:02}_years/phase1_noise_{alt_band}_{nlat}LAT_mc_0000.fits"
+        fname1 = f"with_pbscaling/noise_{nyear:02}_years/" \
+            f"phase2_noise_{alt_band}_{nlat}LAT_mc_0000.fits"
+        fname2 = f"no_pbscaling/noise_{nyear:02}_years/" \
+            f"phase2_noise_{alt_band}_{nlat}LAT_mc_0000.fits"
 
-    params0 = fit_noise(cl0[2])
-    params1 = fit_noise(cl1[2])
-    params2 = fit_noise(cl2[2])
+        cl0 = get_cl(fname0, fname_rhit0, lmax, recompute)
+        cl1 = get_cl(fname1, fname_rhit, lmax, recompute)
+        cl2 = get_cl(fname2, fname_rhit, lmax, recompute)
 
-    level0 = params0[0]
-    level1 = params1[0]
-    level2 = params2[0]
-    
-    ratio10 = level1 / level0
-    ratio21 = level2 / level1
+        params0 = fit_noise(cl0[2])
+        params1 = fit_noise(cl1[2])
+        params2 = fit_noise(cl2[2])
 
-    depth0 = np.sqrt(level0) * 1e6 * 180 / np.pi * 60
-    depth1 = np.sqrt(level1) * 1e6 * 180 / np.pi * 60
-    depth2 = np.sqrt(level2) * 1e6 * 180 / np.pi * 60
+        level0 = params0[0]
+        level1 = params1[0]
+        level2 = params2[0]
 
-    ax = fig.add_subplot(nrow, ncol, iplot)
-    ax.set_title(
-        f"{band} : " + r"C$_\ell^\mathrm{BB}$"
-        + f" ratio = {ratio10:.3f}"
-        + f" ratio = {ratio21:.3f}")
-    ax.loglog(cl0[2], label=f"Phase 1 : depth = {depth0:.3f}", color="tab:blue")
-    ax.loglog(ell, noise_model(ell, *params0), "--", color="tab:blue")
-    ax.loglog(cl1[2], label=f"Phase 2 : depth = {depth1:.3f}", color="tab:orange")
-    ax.loglog(ell, noise_model(ell, *params1), "--", color="tab:orange")
-    ax.loglog(cl2[2], label=f"Phase 2 : depth = {depth2:.3f} (no PB)", color="tab:green")
-    ax.loglog(ell, noise_model(ell, *params2), "--", color="tab:green")
-    ax.legend(loc="best")
+        ratio10 = level1 / level0
+        ratio21 = level2 / level1
 
-fig.tight_layout()
-fig.savefig("lat_noise_comparison.png")
+        depth0 = np.sqrt(level0) * 1e6 * 180 / np.pi * 60
+        depth1 = np.sqrt(level1) * 1e6 * 180 / np.pi * 60
+        depth2 = np.sqrt(level2) * 1e6 * 180 / np.pi * 60
+
+        ax = fig.add_subplot(nrow, ncol, iplot)
+        ax.set_title(
+            f"{band} : " + r"C$_\ell^\mathrm{BB}$"
+            + f" ratios = {ratio10:.3f}"
+            + f", {ratio21:.3f}"
+        )
+        ind = slice(2, lmax + 1)
+        ax.loglog(ell[ind], cl0[2][ind], label=f"Phase 1 : depth = {depth0:.3f}", color="tab:blue")
+        ax.loglog(ell[ind], noise_model(ell[ind], *params0), "--", color="tab:blue")
+        ax.loglog(ell[ind], cl1[2][ind], label=f"Phase 2 : depth = {depth1:.3f}", color="tab:orange")
+        ax.loglog(ell[ind], noise_model(ell[ind], *params1), "--", color="tab:orange")
+        ax.loglog(ell[ind], cl2[2][ind], label=f"Phase 2 : depth = {depth2:.3f} (no BK)", color="tab:green")
+        ax.loglog(ell[ind], noise_model(ell[ind], *params2), "--", color="tab:green")
+        ax.legend(loc="best")
+
+    fig.tight_layout()
+    fig.savefig(f"lat_noise_comparison.{nlat}LAT.png")

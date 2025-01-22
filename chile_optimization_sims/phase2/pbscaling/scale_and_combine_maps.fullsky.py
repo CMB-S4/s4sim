@@ -24,7 +24,7 @@ if rank == 0:
     print(f"Running with {ntask} MPI tasks")
 prefix = f"{rank:04} : "
 
-survey_lengths = [4, 7, 10, 20]
+survey_lengths = [7, 10, 20]
 survey_length_in_sat = 1
 survey_length_in_lat = 1
 wide_survey_max = 14  # Stop wide survey once this limit is reached
@@ -138,7 +138,7 @@ for band, fwhm in fwhms.items():
 
     fg = None
 
-    for mc in range(3):
+    for mc in range(100):
 
         ijob += 1
         if ijob % ntask != rank:

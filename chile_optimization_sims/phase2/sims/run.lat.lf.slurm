@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --qos=regular
+#SBATCH --qos=debug
 #SBATCH --time=00:30:00
 #SBATCH --nodes=1
 #SBATCH --job-name=CMBS4_phase2
@@ -44,7 +44,8 @@ fproot=../focalplanes/focalplane_LAT0_CHLAT
 sleep $((RANDOM % 15))
 
 #for flavor in lat_wide lat_delensing lat_delensing_core lat_delensing_tiled; do
-for flavor in lat_delensing_max; do
+#for flavor in lat_delensing_max; do
+for flavor in lat_delensing_supplement; do
     args=()
     args+="--config params.lat.toml"
     args+=" --telescope LAT"
@@ -69,6 +70,11 @@ for flavor in lat_delensing_max; do
                     schedule="../scan_strategy/lat_wide/schedule_lat_wide.${pwv_limit}mm.${period}.txt"
                     args+=" --sim_ground.scan_cosecant_modulation"
                     scan_rate="Quantity('0.5 deg / s')"
+	            ;;
+	        lat_delensing_supplement)
+                    [[ $period = "break" ]] && continue
+                    schedule="../scan_strategy/lat_wide/schedule_lat_delensing_supplement.${pwv_limit}mm.${period}.txt"
+                    scan_rate="Quantity('1.0 deg / s')"
 	            ;;
 	        lat_delensing)
                     schedule="../scan_strategy/lat_delensing/schedule_lat_delensing.${pwv_limit}mm.${period}.txt"

@@ -150,6 +150,13 @@ f_weather_sim["lat_delensing_max"] = {
     },
 }
 
+# lat_delensing_supplement
+
+f_total["lat_delensing_supplement"] = f_total["lat_delensing_max"]
+fskies["lat_delensing_supplement"] = 0.03
+f_weather_sim["lat_delensing_supplement"] = f_weather_sim["lat_delensing_max"]
+f_field["lat_delensing_supplement"] = f_field["lat_delensing_max"]
+
 # Focalplane decimation factors must be compensated for
 
 thinfp = {
@@ -166,13 +173,15 @@ thinfp = {
 
 n_years = {
     "lat_wide" : [14],
+    "lat_delensing_supplement" : [14],
     "lat_delensing_max" : [16, 26, 36],
 }
 
 
 # Loop over all covariance matrices
 
-for flavor in "lat_wide", "lat_delensing_max":
+#for flavor in "lat_wide", "lat_delensing_max":
+for flavor in "lat_delensing_supplement",:
     for n_year in n_years[flavor]:
         nrow, ncol = 2, 4
         fig = plt.figure(figsize=[4 * ncol, 4 * nrow])
@@ -181,6 +190,8 @@ for flavor in "lat_wide", "lat_delensing_max":
         for band in f_total[flavor]["season"].keys():
             covs = []
             for period in "season", "break":
+                if flavor == "lat_delensing_supplement" and period == "break":
+                    continue
                 fname_in = f"outputs/{flavor}/{band}/{period}/mapmaker_cov.fits"
                 print(f"Loading {fname_in}")
                 cov = hp.read_map(fname_in, [0, 3, 5])  # II, QQ, UU

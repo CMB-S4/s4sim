@@ -15,7 +15,8 @@ np.random.seed(673653982)
 realization = 0
 
 pwv_limits = [2, 3]
-fname_in = "schedule_lat_wide.txt"
+# fname_in = "schedule_lat_wide.txt"
+fname_in = "schedule_lat_delensing_supplement.txt"
 
 first_time = dateutil.parser.parse(f"2030-01-01 00:00:00 00:00:00 +0000")
 break_start = dateutil.parser.parse(f"2030-01-01 00:00:00 00:00:00 +0000")

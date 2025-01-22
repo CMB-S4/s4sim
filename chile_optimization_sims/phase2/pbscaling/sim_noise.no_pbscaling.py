@@ -124,7 +124,7 @@ for tele, teleparams in measurement_requirement.items():
             except:
                 print(f"No matches to pattern '{pattern}'")
                 sys.exit()
-            for mc in range(3):
+            for mc in range(100):
                 ijob += 1
                 if ijob % ntask != rank:
                     continue

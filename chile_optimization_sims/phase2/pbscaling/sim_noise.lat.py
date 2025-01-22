@@ -175,7 +175,7 @@ for irow, row in enumerate(arr):
         hp.write_map(fname_rhit_delens, rhit_delens, **args)
         print(prefix + f"Wrote {fname_rhit_delens}")
 
-    for mc in range(3):
+    for mc in range(100):
         ijob += 1
         if ijob % ntask != rank:
             continue

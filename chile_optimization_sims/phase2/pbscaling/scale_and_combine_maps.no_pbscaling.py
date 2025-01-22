@@ -24,7 +24,7 @@ if rank == 0:
     print(f"Running with {ntask} MPI tasks")
 prefix = f"{rank:04} : "
 
-survey_lengths = [10]
+survey_lengths = [7, 10, 20]
 survey_length_in = 1
 wide_survey_max = 14  # Stop wide survey once this limit is reached
 nlats = [3, 4, 5]  # Total number of LATs
@@ -129,7 +129,7 @@ for band, fwhm in fwhms.items():
 
     fg = None
 
-    for mc in range(3):
+    for mc in range(100):
 
         ijob += 1
         if ijob % ntask != rank:
@@ -270,7 +270,7 @@ for band, fwhm in fwhms.items():
                     noise_sat = (
                         rhits_90 * noise_90 + rhits_45 * noise_45
                     ) * inv_map(rhits_90 + rhits_45)
-                    noise_sat[noise_sat == 0] = hp.UNSEEN
+                    noise_sat[:, rhits_90 + rhits_45 == 0] = hp.UNSEEN
                     noisedir_out = f"no_pbscaling/noise_{survey_length:02}_years"
                     os.makedirs(noisedir_out, exist_ok=True)
                     # Save a copy of the pure noise map
@@ -298,8 +298,12 @@ for band, fwhm in fwhms.items():
                     # Now assemble the total map
                     total_sat = sky + noise_sat
                     total_sat[noise_sat == hp.UNSEEN] = hp.UNSEEN
-                    fname_total_sat = f"no_pbscaling/total_{survey_length:02}_years/" \
-                        f"phase2_total_{alt_band}_SAT_mc_{mc:04}.fits"
+                    if add_45:
+                        fname_total_sat = f"no_pbscaling/total_{survey_length:02}_years/" \
+                            f"phase2_total_{alt_band}_SAT90+45_mc_{mc:04}.fits"
+                    else:
+                        fname_total_sat = f"no_pbscaling/total_{survey_length:02}_years/" \
+                            f"phase2_total_{alt_band}_SAT90_mc_{mc:04}.fits"
                     os.makedirs(os.path.dirname(fname_total_sat), exist_ok=True)
                     args = {
                         "dtype" : np.float32,
@@ -354,7 +358,7 @@ for band, fwhm in fwhms.items():
                     noise_lat = (
                         rhits_wide * noise_wide + rhits_delens * noise_delens
                     ) * inv_map(rhits_wide + rhits_delens)
-                    noise_lat[noise_lat == 0] = hp.UNSEEN
+                    noise_lat[:, rhits_wide + rhits_delens == 0] = hp.UNSEEN
                     # Save a copy of the pure noise map
                     fname_scaled_noise_lat = f"{noisedir_out}/" \
                         f"phase2_noise_{alt_band}_{nlat}LAT_mc_{mc:04}.fits"
