@@ -19,7 +19,9 @@ def invert_map(m):
     return result
 
 
-def get_cl(fname_noise, fname_rhit, lmax, recompute):
+def get_cl(fname_noise, fname_rhit, lmax, recompute, save=True, scale=None):
+    if fname_noise is None:
+        return None
     fname_cl = fname_noise.replace(".fits", "_cl.fits")
     if fname_noise == fname_cl:
         raise RuntimeError("Failed to synthesize C_ell filename")
@@ -44,8 +46,11 @@ def get_cl(fname_noise, fname_rhit, lmax, recompute):
         noise = hp.read_map(fname_noise, None)
         print(f"Running Anafast on {fname_noise}")
         cl = hp.anafast(rhit * noise, lmax=lmax, iter=0) / fsky
-        print(f"Writing {fname_cl}")
-        hp.write_cl(fname_cl, cl, overwrite=True)
+        if scale is not None:
+            cl *= scale
+        if save:
+            print(f"Writing {fname_cl}")
+            hp.write_cl(fname_cl, cl, overwrite=True)
     return cl
 
 
@@ -94,9 +99,19 @@ for alt_band, band in bands.items():
     print(f"{alt_band} {band}")
     fname_rhit = f"rhits/rhits_sat_{band}.fits"
 
+    fname_rhit00 = "/global/cfs/cdirs/cmbs4/awg/lowellbb/expt_xx/11a3sat/rhits/alt3_hits_chsat.fits"
     fname_rhit0 = "/global/cfs/cdirs/cmbs4/chile_optimization/simulations/" \
         f"phase1/noise_sims/phase1_hits_chsat.fits"
     nyear = 10
+    try:
+        ver = "11a3sat"
+        fname00 = glob.glob(
+            f"/global/cfs/cdirs/cmbs4/awg/lowellbb/data_xx.yy/{ver}.00/" \
+            f"cmbs4_{ver}_noise_{alt_band}_b*_ellmin30_map_0512_mc_0000.fits"
+        )[0]
+        scale00 = 2.0  # From 20 to 10 years, double the N_ell
+    except:
+        fname00 = None
     fname0 = f"/global/cfs/cdirs/cmbs4/chile_optimization/simulations/" \
         f"phase1/noise_{nyear:02}_years/phase1_noise_{alt_band}_SAT_mc_0000.fits"
     fname1 = f"with_pbscaling/noise_{nyear:02}_years/" \
@@ -106,25 +121,36 @@ for alt_band, band in bands.items():
     fname3 = f"no_pbscaling/noise_{nyear:02}_years/" \
         f"phase2_noise_{alt_band}_SAT90+45_mc_0000.fits"
 
+    cl00 = get_cl(fname00, fname_rhit00, lmax, recompute, save=False, scale=scale00)
     cl0 = get_cl(fname0, fname_rhit0, lmax, recompute)
     cl1 = get_cl(fname1, fname_rhit, lmax, recompute)
     cl2 = get_cl(fname2, fname_rhit, lmax, recompute)
     cl3 = get_cl(fname3, fname_rhit, lmax, recompute)
 
+    params00 = fit_noise(cl00)
     params0 = fit_noise(cl0)
     params1 = fit_noise(cl1)
     params2 = fit_noise(cl2)
     params3 = fit_noise(cl3)
 
+    level00 = params00[0]
     level0 = params0[0]
     level1 = params1[0]
     level2 = params2[0]
     level3 = params3[0]
 
-    ratio10 = level1 / level0
+    if level00 == 0:
+        ratio00 = np.inf
+    else:
+        ratio00 = level0 / level00
+    if level0 == 0:
+        ratio10 = np.inf
+    else:
+        ratio10 = level1 / level0
     ratio21 = level2 / level1
     ratio32 = level3 / level2
 
+    depth00 = np.sqrt(level00) * 1e6 * 180 / np.pi * 60
     depth0 = np.sqrt(level0) * 1e6 * 180 / np.pi * 60
     depth1 = np.sqrt(level1) * 1e6 * 180 / np.pi * 60
     depth2 = np.sqrt(level2) * 1e6 * 180 / np.pi * 60
@@ -133,11 +159,16 @@ for alt_band, band in bands.items():
     ax = fig.add_subplot(nrow, ncol, iplot)
     ax.set_title(
         f"{band} : " + r"C$_\ell^\mathrm{BB}$"
-        + f" ratios = {ratio10:.3f}"
-        + f", {ratio21:.3f}"
-        + f", {ratio32:.3f}"
+        + f" ratios ="
+        + f" {ratio00:.3f},"
+        + f" {ratio10:.3f},"
+        + f" {ratio21:.3f},"
+        + f" {ratio32:.3f},"
     )
     ind = slice(2, lmax + 1)
+    if cl00 is not None:
+        ax.loglog(ell[ind], cl00[2][ind], label=f"Alt 3 : depth = {depth00:.3f}", color="tab:purple")
+        ax.loglog(ell[ind], noise_model(ell[ind], *params00), "--", color="tab:purple")
     if cl0 is not None:
         ax.loglog(ell[ind], cl0[2][ind], label=f"Phase 1 : depth = {depth0:.3f}", color="tab:blue")
         ax.loglog(ell[ind], noise_model(ell[ind], *params0), "--", color="tab:blue")

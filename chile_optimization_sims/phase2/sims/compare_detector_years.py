@@ -1,0 +1,95 @@
+import os
+import sys
+
+import healpy as hp
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+f_weights = {
+    30 : 0.8,
+    40 : 0.8,
+    85 : 0.8,
+    95 : 0.8,
+    145 : 0.65,
+    155 : 0.65,
+    220 : 0.65,
+    280 : 0.65,
+}
+
+
+ndets = {
+    "phase1" : {
+        30 : 400,
+        40 : 400,
+        85 : 4520,
+        95 : 5656,
+        145 : 4520,
+        155 : 5656,
+        220 : 9812,
+        280 : 9812,
+    },
+    "phase2" : {
+        30 : 888,
+        40 : 888,
+        85 : 10320,
+        95 : 10320,
+        145 : 10320,
+        155 : 10320,
+        220 : 11208,
+        280 : 11208,
+    },
+}
+
+
+def best3pc(h):
+    hsorted = np.sort(h)
+    limit = hsorted[int(0.97 * h.size)]
+    return h >= limit
+
+
+for freq in 30, 40, 85, 95, 145, 155, 220, 280:
+    band = f"f{freq:03}"
+
+    f_weight = f_weights[freq]
+    
+    fname0 = f"../../phase1/sims/outputs/sat/{band}/mapmaker_hits.fits"
+    fname1 = f"outputs/sun90max/{band}/season/mapmaker_hits.fits"
+    fname2 = f"outputs/sun90max/{band}/break/mapmaker_hits.fits"
+
+    w1 = hp.read_map(fname0.replace("hits", "invcov"))
+    w2season = hp.read_map(fname1.replace("hits", "invcov"))
+    w2break = hp.read_map(fname2.replace("hits", "invcov"))
+    w2 = w2season + w2break
+    mask1 = best3pc(w1)
+    mask2 = best3pc(w2)
+    w1sum = np.sum(w1[mask1])
+    w2sum = np.sum(w2[mask2])
+                     
+    h1 = hp.read_map(fname0)
+    h2season = hp.read_map(fname1)
+    h2break = hp.read_map(fname2)
+    h2 = h2season + h2break
+
+    h1sum = np.sum(h1[mask1])
+    h2sum_season = np.sum(h2season[mask2])
+    h2sum_break = np.sum(h2break[mask2])
+    h2sum = np.sum(h2[mask2])
+
+    var1 = np.mean(h1[mask1] / w1[mask1])
+    var2 = np.mean(h2[mask2] / w2[mask2])
+
+    ndet1 = ndets["phase1"][freq]
+    ndet2 = ndets["phase2"][freq]
+
+    print(
+        f"{band} : "
+        f" "
+        f" survey weight = {w2sum / w1sum / f_weight:.2f}, "
+        f" f_weight = {1 / f_weight:.2f}, "
+        f" 1 / NET^2 = {var1 / var2:.2f}, "
+        f" detector years = {h2sum / h1sum:.2f}, "
+        f" detectors = {ndet2 / ndet1:.2f}, "
+        f" tele years (season) = {(h2sum_season / ndet2) / (h1sum / ndet1):.2f}, x"
+        f" tele years (off-season) = {h2sum / h2sum_season:.2f}"
+    )

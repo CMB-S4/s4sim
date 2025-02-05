@@ -142,6 +142,11 @@ for tele, teleparams in measurement_requirement.items():
 
                 print(prefix + f"Loading {fname_cov}")
                 cov = hp.read_map(fname_cov, None)
+                # Remove useless, noisy pixels
+                pvar = cov[1] + cov[2]
+                pmin = np.amin(pvar[pvar != 0])
+                cov[:, pvar > 1e6 * pmin] = 0
+                # Upgrade to target resolution
                 cov = hp.ud_grade(cov, nside, power=2)
                 cov *= nyear[flavor]  # Scale to one year instead of 10
 
