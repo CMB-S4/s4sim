@@ -14,8 +14,8 @@ export OMP_PLACES=threads
 export OMP_NUM_THREADS=16
 
 # srun python -u sim_noise.lat.py
-# srun python -u sim_noise.sat.py
-# srun python -u scale_and_combine_maps.fullsky.py
+#srun python -u sim_noise.sat.py
+srun python -u scale_and_combine_maps.fullsky.py
 
-srun python -u sim_noise.no_pbscaling.py
-srun python -u scale_and_combine_maps.no_pbscaling.py
+#srun python -u sim_noise.no_pbscaling.py
+#srun python -u scale_and_combine_maps.no_pbscaling.py

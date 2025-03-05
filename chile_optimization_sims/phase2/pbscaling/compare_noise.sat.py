@@ -8,6 +8,7 @@ import numpy as np
 from scipy.optimize import curve_fit
 
 
+single = True
 recompute = False
 
 
@@ -116,9 +117,9 @@ for alt_band, band in bands.items():
         f"phase1/noise_{nyear:02}_years/phase1_noise_{alt_band}_SAT_mc_0000.fits"
     fname1 = f"with_pbscaling/noise_{nyear:02}_years/" \
         f"phase2_noise_{alt_band}_SAT_mc_0000.fits"
-    fname2 = f"no_pbscaling/noise_{nyear:02}_years/" \
+    fname2 = f"no_pbscaling_no_artifact/noise_{nyear:02}_years/" \
         f"phase2_noise_{alt_band}_SAT90_mc_0000.fits"
-    fname3 = f"no_pbscaling/noise_{nyear:02}_years/" \
+    fname3 = f"no_pbscaling_no_artifact/noise_{nyear:02}_years/" \
         f"phase2_noise_{alt_band}_SAT90+45_mc_0000.fits"
 
     cl00 = get_cl(fname00, fname_rhit00, lmax, recompute, save=False, scale=scale00)
@@ -156,34 +157,60 @@ for alt_band, band in bands.items():
     depth2 = np.sqrt(level2) * 1e6 * 180 / np.pi * 60
     depth3 = np.sqrt(level3) * 1e6 * 180 / np.pi * 60
 
-    ax = fig.add_subplot(nrow, ncol, iplot)
-    ax.set_title(
-        f"{band} : " + r"C$_\ell^\mathrm{BB}$"
-        + f" ratios ="
-        + f" {ratio00:.3f},"
-        + f" {ratio10:.3f},"
-        + f" {ratio21:.3f},"
-        + f" {ratio32:.3f},"
-    )
+    if single:
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+    else:
+        ax = fig.add_subplot(nrow, ncol, iplot)
+    if single:
+        ax.set_title(
+            f"{band} : " + r"C$_\ell^\mathrm{BB}$"
+            + f" ratios ="
+            + f" {ratio21:.3f},"
+            + f" {ratio32:.3f},"
+        )
+    else:
+        ax.set_title(
+            f"{band} : " + r"C$_\ell^\mathrm{BB}$"
+            + f" ratios ="
+            + f" {ratio00:.3f},"
+            + f" {ratio10:.3f},"
+            + f" {ratio21:.3f},"
+            + f" {ratio32:.3f},"
+        )
     ind = slice(2, lmax + 1)
-    if cl00 is not None:
-        ax.loglog(ell[ind], cl00[2][ind], label=f"Alt 3 : depth = {depth00:.3f}", color="tab:purple")
-        ax.loglog(ell[ind], noise_model(ell[ind], *params00), "--", color="tab:purple")
-    if cl0 is not None:
-        ax.loglog(ell[ind], cl0[2][ind], label=f"Phase 1 : depth = {depth0:.3f}", color="tab:blue")
-        ax.loglog(ell[ind], noise_model(ell[ind], *params0), "--", color="tab:blue")
-    ax.loglog(ell[ind], cl1[2][ind], label=f"Phase 2 : depth = {depth1:.3f}", color="tab:orange")
+    if not single:
+        unit = ""
+        if cl00 is not None:
+            ax.loglog(ell[ind], cl00[2][ind], label=f"Alt 3 : depth = {depth00:.3f}", color="tab:purple")
+            ax.loglog(ell[ind], noise_model(ell[ind], *params00), "--", color="tab:purple")
+        if cl0 is not None:
+            ax.loglog(ell[ind], cl0[2][ind], label=f"Phase 1 : depth = {depth0:.3f}", color="tab:blue")
+            ax.loglog(ell[ind], noise_model(ell[ind], *params0), "--", color="tab:blue")
+    else:
+        unit = r"$\mu K$-arcmin"
+    ax.loglog(ell[ind], cl1[2][ind], label=f"Phase 2 : depth = {depth1:.3f}" + unit, color="tab:orange")
     ax.loglog(ell[ind], noise_model(ell[ind], *params1), "--", color="tab:orange")
-    ax.loglog(ell[ind], cl2[2][ind], label=f"Phase 2 : depth = {depth2:.3f} (no BK)", color="tab:green")
+    ax.loglog(ell[ind], cl2[2][ind], label=f"Phase 2 : depth = {depth2:.3f}" + unit + " (no BK)", color="tab:green")
     ax.loglog(ell[ind], noise_model(ell[ind], *params2), "--", color="tab:green")
-    ax.loglog(ell[ind], cl3[2][ind], label=f"Phase 2 : depth = {depth3:.3f} (no BK + 45)", color="tab:red")
+    ax.loglog(ell[ind], cl3[2][ind], label=f"Phase 2 : depth = {depth3:.3f}" + unit + " (no BK + 45)", color="tab:red")
     ax.loglog(ell[ind], noise_model(ell[ind], *params3), "--", color="tab:red")
     if band in ["f030", "f040", "f220", "f280"]:
         ax.legend(loc="lower left")
     else:
         ax.legend(loc="best")
 
-    ax.set_ylim([1e-21, 1e-15])
+    if single:
+        ax.set_xscale("linear")
+        ax.set_yscale("log")
+        ax.set_xlim([0, 400])
+        ax.set_ylim([3e-21, 3e-18])
+        ax.set_xlabel(r"Multipole, $\ell$")
+        ax.set_ylabel(r"$C_\ell^\mathrm{BB}$ [K$^2$]")
+        fig.savefig(f"sat_noise_comparison.{band}.png")
+    else:
+        ax.set_ylim([1e-21, 1e-15])
 
-fig.tight_layout()
-fig.savefig("sat_noise_comparison.png")
+if not single:
+    fig.tight_layout()
+    fig.savefig("sat_noise_comparison.png")

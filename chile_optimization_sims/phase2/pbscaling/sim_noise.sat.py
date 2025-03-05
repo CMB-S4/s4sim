@@ -121,9 +121,13 @@ for irow, row in enumerate(arr):
         # We'll use Colin's reldetyrs from Phase1 so we need the relative
         # survey weight between Phase1 and Phase2
 
-        fname0 = glob.glob(f"{rootdir1}/noise_depth/sat_{ref_band}_*years_cov.fits")[0]
+        fname0 = glob.glob(
+            f"{rootdir1}/noise_depth/sat_{ref_band}_*years_cov.fits"
+        )[0]
         cov0 = hp.read_map(fname0)
-        fname = glob.glob(f"{rootdir2}/noise_depth/sun90max_{band}_*years_cov.fits")[0]
+        fname = glob.glob(
+            f"{rootdir2}/noise_depth/sun90max_{band}_*years_cov.fits"
+        )[0]
         cov = hp.read_map(fname)
         invcov0 = invert_map(cov0)
         invcov = invert_map(cov)
