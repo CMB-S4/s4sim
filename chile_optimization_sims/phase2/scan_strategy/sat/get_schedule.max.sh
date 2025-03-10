@@ -4,7 +4,7 @@
 
 scantime=60
 
-for angle in 45 90; do
+for angle in 40 45 50 60 70 80 90; do
 
 toast_ground_schedule \
     @schedule_sat.par \

@@ -9,6 +9,10 @@ import healpy as hp
 import numpy as np
 
 
+merge = True  # If False, create a supplementing schedule
+gap_min = 3600  # Size of gap to fill from other schedule
+
+
 if len(sys.argv) < 4:
     print(f"Usage: {sys.argv[0]} <master_schedule> <supplementing_schedule> <output_schedule>")
     sys.exit()
@@ -49,10 +53,11 @@ with open(fname_out, "w") as f:
         f.write(line)
     nline = len(master)
     for iline in range(nline - 1):
-        # f.write(master[iline][2])
+        if merge:
+            f.write(master[iline][2])
         gap_start = master[iline][1]
         gap_stop = master[iline + 1][0]
-        if gap_stop - gap_start > 3600:
+        if gap_stop - gap_start > gap_min:
             # see if we can fill the gap from the other schedule
             for start, stop, line in supplement:
                 if stop < gap_start:
@@ -61,4 +66,5 @@ with open(fname_out, "w") as f:
                     break
                 if gap_start < start and stop < gap_stop:
                     f.write(line)
-    # f.write(master[-1][2])
+    if merge:
+        f.write(master[-1][2])
