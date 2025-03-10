@@ -8,7 +8,7 @@ import numpy as np
 from scipy.optimize import curve_fit
 
 
-single = True
+single = False
 recompute = False
 
 
