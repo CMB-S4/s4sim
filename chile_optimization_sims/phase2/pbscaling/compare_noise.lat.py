@@ -92,7 +92,7 @@ for nlat in 3, 4, 5:
             f"phase1/noise_{nyear:02}_years/phase1_noise_{alt_band}_{nlat}LAT_mc_0000.fits"
         fname1 = f"with_pbscaling/noise_{nyear:02}_years/" \
             f"phase2_noise_{alt_band}_{nlat}LAT_mc_0000.fits"
-        fname2 = f"no_pbscaling/noise_{nyear:02}_years/" \
+        fname2 = f"no_pbscaling_no_artifact/noise_{nyear:02}_years/" \
             f"phase2_noise_{alt_band}_{nlat}LAT_mc_0000.fits"
 
         cl0 = get_cl(fname0, fname_rhit0, lmax, recompute)

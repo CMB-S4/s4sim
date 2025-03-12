@@ -38,10 +38,32 @@ for field in "all", "south", "north":
         hits = hit.copy()
     elif field == "south":
         hits = hit.copy()
-        hits[np.logical_and(lon > 110, lon < 250)] = 0
+        hits[np.logical_and(lon > 120, lon < 250)] = 0
+        hits[
+            np.logical_and(
+                np.logical_and(lat > -30, lat < 30),
+                np.logical_and(lon > 100, lon < 150),
+            )
+        ] = 0
+        hits[
+            np.logical_and(
+                np.logical_and(lat > -45, lat < -30),
+                np.logical_and(lon > 110, lon < 150),
+            )
+        ] = 0
+        bmask = hits != 0
+        hp.write_map(
+            "cmbs4_phase2_mask_south.fits", bmask, dtype=bool, overwrite=True,
+        )
     elif field == "north":
         hits = hit.copy()
-        hits[np.logical_or(lon < 110, lon > 250)] = 0
+        south = hp.read_map("cmbs4_phase2_mask_south.fits", dtype=bool)
+        hits[south] = 0
+        bmask = hits != 0
+        hp.write_map(
+            "cmbs4_phase2_mask_north.fits", bmask, dtype=bool, overwrite=True,
+        )
+        # hits[np.logical_or(lon < 120, lon > 250)] = 0
     fraw, fnoise, fsignal = fskies(hits)
     hits /= np.amax(hits)
     ipix = np.argmax(hits)
