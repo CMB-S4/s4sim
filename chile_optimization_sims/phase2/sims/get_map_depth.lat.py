@@ -9,8 +9,8 @@ import numpy as np
 
 bands = [20, 30, 40, 90, 150, 220, 280]
 add_45 = False
-add_wide = False
-just_wide = True
+add_wide = True
+just_wide = False
 
 def fskies(hit):
     good = hit > 0
@@ -45,14 +45,22 @@ satinvcov = np.zeros_like(satcov)
 satinvcov[satgood] = 1 / satcov[satgood]
 
 
-for nlat in 3, 4, 5:
+# for nlat in 2, 3, 4, 5:
+for nlat in 2,:
     if nlat > 3 and just_wide:
         break
     for band in bands:
         print(band)
-        cov = hp.read_map(
-            glob.glob(f"scaled_outputs/lat_delensing_max_f{band:03}_{6+(nlat-2)*10}years_cov.fits")[0]
-        )
+        if nlat == 2:
+            # Reduced configuration, assume 10 LAT years of delensing
+            cov = hp.read_map(
+                glob.glob(f"scaled_outputs/lat_delensing_max_f{band:03}_16years_cov.fits")[0]
+            )
+            cov *= 16 / 10
+        else:
+            cov = hp.read_map(
+                glob.glob(f"scaled_outputs/lat_delensing_max_f{band:03}_{6+(nlat-2)*10}years_cov.fits")[0]
+            )
         if add_wide or just_wide:
             cov2 = hp.read_map(
                 glob.glob(f"scaled_outputs/lat_wide_f{band:03}_14years_cov.fits")[0]
