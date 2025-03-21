@@ -18,7 +18,7 @@ if rank == 0:
     print(f"Running with {ntask} MPI tasks")
 prefix = f"{rank:04} : "
 
-npipe_noise_dir  = '/global/cfs/cdirs/cmb/data/planck2020/npipe/npipe6v20_sim/residual/'
+npipe_noise_dir  = '/global/cfs/cdirs/cmb/data/planck2020/npipe/npipe6v20_sim/'
 beam_dir         = '/global/cfs/cdirs/cmb/data/planck2020/npipe/npipe6v20/quickpol/'
 fgdir            = "/global/cfs/cdirs/cmb/gsharing/panexp_v1_planck/galactic_foregrounds_mediumcomplexity/"
 cmbdir           = "/global/cfs/cdirs/cmb/data/generic/cmb/ffp10/mc/scalar/"
@@ -170,7 +170,7 @@ for band in freqs:
 
         # Read and rotate noise maps
         noise_mc = npipe_noise_ini+mc
-        fname_npipe = f"{npipe_noise_dir}{noise_mc:04}residual_npipe6v20_{band}_{noise_mc:04}.fits"
+        fname_npipe = f"{npipe_noise_dir}{noise_mc:04}/residual/residual_npipe6v20_{band}_{noise_mc:04}.fits"
         print(prefix + f"        Reading {fname_npipe}")
         noise_npipe = hp.read_map(fname_npipe, field=None)
         noise_npipe[noise_npipe == hp.UNSEEN] = 0.
