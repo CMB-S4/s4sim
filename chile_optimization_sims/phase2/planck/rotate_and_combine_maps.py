@@ -52,16 +52,18 @@ for band in freqs:
     print(prefix + f"band = {band} GHz")
 
     # Get the foregrounds
-
-    nside = 2048
-    lmin  = 0
-    lmax  = 2 * nside
     
     fname_Bl = f"{beam_dir}/Bl_TEB_npipe6v20_{band}GHzx{band}GHz.fits"
     if int(band) < 100:
+        nside = 1024
+        lmin  = 0
+        lmax  = 2 * nside
         fname_fg = f"{fgdir}" \
             f"sobs_mbs-s0017-20250208_LFI_mission_{band}_galactic_foregrounds_mediumcomplexity_healpix.fits"
     else:
+        nside = 2048
+        lmin  = 0
+        lmax  = 2 * nside
         fname_fg = f"{fgdir}" \
             f"sobs_mbs-s0017-20250208_HFI_mission_{band}_galactic_foregrounds_mediumcomplexity_healpix.fits"
 
@@ -174,7 +176,8 @@ for band in freqs:
         print(prefix + f"        Reading {fname_npipe}")
         noise_npipe = hp.read_map(fname_npipe, field=None)
         noise_npipe[noise_npipe == hp.UNSEEN] = 0.
-        noise_npipe = rot.rotate_map_pixel(noise_npipe)
+        noise_npipe = np.array(rot.rotate_map_pixel(noise_npipe))
+        print(noise_npipe.shape)
         
         fname_noise = f"{outputdir}noise/planck_noise_{band}_mc_{mc:04}.fits"
         print(prefix + f"        Writing {fname_noise}")
@@ -206,13 +209,18 @@ for band in freqs:
                 ("BEAM", f"NPIPE TEB {band}GHzx{band}GHz"),
                 ("FOREGRND", os.path.basename(fname_fg)),
                 ("CMB", os.path.basename(fname_cmb)),
-                ("TENSOR", os.path.basename(fname_tensor)),
                 ("R", r, "tensor-scalar ratio"),
                 ("LMIN_CMB", lmin, "High-pass cut-off"),
                 ("NOISE", os.path.basename(fname_noise)),
             ],
             "overwrite" : True,
         }
+        
+        if fname_tensor is not None:
+            args["extra_header"].append(("TENSOR", os.path.basename(fname_tensor)))
+        else:
+            args["extra_header"].append(("TENSOR", "None"))
+            
         print(prefix + f"        Writing {fname_total}")
         hp.write_map(fname_total, total.astype(np.float32), **args)
 
