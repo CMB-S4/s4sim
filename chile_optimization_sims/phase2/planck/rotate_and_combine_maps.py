@@ -1,3 +1,5 @@
+# TO-DO: Add 545 and 857 channels which are not polarized and might have different units
+
 # 2025-03-20: Original version by Shamik Ghosh
 
 import glob
@@ -40,8 +42,8 @@ freqs = [
             "143",
             "217",
             "353",
-            "545",
-            "857",
+            # "545",
+            # "857",
 ]
 
 rot = hp.Rotator(coord=('G', 'C'))
@@ -53,7 +55,11 @@ for band in freqs:
 
     # Get the foregrounds
     
-    fname_Bl = f"{beam_dir}/Bl_TEB_npipe6v20_{band}GHzx{band}GHz.fits"
+    if int(band) < 500:
+        fname_Bl = f"{beam_dir}/Bl_TEB_npipe6v20_{band}GHzx{band}GHz.fits"
+    else:
+        fname_Bl = f"{beam_dir}/Bl_npipe6v20_{band}GHzx{band}GHz.fits"
+    
     if int(band) < 100:
         nside = 1024
         lmin  = 0
