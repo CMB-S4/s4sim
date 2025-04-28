@@ -1,0 +1,53 @@
+[operators]
+
+[operators.sim_ground]
+    class = "toast.ops.sim_ground.SimGround"
+    enabled = true # If True, this class instance is marked as enabled
+    fix_rate_on_sky = true # If True, `scan_rate_az` is given in sky coordinates and azimuthal rate on mount will be adjusted to meet it.  If False, `scan_rate_az` is used as the mount azimuthal rate.
+    randomize_phase = true # If True, the Constant Elevation Scan will begin at a randomized phase.
+    scan_accel_az = "Quantity('100 deg / s2')" # Mount scanning rate acceleration for turnarounds
+    weather = "atacama" # Name of built-in weather site (e.g. 'atacama', 'south_pole') or path to HDF5 file
+
+[operators.elevation_model]
+    class = "toast.ops.elevation_noise.ElevationNoise"
+    enabled = true # If True, this class instance is marked as enabled
+
+[operators.pixels_healpix_radec]
+    class = "toast.ops.pixels_healpix.PixelsHealpix"
+    enabled = true # If True, this class instance is marked as enabled
+    nest = true # If True, use NESTED ordering instead of RING
+    nside = 4096 # The NSIDE resolution
+
+[operators.sim_atmosphere]
+    class = "toast.ops.sim_tod_atm.SimAtmosphere"
+    enabled = false
+
+[operators.sim_noise]
+    class = "toast.ops.sim_tod_noise.SimNoise"
+    enabled = false # If True, this class instance is marked as enabled
+
+[operators.flag_sso]
+    class = "toast.ops.flag_sso.FlagSSO"
+    enabled = true # If True, this class instance is marked as enabled
+    sso_names = "['Moon']" # Names of the SSOs, must be recognized by pyEphem
+    sso_radii = "[Quantity('5 deg')]" # Radii around the sources to flag
+    times = "times" # Observation shared key for timestamps
+    view = "None" # Use this view of the data in all observations
+
+[operators.mapmaker]
+    class = "toast.ops.mapmaker.MapMaker"
+    enabled = true # If True, this class instance is marked as enabled
+    template_matrix = "None" # This must be an instance of a template matrix operator
+    write_binmap = false # If True, write the projected map *before* template subtraction
+    write_cov = true # If True, write the white noise covariance matrices.
+    write_hdf5 = false # If True, outputs are in HDF5 rather than FITS format.
+    write_hdf5_serial = false # If True, force serial HDF5 write of output maps.
+    write_hits = true # If True, write the hits map
+    write_invcov = true # If True, write the inverse white noise covariance matrices.
+    write_map = false # If True, write the projected map
+    write_noiseweighted_map = false # If True, write the noise-weighted map
+    write_rcond = true # If True, write the reciprocal condition numbers.
+
+[templates.baselines]
+    class = "toast.templates.offset.offset.Offset"
+    enabled = false # If True, this class instance is marked as enabled

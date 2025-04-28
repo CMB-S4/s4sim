@@ -76,10 +76,10 @@ f_total["lat_wide"] = {
     },
 }
 f_field["lat_wide"] = {
-    "season" : 0.975,
-    "break" : 0.999,
+    "season" : 0.955,
+    "break" : 0.996,
 }
-# fskies["lat_wide"] = 0.6
+# fskies["lat_wide"] = 0.7
 
 # LAT delensing_max f_total from
 # https://docs.google.com/spreadsheets/d/1n2NyRSKN9OZRtLJp6FTTG66upSJUAcfMDarWwU9IYb0/edit?pli=1&gid=516713372#gid=516713372
@@ -114,10 +114,10 @@ f_field["lat_delensing_max"] = {
 
 # f_weather from prune_schedule.py
 
-cut_3mm_season = 5418 / 6642
-cut_2mm_season = 4568 / 6642
-cut_3mm_break = 474 / 2234
-cut_2mm_break = 401 / 2234
+cut_3mm_season = 5371 / 6588
+cut_2mm_season = 4505 / 6588
+cut_3mm_break = 471 / 2230
+cut_2mm_break = 400 / 2230
 f_weather_sim["lat_wide"] = {
     "season" : {
         "f020" : cut_3mm_season,
@@ -164,13 +164,6 @@ f_weather_sim["lat_delensing_max"] = {
     },
 }
 
-# lat_delensing_supplement
-
-f_total["lat_delensing_supplement"] = f_total["lat_delensing_max"]
-# fskies["lat_delensing_supplement"] = 0.03
-f_weather_sim["lat_delensing_supplement"] = f_weather_sim["lat_delensing_max"]
-f_field["lat_delensing_supplement"] = f_field["lat_delensing_max"]
-
 # Focalplane decimation factors must be compensated for
 
 thinfp = {
@@ -194,8 +187,8 @@ n_years = {
 
 # Loop over all covariance matrices
 
-#for flavor in "lat_wide", "lat_delensing_max", "lat_delensing_supplement",:
-for flavor in "lat_wide", :
+#for flavor in "lat_wide", "lat_delensing_max":
+for flavor in "lat_wide",:
     for n_year in n_years[flavor]:
         nrow, ncol = 2, 4
         fig = plt.figure(figsize=[4 * ncol, 4 * nrow])
