@@ -45,8 +45,8 @@ sleep $((RANDOM % 15))
 
 #for flavor in lat_wide lat_delensing lat_delensing_core lat_delensing_tiled; do
 #for flavor in lat_wide lat_delensing_tiled lat_delensing_core; do
-#for flavor in lat_delensing_max; do
-for flavor in lat_wide; do
+for flavor in lat_delensing_sun90bk; do
+# for flavor in lat_wide; do
     args=()
     args+="--config params.lat.toml"
     args+=" --telescope LAT"
@@ -91,6 +91,10 @@ for flavor in lat_wide; do
 	            ;;
 	        lat_delensing_max)
                     schedule="../scan_strategy/lat_delensing_max/schedule_lat_delensing_max.${pwv_limit}mm.${period}.txt"
+                    scan_rate="Quantity('1.0 deg / s')"
+                    ;;
+	        lat_delensing_sun90bk)
+                    schedule="../scan_strategy/lat_delensing_sun90bk/schedule_lat_delensing_sun90bk.${pwv_limit}mm.${period}.txt"
                     scan_rate="Quantity('1.0 deg / s')"
 	            ;;
             esac

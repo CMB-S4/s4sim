@@ -268,10 +268,10 @@ for flavor in "lat_wide",:
             vmin = np.amin(depth[depth != 0])
             vmax = 2 * vmin
             #
-            sorted_depth = depth.copy()
-            sorted_depth[sorted_depth == 0] = 1e10
-            sorted_depth = np.sort(sorted_depth)
             if False:
+                sorted_depth = depth.copy()
+                sorted_depth[sorted_depth == 0] = 1e10
+                sorted_depth = np.sort(sorted_depth)
                 fsky = fskies[flavor]
                 lim = int(depth.size * fsky)
                 mean_depth = np.mean(sorted_depth[:lim])

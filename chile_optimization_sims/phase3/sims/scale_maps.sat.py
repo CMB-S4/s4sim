@@ -14,13 +14,27 @@ import numpy as np
 # on 2025/01/17
 
 
+def fskies(hit):
+    npix = hit.size
+    good = hit > 0
+    dhit = hit[good].astype(float)
+    moment0 = np.sum(good) / npix
+    moment1 = np.sum(dhit) / npix
+    moment2 = np.sum(dhit ** 2) / npix
+    moment4 = np.sum(dhit ** 4) / npix
+    fraw = moment0
+    fnoise = moment1 ** 2 / moment2
+    fsignal = moment2 ** 2 / moment4
+    return fraw, fnoise, fsignal
+
+
 # Total target efficiency factor
 
 f_total = {}
 
 # fsky for measurement requirement
 
-fsky = 0.03
+# fsky = 0.03
 
 # Factors not included in f_total
 
@@ -137,9 +151,10 @@ n_years = {
 # Loop over all covariance matrices
 
 for flavor in "sun90bk",:
-    nrow, ncol = 2, 5
-    fig = plt.figure(figsize=[4 * ncol, 4 * nrow])
-    fig.suptitle(f"{flavor}, {nsat * 3} tubes, fsky = {fsky}")
+    nrow, ncol = 2, 3
+    fig = plt.figure(figsize=[5 * ncol, 4 * nrow])
+    # fig.suptitle(f"{flavor}, {nsat * 3} tubes, fsky = {fsky}")
+    fig.suptitle(f"{flavor}, {nsat * 3} tubes")
     iplot = 0
     for band in f_total[flavor]["season"].keys():
         covs = []
@@ -215,18 +230,23 @@ for flavor in "sun90bk",:
         vmin = np.amin(depth[depth != 0])
         vmax = 2 * vmin
         #
-        sorted_depth = depth.copy()
-        sorted_depth[sorted_depth == 0] = 1e10
-        sorted_depth = np.sort(sorted_depth)
-        lim = int(depth.size * fsky)
-        mean_depth = np.mean(sorted_depth[:lim])
+        if False:
+            sorted_depth = depth.copy()
+            sorted_depth[sorted_depth == 0] = 1e10
+            sorted_depth = np.sort(sorted_depth)
+            lim = int(depth.size * fsky)
+            mean_depth = np.mean(sorted_depth[:lim])
+        else:
+            fraw, fnoise, fsignal = fskies(invcov_sum)
+            var = np.sum(invcov_sum) / np.sum(invcov_sum**2)
+            mean_depth = np.sqrt(var * pix_area) * 1e6 * np.sqrt(2)
         #
         depth[depth == 0] = hp.UNSEEN
         hp.mollview(
             depth,
             min=vmin,
             max=vmax,
-            title=f"{band}, {n_year} tube years, mean = {mean_depth:.2f}",
+            title=f"{band}, {n_year} tube years, mean = {mean_depth:.2f} (fsky={fraw:.3f}/{fnoise:.3f})",
             sub=[nrow, ncol, iplot],
             cmap="inferno",
             unit="$\mu$K.arcmin",
