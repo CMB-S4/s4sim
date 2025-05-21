@@ -8,7 +8,7 @@ import toast
 
 
 include_off_season = False
-south_only = False
+south_only = True
 
 times = {}
 fname_schedule = sys.argv[1]
@@ -56,6 +56,8 @@ for scan in schedule.scans:
 
 
 t_delta_tot = (t_stop - t_start).total_seconds()
+if not include_off_season:
+    t_delta_tot -= (31 + 28 + 31) * 86400
 print(
     f"Scheduled observing time: {t_tot / 86400:.3f} / {t_delta_tot / 86400:.3f} "
     f"days = {t_tot / t_delta_tot:.3f}"

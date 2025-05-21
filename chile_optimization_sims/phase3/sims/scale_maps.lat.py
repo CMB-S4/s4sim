@@ -225,16 +225,17 @@ thinfp = {
 # Number of telescope years is a parameter
 
 n_years = {
-    "lat_wide" : [10],
-    "lat_delensing_sun90bk" : [10],
-    "lat_wide_supplement" : [10],
-    "lat_roman_supplement" : [10],
+    "lat_wide" : [10, 6],
+    "lat_delensing_sun90bk" : [10, 4],
+    "lat_wide_supplement" : [10, 4],
+    "lat_roman_supplement" : [10, 4],
 }
 
 
 # Loop over all covariance matrices
 
-#for flavor in "lat_wide", "lat_delensing_max":
+# for flavor in "lat_wide", "lat_delensing_max":
+# for flavor in "lat_wide",:
 for flavor in "lat_delensing_sun90bk", "lat_wide_supplement", "lat_roman_supplement":
     for n_year in n_years[flavor]:
         nrow, ncol = 2, 4
