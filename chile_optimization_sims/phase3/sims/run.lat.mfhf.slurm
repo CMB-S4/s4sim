@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --qos=regular
+#SBATCH --qos=premium
 #SBATCH --time=01:00:00
-#SBATCH --nodes=4
+#SBATCH --nodes=1
 #SBATCH --job-name=CMBS4_phase3
 #SBATCH --licenses=SCRATCH
 #SBATCH --constraint=cpu
@@ -45,7 +45,8 @@ sleep $((RANDOM % 15))
 
 #for flavor in lat_wide lat_delensing lat_delensing_core lat_delensing_tiled; do
 #for flavor in lat_wide lat_delensing_tiled lat_delensing_core; do
-for flavor in lat_delensing_sun90bk; do
+# for flavor in lat_delensing_sun90bk; do
+for flavor in lat_wide_supplement lat_roman_supplement; do
 # for flavor in lat_wide; do
     args=()
     args+="--config params.lat.toml"
@@ -65,7 +66,8 @@ for flavor in lat_delensing_sun90bk; do
                 args+=" --thinfp 16"
 		;;
 	esac
-        for period in season break; do
+        # for period in season break; do
+        for period in break; do
             case $flavor in
 	        lat_wide)
                     schedule="../scan_strategy/lat_wide/schedule_lat_wide.${pwv_limit}mm.${period}.txt"
@@ -97,6 +99,14 @@ for flavor in lat_delensing_sun90bk; do
                     schedule="../scan_strategy/lat_delensing_sun90bk/schedule_lat_delensing_sun90bk.${pwv_limit}mm.${period}.txt"
                     scan_rate="Quantity('1.0 deg / s')"
 	            ;;
+	        lat_wide_supplement)
+                    schedule="../scan_strategy/lat_wide/schedule_lat_wide_supplement.${pwv_limit}mm.${period}.txt"
+                    scan_rate="Quantity('1.0 deg / s')"
+	            ;;
+	        lat_roman_supplement)
+                    schedule="../scan_strategy/lat_roman/schedule_lat_roman_supplement.${pwv_limit}mm.${period}.txt"
+                    scan_rate="Quantity('1.0 deg / s')"
+	            ;;
             esac
             args+=" --schedule $schedule --sort_schedule"
 	    args+=" --focalplane ${fproot}_${band}.h5"
@@ -125,7 +135,7 @@ for flavor in lat_delensing_sun90bk; do
                  toast_sim_ground.py ${args[@]} \
                  --sim_ground.scan_rate_az "${scan_rate}" \
                  >& $logfile
-            exit
+            # exit
         done
     done
 done

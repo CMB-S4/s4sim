@@ -18,5 +18,4 @@ toast_ground_schedule \
     --out schedule_lat_roman.txt \
     >& schedule_lat_roman.log &
 
-# --block-out 01/01-04/01
-# python gapfill_schedule.py schedule_lat_wide.txt ../lat_delensing_max/schedule_lat_delensing_max.txt schedule_lat_delensing_supplement.txt
+python gapfill_schedule.py ../lat_delensing_sun90bk/schedule_lat_delensing_sun90bk.txt schedule_lat_roman.txt schedule_lat_roman_supplement.txt

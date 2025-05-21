@@ -1,6 +1,7 @@
 # This script scales the simulated noise covariances with efficiency and
 # survey factors that were not included in the simulation
 
+import glob
 import os
 import sys
 
@@ -8,19 +9,7 @@ import healpy as hp
 import matplotlib.pyplot as plt
 import numpy as np
 
-
-def fskies(hit):
-    npix = hit.size
-    good = hit > 0
-    dhit = hit[good].astype(float)
-    moment0 = np.sum(good) / npix
-    moment1 = np.sum(dhit) / npix
-    moment2 = np.sum(dhit ** 2) / npix
-    moment4 = np.sum(dhit ** 4) / npix
-    fraw = moment0
-    fnoise = moment1 ** 2 / moment2
-    fsignal = moment2 ** 2 / moment4
-    return fraw, fnoise, fsignal
+from toast.pixels_io_healpix import read_healpix
 
 
 # Total target efficiency factor
@@ -57,22 +46,12 @@ f_weather_sim = {}
 f_sensitivity = yield_ * f_weight
 f_total["lat_wide"] = {
     "season" : {
-        "f020" : 0.250 / f_sensitivity,
-        "f030" : 0.250 / f_sensitivity,
-        "f040" : 0.250 / f_sensitivity,
         "f090" : 0.250 / f_sensitivity,
         "f150" : 0.250 / f_sensitivity,
-        "f220" : 0.218 / f_sensitivity,
-        "f280" : 0.150 / f_sensitivity,
     },
     "break" : {
-        "f020" : 0.022 / f_sensitivity,
-        "f030" : 0.022 / f_sensitivity,
-        "f040" : 0.022 / f_sensitivity,
         "f090" : 0.022 / f_sensitivity,
         "f150" : 0.022 / f_sensitivity,
-        "f220" : 0.017 / f_sensitivity,
-        "f280" : 0.012 / f_sensitivity,
     },
 }
 f_field["lat_wide"] = {
@@ -88,22 +67,12 @@ f_field["lat_wide"] = {
 f_sensitivity = yield_ * f_weight
 f_total["lat_delensing_max"] = {
     "season" : {
-        "f020" : 0.198 / f_sensitivity,
-        "f030" : 0.198 / f_sensitivity,
-        "f040" : 0.198 / f_sensitivity,
         "f090" : 0.198 / f_sensitivity,
         "f150" : 0.198 / f_sensitivity,
-        "f220" : 0.172 / f_sensitivity,
-        "f280" : 0.119 / f_sensitivity,
     },
     "break" : {
-        "f020" : 0.019 / f_sensitivity,
-        "f030" : 0.019 / f_sensitivity,
-        "f040" : 0.019 / f_sensitivity,
         "f090" : 0.019 / f_sensitivity,
         "f150" : 0.019 / f_sensitivity,
-        "f220" : 0.014 / f_sensitivity,
-        "f280" : 0.009 / f_sensitivity,
     },
 }
 f_field["lat_delensing_max"] = {
@@ -234,29 +203,30 @@ n_years = {
 
 # Loop over all covariance matrices
 
+master =  "lat_delensing_sun90bk"
 #for flavor in "lat_wide", "lat_delensing_max":
-for flavor in "lat_delensing_sun90bk", "lat_wide_supplement", "lat_roman_supplement":
-    for n_year in n_years[flavor]:
-        nrow, ncol = 2, 4
-        fig = plt.figure(figsize=[4 * ncol, 4 * nrow])
-        fig.suptitle(f"{flavor} {n_year} years")
-        iplot = 0
-        for band in f_total[flavor]["season"].keys():
+for supplement in "lat_wide_supplement", "lat_roman_supplement":
+    for day in sorted(glob.glob("daily_outputs/lat_wide/f090/*")):
+        day = os.path.basename(day)
+        if day.split("-")[1] in ["01", "02", "03"]:
+            period = "break"
+        else:
+            period = "season"
+        for band in f_total[master]["season"].keys():
             covs = []
-            for period in "season", "break":
-                if flavor == "lat_delensing_supplement" and period == "break":
+            for flavor in master, supplement:
+                fname_in = f"daily_outputs/{flavor}/{band}/{day}/mapmaker_cov.h5"
+                if not os.path.isfile(fname_in):
+                    print(f"No covariance: {fname_in}")
                     continue
-                fname_in = f"outputs/{flavor}/{band}/{period}/mapmaker_cov.fits"
                 print(f"Loading {fname_in}")
-                cov = hp.read_map(fname_in, [0, 3, 5])  # II, QQ, UU
+                cov = read_healpix(fname_in)  # II
 
                 # Scale the white noise covariance
 
                 scale = 1.
                 # Compensate for focalplane decimation
                 scale /= thinfp[band]
-                # Account for full mission length
-                scale /= n_year
                 # Yield and f_weight are not in f_total
                 scale /= yield_
                 scale /= f_weight
@@ -269,6 +239,9 @@ for flavor in "lat_delensing_sun90bk", "lat_wide_supplement", "lat_roman_supplem
                 # Scale
                 cov *= scale
                 covs.append(cov)
+
+            if len(covs) == 0:
+                continue
 
             # Combine the covariances
             invcov_sum = None
@@ -285,64 +258,43 @@ for flavor in "lat_delensing_sun90bk", "lat_wide_supplement", "lat_roman_supplem
   
             # Save the scaled covariance
 
-            outdir = f"scaled_outputs"
+            outdir = f"scaled_daily_outputs/delensing_and_{supplement}/{band}"
             os.makedirs(outdir, exist_ok=True)
-            fname_out = f"{outdir}/{flavor}_{band}_{n_year}years_cov.fits"
+            """
+            fname_out = f"{outdir}/{day}_cov.fits"
             print(f"Writing {fname_out}")
             hp.write_map(fname_out, cov, dtype=np.float32, coord="C", overwrite=True)
+            """
 
             # Derive depth from the covariance and save
 
             nside = hp.get_nside(cov)
             pix_area = hp.nside2pixarea(nside, degrees=True) * 3600  # arcmin^2
-            depth_I = np.sqrt(cov[0] * pix_area) * 1e6  # uK.arcmin
-            depth_Q = np.sqrt(cov[1] * pix_area) * 1e6  # uK.arcmin
-            depth_U = np.sqrt(cov[2] * pix_area) * 1e6  # uK.arcmin
-            fname_out = f"{outdir}/{flavor}_{band}_{n_year}years_depth.fits"
+            depth = np.sqrt(cov * pix_area) * 1e6  # uK.arcmin
+            fname_out = f"{outdir}/{day}_depth.fits"
             print(f"Writing {fname_out}")
             hp.write_map(
                 fname_out,
-                [depth_I, depth_Q, depth_U],
+                depth,
                 dtype=np.float32,
                 coord="C",
                 overwrite=True,
             )
 
-            # Plot depth
-
-            iplot += 1
-            depth = depth_I * np.sqrt(2)  # depth_P
-            vmin = np.amin(depth[depth != 0])
-            vmax = 2 * vmin
-            #
-            if False:
-                sorted_depth = depth.copy()
-                sorted_depth[sorted_depth == 0] = 1e10
-                sorted_depth = np.sort(sorted_depth)
-                fsky = fskies[flavor]
-                lim = int(depth.size * fsky)
-                mean_depth = np.mean(sorted_depth[:lim])
-            else:
-                fraw, fnoise, fsignal = fskies(invcov_sum)
-                var = np.sum(invcov_sum) / np.sum(invcov_sum**2)
-                mean_depth = np.sqrt(var * pix_area) * 1e6 * np.sqrt(2)
-            #
+            plotdir = f"frames/delensing_and_{supplement}"
+            os.makedirs(plotdir, exist_ok=True)
+            fname_plot = f"{plotdir}/frame_{day}.png"
             depth[depth == 0] = hp.UNSEEN
             hp.mollview(
                 depth,
-                min=vmin,
-                max=vmax,
-                title=f"{band}, mean = {mean_depth:.2f} (fsky={fraw:.3f}/{fnoise:.3f})",
-                sub=[nrow, ncol, iplot],
+                min=0,
+                max=100,
+                title=f"{day}",
                 cmap="inferno",
                 unit="$\mu$K.arcmin",
                 xsize=1600,
-                format="%.3f"
+                # format="%.3f",
             )
-
-        # Save plot
-
-        os.makedirs("plots", exist_ok=True)
-        fname_plot = f"plots/{flavor}_{n_year}years.png"
-        fig.savefig(fname_plot)
-        print(f"Plot saved in {fname_plot}")
+            plt.savefig(fname_plot)
+            print(f"Wrote {fname_plot}")
+            plt.close()

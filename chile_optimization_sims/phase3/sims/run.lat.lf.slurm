@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --qos=regular
+#SBATCH --qos=premium
 #SBATCH --time=00:30:00
 #SBATCH --nodes=1
 #SBATCH --job-name=CMBS4_phase3
@@ -44,7 +44,8 @@ fproot=../../phase2/focalplanes/focalplane_LAT0_CHLAT
 sleep $((RANDOM % 15))
 
 # for flavor in lat_wide lat_delensing lat_delensing_core lat_delensing_tiled; do
-for flavor in lat_delensing_sunbk90; do
+# for flavor in lat_delensing_sun90bk; do
+for flavor in lat_wide_supplement lat_roman_supplement; do
 # for flavor in lat_wide; do
     args=()
     args+="--config params.lat.toml"
@@ -96,6 +97,14 @@ for flavor in lat_delensing_sunbk90; do
                     schedule="../scan_strategy/lat_delensing_sun90bk/schedule_lat_delensing_sun90bk.${pwv_limit}mm.${period}.txt"
                     scan_rate="Quantity('1.0 deg / s')"
 	            ;;
+	        lat_wide_supplement)
+                    schedule="../scan_strategy/lat_wide/schedule_lat_wide_supplement.${pwv_limit}mm.${period}.txt"
+                    scan_rate="Quantity('1.0 deg / s')"
+	            ;;
+	        lat_roman_supplement)
+                    schedule="../scan_strategy/lat_roman/schedule_lat_roman_supplement.${pwv_limit}mm.${period}.txt"
+                    scan_rate="Quantity('1.0 deg / s')"
+	            ;;
             esac
             args+=" --schedule $schedule --sort_schedule"
 	    args+=" --focalplane ${fproot}_${band}.h5"
@@ -124,8 +133,7 @@ for flavor in lat_delensing_sunbk90; do
                  toast_sim_ground.py ${args[@]} \
                  --sim_ground.scan_rate_az "${scan_rate}" \
                  >& $logfile
-            # --sim_ground.scan_rate_az "Quantity('0.5 deg / s')" \
-            exit
+            # exit
         done
     done
 done
