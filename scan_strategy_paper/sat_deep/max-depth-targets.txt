@@ -339,7 +339,7 @@ North_Deep-20-001,MAX-DEPTH,1.0e+30,175.3,-17.2,10,40,60
 --patch
 North_Deep-20-002,MAX-DEPTH,1.0e+30,-177.5,-9.8,10,40,60
 --patch
-North_Deep-20-003,MAX-DEPTH,1.0e+30,-175.0,0.0,10,40,60
+North_Deep-20-003,MAX-DEPTH,1.0e+30,-175.0,-0.0,10,40,60
 --patch
 North_Deep-20-004,MAX-DEPTH,1.0e+30,-177.5,9.8,10,40,60
 --patch

@@ -75,7 +75,7 @@ for primary in targets:
         for i, (lon, lat) in enumerate(zip(lons, lats)):
             name = f"{primary}-{radius}-{i:03}"
             f.write(f"--patch\n{name},MAX-DEPTH,{weight:.1e},{lon:.1f},{lat:.1f},{RADIUS},{THROW},{SCANTIME}\n")
-fname_plot = "max-depth-targets.png"
+fname_plot = "max-depth-targets.bk.png"
 plt.savefig(fname_plot)
 print(f"Wrote {fname_plot}")
 
