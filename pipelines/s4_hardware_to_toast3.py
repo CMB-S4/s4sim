@@ -1,6 +1,6 @@
 #!/usr/bin/env/python
 
-# Copyright (c) 2020-2024 CMB-S4 Collaboration.
+# Copyright (c) 2020-2026 CMB-S4 Collaboration.
 # Full license can be found in the top level "LICENSE" file.
 
 """Translate an S4 hardware map on disk into an HDF5 supported by TOAST3
@@ -153,6 +153,14 @@ def main():
     )
 
     args = parser.parse_args()
+
+    env = toast.utils.Environment.get()
+    nthread = env.max_threads()
+    if nthread > 1:
+        print(
+            f"WARNING: maximum number of OpenMP threads is {nthread}. "
+            "This may slow down the focalplane simulation."
+        )
 
     if args.hardware is None:
         if args.telescope is None:
