@@ -27,36 +27,67 @@ else:
     print(f"Writing {fname_pdust}")
     hp.write_map(fname_pdust, pdust)
 
-if plot_bk:
-    fname_bk = "bk18_mask_largefield_cel_n0512.fits"
-    print(f"Loading {fname_bk}")
-    bkhits = hp.read_map(fname_bk)
-    bkhits[np.isnan(bkhits)] = 0
+fname_bk = "bk18_mask_largefield_cel_n0512.fits"
+print(f"Loading {fname_bk}")
+bkhits = hp.read_map(fname_bk)
+bkhits[np.isnan(bkhits)] = 0
 
-for flavor in "sat_deep", "sat_deep_bk":
-    fname = {
-        "sat_deep" : "outputs/sat_deep/SAT_f090/mapmaker_invcov.fits",
-        "sat_deep_bk" : "outputs/sat_deep_bk/SAT_f090/mapmaker_invcov.fits",
+# for flavor in "sat_deep", "sat_deep_bk", "lat_deep", "lat_deep_bk", "lat_wide":
+for flavor in "lat_hybrid",:
+    print(f"\n flavor = {flavor}")
+    # for flavor in "lat_deep", "lat_deep_bk", "lat_wide":
+    # for flavor in "lat_wide", :
+    fnames = {
+        "sat_deep" : ["outputs/sat_deep/SAT_f090/mapmaker_invcov.fits"],
+        "sat_deep_bk" : ["outputs/sat_deep_bk/SAT_f090/mapmaker_invcov.fits"],
+        "lat_deep" : ["outputs/lat_deep/f090/mapmaker_invcov.fits"],
+        "lat_deep_bk" : ["outputs/lat_deep_bk/f090/mapmaker_invcov.fits"],
+        "lat_wide" : ["outputs/lat_wide/f090/mapmaker_invcov.fits"],
+        "lat_hybrid" : [
+            "outputs/lat_hybrid_deep/f090/mapmaker_invcov.fits",
+            "outputs/lat_hybrid_wide/f090/mapmaker_invcov.fits",
+        ],
     }[flavor]
-    print(f"Loading {fname}")
-    invcov = hp.read_map(fname)
+    invcov = None
+    for fname in fnames:
+        print(f"Loading {fname}")
+        if invcov is None:
+            invcov = hp.read_map(fname)
+        else:
+            invcov += hp.read_map(fname)
     # depth = np.sqrt(invcov)
     weight = invcov / np.amax(invcov)
     good = weight != 0
     weight[weight == 0] = hp.UNSEEN
 
-    nrow, ncol = 1, 2
-    fig = plt.figure(figsize=[6 * ncol, 4 * nrow])
-    hp.mollview(weight, sub=[nrow, ncol, 1], cmap="magma", title="", cbar=False, min=0, max=1)
+    plot_bk = "bk" in flavor
 
-    def get_outline(weight, frac):
+    if "hybrid" in flavor:
+        nrow, ncol = 1, 3
+        fig = plt.figure(figsize=[6 * ncol, 4 * nrow])
+        hp.mollview(weight, sub=[nrow, ncol, 1], cmap="magma", title="", cbar=False, min=0, max=1)
+        hp.mollview(weight, sub=[nrow, ncol, 2], cmap="magma", title="", cbar=False, min=0, max=.04)
+    else:
+        nrow, ncol = 1, 2
+        fig = plt.figure(figsize=[6 * ncol, 4 * nrow])
+        hp.mollview(weight, sub=[nrow, ncol, 1], cmap="magma", title="", cbar=False, min=0, max=1)
+
+    def get_outline(weight, frac, use_median):
         good = np.logical_and(weight != 0, weight != hp.UNSEEN)
-        sorted_weight = np.sort(weight[good])[::-1]
-        cumulative_weight = np.cumsum(sorted_weight)
-        tot = np.sum(weight[good])
+        ngood = np.sum(good)
 
-        i = np.searchsorted(cumulative_weight, frac * tot)
-        mask = (weight > sorted_weight[i]).astype(float)
+        if use_median:
+            median_weight = np.median(weight[good])
+            mask = weight > median_weight * frac
+        else:
+            sorted_weight = np.sort(weight[good])[::-1]
+            cumulative_weight = np.cumsum(sorted_weight)
+            tot = np.sum(weight[good])
+
+            i = np.searchsorted(cumulative_weight, frac * tot)
+            i = min(i, ngood - 1)
+            mask = (weight > sorted_weight[i]).astype(float)
+
         fsky = np.sum(mask) / mask.size
         print(f"{frac} of the survey is limited to fsky = {fsky:.3f}")
         fsky = np.sum(good) / good.size
@@ -70,16 +101,29 @@ for flavor in "sat_deep", "sat_deep_bk":
 
         return smask
 
-    outline10 = get_outline(weight, 0.25)
-    outline50 = get_outline(weight, 0.50)
-    outline_bk10 = get_outline(bkhits, 0.25)
-    outline_bk50 = get_outline(bkhits, 0.50)
+    hp.mollview(pdust, sub=[nrow, ncol, ncol], cmap="magma", title="", cbar=False, max=1e-4)
 
-    hp.mollview(pdust, sub=[nrow, ncol, 2], cmap="magma", title="", cbar=False, max=1e-4)
-    hp.mollview(outline10, sub=[nrow, ncol, 2], cmap="bwr", title="", cbar=False, reuse_axes=True, alpha=0.75 * outline10)
-    hp.mollview(outline50, sub=[nrow, ncol, 2], cmap="bwr", title="", cbar=False, reuse_axes=True, alpha=0.50 * outline50)
-    hp.mollview(outline_bk10, sub=[nrow, ncol, 2], cmap="plasma", title="", cbar=False, reuse_axes=True, alpha=0.75 * outline_bk10)
-    hp.mollview(outline_bk50, sub=[nrow, ncol, 2], cmap="plasma", title="", cbar=False, reuse_axes=True, alpha=0.50 * outline_bk50)
+    if "wide" in flavor:
+        inner_frac = 0.80
+        outer_frac = 1.20
+        use_median = True
+    else:
+        inner_frac = 0.25
+        outer_frac = 0.50
+        use_median = False
+
+    inner_outline = get_outline(weight, inner_frac, use_median)
+    outer_outline = get_outline(weight, outer_frac, use_median)
+    full_outline = get_outline(weight, 1.0, False)
+    hp.mollview(inner_outline, sub=[nrow, ncol, ncol], cmap="bwr", title="", cbar=False, reuse_axes=True, alpha=0.75 * inner_outline)
+    hp.mollview(outer_outline, sub=[nrow, ncol, ncol], cmap="bwr", title="", cbar=False, reuse_axes=True, alpha=0.50 * outer_outline)
+    hp.mollview(-full_outline, sub=[nrow, ncol, ncol], cmap="bwr", title="", cbar=False, reuse_axes=True, alpha=0.75 * full_outline)
+
+    if plot_bk:
+        inner_outline_bk = get_outline(bkhits, inner_frac, use_median)
+        outer_outline_bk = get_outline(bkhits, outer_frac, use_median)
+        hp.mollview(inner_outline_bk, sub=[nrow, ncol, ncol], cmap="plasma", title="", cbar=False, reuse_axes=True, alpha=0.75 * inner_outline_bk)
+        hp.mollview(outer_outline_bk, sub=[nrow, ncol, ncol], cmap="plasma", title="", cbar=False, reuse_axes=True, alpha=0.50 * outer_outline_bk)
 
     fname_plot = f"survey_weight_{flavor}.png"
     plt.savefig(fname_plot)

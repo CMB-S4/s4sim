@@ -18,7 +18,7 @@ export HDF5_USE_FILE_LOCKING=FALSE
 export TOAST_FUNCTIME=1
 
 # Parallelization
-export OMP_NUM_THREADS=4
+export OMP_NUM_THREADS=8
 export OMP_PLACES=threads
 export OMP_PROC_BIND=spread
 let nnode=$SLURM_JOB_NUM_NODES
@@ -26,7 +26,7 @@ let nnode=$SLURM_JOB_NUM_NODES
 let ntask_node=256/$OMP_NUM_THREADS
 let ntask=$nnode*$ntask_node
 let ncore=$OMP_NUM_THREADS
-let groupsize=8
+let groupsize=4
 
 echo "$(date) : Running with"
 echo "            nnode = ${nnode}"
@@ -35,7 +35,7 @@ echo "       ntask_node = ${ntask_node}"
 echo "            ntask = ${ntask}"
 echo "        groupsize = ${groupsize}"
 
-flavors=(lat_deep lat_deep_bk lat_wide)
+flavors=(lat_deep lat_deep_bk lat_wide lat_hybrid_deep lat_hybrid_wide)
 # freqs=(20 30 40 90 150 220 280)
 freqs=(90)
 
@@ -48,12 +48,20 @@ for flavor in ${flavors[*]}; do
             schedule=../lat_deep/schedule_lat_deep.txt
             params=params.lat.toml
             ;;
+        "lat_hybrid_deep")
+            schedule=../hybrid_lat/schedule_lat_deep.txt
+            params=params.lat.toml
+            ;;
         "lat_deep_bk")
             schedule=../lat_deep/schedule_lat_deep.bk.txt
             params=params.lat.toml
             ;;
         "lat_wide")
             schedule=../lat_wide/schedule_lat_wide.txt
+            params=params.lat.wide.toml
+            ;;
+        "lat_hybrid_wide")
+            schedule=../hybrid_lat/schedule_lat_supplement.txt
             params=params.lat.wide.toml
             ;;
         *)
