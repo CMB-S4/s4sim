@@ -35,7 +35,7 @@ echo "       ntask_node = ${ntask_node}"
 echo "            ntask = ${ntask}"
 echo "        groupsize = ${groupsize}"
 
-flavors=(sat_deep sat_deep_bk)
+flavors=(sat_deep sat_deep_bk sat_classic)
 # freqs=(30 40 90 150 230 290)
 freqs=(90)
 
@@ -46,6 +46,7 @@ for flavor in ${flavors[*]}; do
     case $flavor in
         "sat_deep") schedule=../sat_deep/schedule.sat.txt ;;
         "sat_deep_bk") schedule=../sat_deep/schedule.sat.bk.txt ;;
+        "sat_classic") schedule=../sat_classic/schedule_sat.txt ;;
         *)
             echo "Unknown flavor: $flavor"
             exit
