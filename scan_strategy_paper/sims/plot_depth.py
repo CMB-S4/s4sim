@@ -32,8 +32,8 @@ print(f"Loading {fname_bk}")
 bkhits = hp.read_map(fname_bk)
 bkhits[np.isnan(bkhits)] = 0
 
-# for flavor in "sat_deep", "sat_deep_bk", "lat_deep", "lat_deep_bk", "lat_wide":
-for flavor in "lat_hybrid",:
+for flavor in "sat_deep", "sat_deep_bk", "lat_deep", "lat_deep_bk", "lat_wide", "lat_hybrid":
+    # for flavor in "lat_hybrid",:
     print(f"\n flavor = {flavor}")
     # for flavor in "lat_deep", "lat_deep_bk", "lat_wide":
     # for flavor in "lat_wide", :
@@ -64,13 +64,14 @@ for flavor in "lat_hybrid",:
 
     if "hybrid" in flavor:
         nrow, ncol = 1, 3
-        fig = plt.figure(figsize=[6 * ncol, 4 * nrow])
-        hp.mollview(weight, sub=[nrow, ncol, 1], cmap="magma", title="", cbar=False, min=0, max=1)
-        hp.mollview(weight, sub=[nrow, ncol, 2], cmap="magma", title="", cbar=False, min=0, max=.04)
+        scale = 0.75
+        fig = plt.figure(figsize=[6 * ncol * scale, 4 * nrow * scale])
+        hp.mollview(weight, sub=[nrow, ncol, 1], cmap="magma", title="", cbar=True, min=0, max=1, unit="Relative pixel weight")
+        hp.mollview(weight, sub=[nrow, ncol, 2], cmap="magma", title="", cbar=True, min=0, max=.04, unit="Relative pixel weight")
     else:
         nrow, ncol = 1, 2
         fig = plt.figure(figsize=[6 * ncol, 4 * nrow])
-        hp.mollview(weight, sub=[nrow, ncol, 1], cmap="magma", title="", cbar=False, min=0, max=1)
+        hp.mollview(weight, sub=[nrow, ncol, 1], cmap="magma", title="", cbar=True, min=0, max=1, unit="Relative pixel weight")
 
     def get_outline(weight, frac, use_median):
         good = np.logical_and(weight != 0, weight != hp.UNSEEN)
@@ -101,7 +102,7 @@ for flavor in "lat_hybrid",:
 
         return smask
 
-    hp.mollview(pdust, sub=[nrow, ncol, ncol], cmap="magma", title="", cbar=False, max=1e-4)
+    hp.mollview(pdust * 1e6, sub=[nrow, ncol, ncol], cmap="magma", title="", cbar=True, min=0, max=1e2, unit=r"$\mu$K @ 353 GHz")
 
     if "wide" in flavor:
         inner_frac = 0.80
