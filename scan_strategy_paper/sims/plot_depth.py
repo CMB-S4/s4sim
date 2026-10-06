@@ -7,6 +7,7 @@ import numpy as np
 
 
 plot_bk = True
+dpi = 500
 
 fname_pdust = "pdust.fits"
 if os.path.isfile(fname_pdust):
@@ -65,12 +66,12 @@ for flavor in "sat_deep", "sat_deep_bk", "lat_deep", "lat_deep_bk", "lat_wide", 
     if "hybrid" in flavor:
         nrow, ncol = 1, 3
         scale = 0.75
-        fig = plt.figure(figsize=[6 * ncol * scale, 4 * nrow * scale])
+        fig = plt.figure(figsize=[6 * ncol * scale, 4 * nrow * scale], dpi=dpi)
         hp.mollview(weight, sub=[nrow, ncol, 1], cmap="magma", title="", cbar=True, min=0, max=1, unit="Relative pixel weight")
         hp.mollview(weight, sub=[nrow, ncol, 2], cmap="magma", title="", cbar=True, min=0, max=.04, unit="Relative pixel weight")
     else:
         nrow, ncol = 1, 2
-        fig = plt.figure(figsize=[6 * ncol, 4 * nrow])
+        fig = plt.figure(figsize=[6 * ncol, 4 * nrow], dpi=dpi)
         hp.mollview(weight, sub=[nrow, ncol, 1], cmap="magma", title="", cbar=True, min=0, max=1, unit="Relative pixel weight")
 
     def get_outline(weight, frac, use_median):
@@ -127,7 +128,7 @@ for flavor in "sat_deep", "sat_deep_bk", "lat_deep", "lat_deep_bk", "lat_wide", 
         hp.mollview(outer_outline_bk, sub=[nrow, ncol, ncol], cmap="plasma", title="", cbar=False, reuse_axes=True, alpha=0.50 * outer_outline_bk)
 
     fname_plot = f"survey_weight_{flavor}.png"
-    plt.savefig(fname_plot)
+    fig.savefig(fname_plot)
     print(f"Wrote {fname_plot}")
 
 plt.show()
